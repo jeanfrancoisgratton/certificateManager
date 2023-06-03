@@ -19,7 +19,7 @@ var privKeySize int
 var caCmd = &cobra.Command{
 	Use:   "ca",
 	Short: "Root Certificate Authority management",
-	Long:  `This is where you will manage (add/verify) your rootCAs.`,
+	Long:  `This is where you will manage (add/verify/delete) your rootCAs.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			fmt.Println("Usage ca {create|verify")
@@ -40,7 +40,6 @@ var caCreateCmd = &cobra.Command{
 			fmt.Println(err)
 		} else {
 			fmt.Printf("A %v bits-keysize certificate %s has been created in %s\n", helpers.Green(strconv.Itoa(privKeySize)), helpers.Green(helpers.CertConfig.CertificateName), helpers.Green(helpers.CertConfig.CertificateDirectory))
-			//fmt.Println("Certificate has been created.")
 		}
 	},
 }
@@ -65,7 +64,7 @@ var caVerifyCmd = &cobra.Command{
 	},
 }
 
-// Edit a root CA based on the config file as defined with the -c global flag
+// Delete a root CA based on the config file as defined with the -c global flag
 var caDeleteCmd = &cobra.Command{
 	Use:     "delete",
 	Aliases: []string{"rm", "del", "remove"},
