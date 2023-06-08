@@ -41,7 +41,7 @@ func CreateRootCA(privateKeySize int) error {
 	if helpers.CertConfig.Duration == 0 {
 		helpers.CertConfig.Duration = 1
 	}
-	// Create a new self-signed root certificate template
+	// Create a new self-signed certificate template
 	template := &x509.Certificate{
 		SerialNumber:          big.NewInt(1),
 		Subject:               pkix.Name{CommonName: helpers.CertConfig.CommonName, Locality: []string{helpers.CertConfig.Locality}, Country: []string{helpers.CertConfig.Country}, Organization: []string{helpers.CertConfig.Organization}, OrganizationalUnit: []string{helpers.CertConfig.OrganizationalUnit}, Province: []string{helpers.CertConfig.Province}},
@@ -57,13 +57,13 @@ func CreateRootCA(privateKeySize int) error {
 	if helpers.CertConfig.IsCA {
 		template.KeyUsage = helpers.ReindexKeyUsage(helpers.CertConfig)
 	}
-	// Create the root certificate using the template and the private key
-	rootCertBytes, err := x509.CreateCertificate(rand.Reader, template, template, &privateKey.PublicKey, privateKey)
+	// Create the certificate using the template and the private key
+	certBytes, err := x509.CreateCertificate(rand.Reader, template, template, &privateKey.PublicKey, privateKey)
 	if err != nil {
 		return err
 	}
 
-	// Write the private key and root certificate to files
+	// Write the private key and certificate to files
 	privateKeyFile, err := os.Create(filepath.Join(helpers.CertConfig.CertificateDirectory, helpers.CertConfig.CertificateName) + ".key")
 	if err != nil {
 		return err
@@ -75,13 +75,13 @@ func CreateRootCA(privateKeySize int) error {
 		return err
 	}
 
-	rootCertFile, err := os.Create(filepath.Join(helpers.CertConfig.CertificateDirectory, helpers.CertConfig.CertificateName) + ".crt")
+	certFile, err := os.Create(filepath.Join(helpers.CertConfig.CertificateDirectory, helpers.CertConfig.CertificateName) + ".crt")
 	if err != nil {
 		return err
 	}
-	defer rootCertFile.Close()
+	defer certFile.Close()
 
-	err = pem.Encode(rootCertFile, &pem.Block{Type: "CERTIFICATE", Bytes: rootCertBytes})
+	err = pem.Encode(certFile, &pem.Block{Type: "CERTIFICATE", Bytes: certBytes})
 	if err != nil {
 		return err
 	}

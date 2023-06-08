@@ -16,7 +16,8 @@ func Changelog() {
 	fmt.Print(`
 VERSION		DATE			COMMENT
 -------		----			-------
-0.400		2023.04.22		environment management
+0.500		2023.06.03		server cert management
+0.400		2023.04.22		config management
 0.300		2023.04.20		ca edit, ca del
 0.200		2023.04.20		ca create and ca verify
 0.100		2023.04.16		near-config-aware
