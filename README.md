@@ -19,7 +19,7 @@ The latest branch merged in develop is the one listed in the file `IN THIS BRANC
 You need the following packages and tools:<br>
 - gcc<br>
 - make<br>
-- go : check the `go.version` file to see which version to install; as of writing this, v1.20.4 was the current version.<br>
+- go : check the `go.version` file to see which version to install; as of writing this, v1.20.5 was the current version.<br>
 
 <H3>Building:</H3>
 A helper script is available in the `src/` directory.<br>
