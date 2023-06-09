@@ -4,6 +4,6 @@
 - [x] APK package might not work as it needs libresolv.so.2, which just does not exist on Alpine. Workaround needed (CGO_ENABLED=0, maybe ?)
 - [ ] ca.prompt4values() is beyond ugly... Interface{}, much ? :-p
 - [ ] not that big an issue, but exportable variables that do not need to be exportable should not be marked as exportable.
-
+- [ ] `cert create` creates a certificate, but it is not signed
 
 <br><br><br>

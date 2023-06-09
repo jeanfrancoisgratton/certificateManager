@@ -4,7 +4,10 @@
 
 package helpers
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/jwalton/gchalk"
+)
 
 func Changelog() {
 	//fmt.Printf("\x1b[2J")
@@ -13,9 +16,31 @@ func Changelog() {
 	fmt.Print(`
 VERSION		DATE			COMMENT
 -------		----			-------
-0.400		2023.04.22		environment management
+0.500		2023.06.03		server cert management
+0.400		2023.04.22		config management
 0.300		2023.04.20		ca edit, ca del
 0.200		2023.04.20		ca create and ca verify
 0.100		2023.04.16		near-config-aware
 \n`)
+}
+
+func Red(sentence string) string {
+	return fmt.Sprintf("%s", gchalk.WithBrightRed().Bold(sentence))
+}
+
+func Green(sentence string) string {
+	return fmt.Sprintf("%s", gchalk.WithBrightGreen().Bold(sentence))
+}
+
+func White(sentence string) string {
+	return fmt.Sprintf("%s", gchalk.WithBrightWhite().Bold(sentence))
+}
+
+func Yellow(sentence string) string {
+	return fmt.Sprintf("%s", gchalk.WithBrightYellow().Bold(sentence))
+}
+
+// FIXME : Normal() is the same as White()
+func Normal(sentence string) string {
+	return fmt.Sprintf("%s", gchalk.WithWhite().Bold(sentence))
 }

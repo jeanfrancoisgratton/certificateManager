@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-var version = "0.400 (2023.04.22)"
+var version = "0.500 (2023.06.03)"
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -33,7 +33,6 @@ func Execute() {
 	if err != nil {
 		os.Exit(1)
 	}
-	//fmt.Println("Remote Host is ==>", hosts.ConnectURI)
 }
 
 func init() {
