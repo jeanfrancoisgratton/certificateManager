@@ -1,8 +1,8 @@
 // certificateManager : Écrit par Jean-François Gratton (jean-francois@famillegratton.net)
-// src/helpers/configCreateHelpers.go
+// src/helpers-old/configCreateHelpers.go
 // 4/29/23 17:36:16
 
-package helpers
+package helpers_old
 
 import (
 	"bufio"

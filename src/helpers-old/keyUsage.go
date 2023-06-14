@@ -1,8 +1,8 @@
 // certificateManager : Écrit par Jean-François Gratton (jean-francois@famillegratton.net)
-// src/helpers/keyUsage.go
+// src/helpers-old/keyUsage.go
 // 4/29/23 17:01:24
 
-package helpers
+package helpers_old
 
 import (
 	"crypto/x509"

@@ -5,7 +5,7 @@ package main
 
 import (
 	"cm/cmd"
-	"cm/config"
+	"cm/config-old"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -16,7 +16,7 @@ func main() {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
-	if err := config.TemplateConfigCreate(); err != nil {
+	if err := config_old.TemplateConfigCreate(); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	}

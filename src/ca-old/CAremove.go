@@ -1,18 +1,18 @@
 // certificateManager : Écrit par Jean-François Gratton (jean-francois@famillegratton.net)
-// src/ca/removeRootCA.go
+// src/ca-old/removeRootCA.go
 // 4/22/23 08:55:20
 
-package ca
+package ca_old
 
 import (
-	"cm/helpers"
+	"cm/helpers-old"
 	"os"
 	"path/filepath"
 )
 
 // This is a stub, really, before we get to the actual removal in branch 0.600
 func RemoveCACertificate() error {
-	cfg, err := helpers.Json2Config()
+	cfg, err := helpers_old.Json2Config()
 
 	if err != nil {
 		return err

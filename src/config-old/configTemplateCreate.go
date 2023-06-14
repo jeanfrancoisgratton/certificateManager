@@ -1,12 +1,12 @@
 // certificateManager
 // Écrit par J.F. Gratton <jean-francois@famillegratton.net>
-// Orininal name: src/config/configTemplateCreate.go
+// Orininal name: src/config-old/configTemplateCreate.go
 // Original time: 2023/06/03 07:01
 
-package config
+package config_old
 
 import (
-	"cm/helpers"
+	"cm/helpers-old"
 	"net"
 	"os"
 	"path/filepath"
@@ -41,7 +41,7 @@ func createExplanationfile() error {
 	"Comments": ["To see which values to put in the KeyUsage field, see https://pkg.go.dev/crypto/x509#KeyUsage", "Strip off 'KeyUsage' from the const name and there you go.", "", "Please note that this field offers no functionality and is strictly here for documentation purposes"] -> Those won't appear in the certificate file
 }`
 
-	expFile, err := os.Create(filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "template-README.txt"))
+	expFile, err := os.Create(filepath.Join(os.Getenv("HOME"), ".config-old", "certificatemanager", "template-README.txt"))
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func createExplanationfile() error {
 }
 
 func createSampleTemplate() error {
-	var sampleCertConfig = helpers.CertConfigStruct{
+	var sampleCertConfig = helpers_old.CertConfigStruct{
 		Country:              "CA",
 		Province:             "Quebec",
 		Locality:             "Blainville",

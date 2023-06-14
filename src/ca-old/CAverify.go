@@ -1,11 +1,11 @@
 // certificateManager : Écrit par Jean-François Gratton (jean-francois@famillegratton.net)
-// src/ca/verifyRootCAcert.go
+// src/ca-old/verifyRootCAcert.go
 // 4/18/23 05:37:11
 
-package ca
+package ca_old
 
 import (
-	"cm/helpers"
+	"cm/helpers-old"
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
@@ -79,7 +79,7 @@ func VerifyCACertificate(certFilePath string) error {
 
 	if parsedCert.KeyUsage != 0 {
 		fmt.Printf("\n   x509v3 Key usage:\n")
-		ku := helpers.GetStringsFromKeyUsage(parsedCert.KeyUsage)
+		ku := helpers_old.GetStringsFromKeyUsage(parsedCert.KeyUsage)
 		for _, k := range ku {
 			fmt.Printf("\t• %s\n", k)
 		}
@@ -94,12 +94,12 @@ func VerifyCACertificate(certFilePath string) error {
 	}
 
 	if CaVerifyComments {
-		cfg, err := helpers.Json2Config()
+		cfg, err := helpers_old.Json2Config()
 		if err != nil {
 			return err
 		}
 		if len(cfg.Comments) > 0 {
-			fmt.Println("\n\nComments (part of the config, but NOT of the certificate itself)\n----------------------------------------------------------------")
+			fmt.Println("\n\nComments (part of the config-old, but NOT of the certificate itself)\n----------------------------------------------------------------")
 			for _, cm := range cfg.Comments {
 				fmt.Printf("\t• %s\n", cm)
 			}

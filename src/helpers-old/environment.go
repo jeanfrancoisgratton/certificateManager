@@ -1,8 +1,8 @@
 // certificateManager : Écrit par Jean-François Gratton (jean-francois@famillegratton.net)
-// src/helpers/environment.go
+// src/helpers-old/environment.go
 // 4/29/23 17:00:45
 
-package helpers
+package helpers_old
 
 import (
 	"encoding/json"
@@ -18,7 +18,7 @@ func Json2Config() (CertConfigStruct, error) {
 	if !strings.HasSuffix(CertConfigFile, ".json") {
 		CertConfigFile += ".json"
 	}
-	rcFile := filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", CertConfigFile)
+	rcFile := filepath.Join(os.Getenv("HOME"), ".config-old", "certificatemanager", CertConfigFile)
 	jFile, err := os.ReadFile(rcFile)
 	if err != nil {
 		return CertConfigStruct{}, err
@@ -39,7 +39,7 @@ func (c CertConfigStruct) Config2Json(outputfile string) error {
 	if err != nil {
 		return err
 	}
-	rcFile := filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", outputfile)
+	rcFile := filepath.Join(os.Getenv("HOME"), ".config-old", "certificatemanager", outputfile)
 	err = os.WriteFile(rcFile, jStream, 0600)
 
 	return err
