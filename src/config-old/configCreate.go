@@ -34,7 +34,7 @@ func CreateConfig() error {
 	return nil
 }
 
-func prompt4values(cfg *certs.CertConfigStruct) error {
+func prompt4values(cfg *certs.CertificateStruct) error {
 	fmt.Println(`
 You will now be prompted to provide values to all of the fields that should
 be part of your config-old file. If a prompt shows a value between [brackets],

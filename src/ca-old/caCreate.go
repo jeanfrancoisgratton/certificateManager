@@ -26,7 +26,7 @@ CertFilePath: The path to write the root certificate to.
 The function generates a new RSA private key
 */
 
-// func CreateRootCA(caconfig *config-old.CertConfigStruct) error {
+// func CreateRootCA(caconfig *config-old.CertificateStruct) error {
 func CreateRootCA(privateKeySize int) error {
 	// Generate a new private key for the CA
 	privateKey, err := rsa.GenerateKey(rand.Reader, privateKeySize)

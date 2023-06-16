@@ -13,10 +13,10 @@ import (
 	"strings"
 )
 
-var CertConfig = CertConfigStruct{Duration: 1, KeyUsage: []string{"certs sign", "crl sign", "digital signature"}}
+var CertConfig = CertificateStruct{Duration: 1, KeyUsage: []string{"certs sign", "crl sign", "digital signature"}}
 var CertConfigFile = "defaultCertConfig.json"
 
-type CertConfigStruct struct {
+type CertificateStruct struct {
 	Country              string   `json:"Country"`
 	Province             string   `json:"Province"`
 	Locality             string   `json:"Locality"`
@@ -34,8 +34,8 @@ type CertConfigStruct struct {
 	Comments             []string `json:"Comments,omitempty"`
 }
 
-func Json2Config() (CertConfigStruct, error) {
-	var payload CertConfigStruct
+func Json2Config() (CertificateStruct, error) {
+	var payload CertificateStruct
 	var err error
 
 	if !strings.HasSuffix(CertConfigFile, ".json") {
@@ -44,17 +44,17 @@ func Json2Config() (CertConfigStruct, error) {
 	rcFile := filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", CertConfigFile)
 	jFile, err := os.ReadFile(rcFile)
 	if err != nil {
-		return CertConfigStruct{}, err
+		return CertificateStruct{}, err
 	}
 	err = json.Unmarshal(jFile, &payload)
 	if err != nil {
-		return CertConfigStruct{}, err
+		return CertificateStruct{}, err
 	} else {
 		return payload, nil
 	}
 }
 
-func (c CertConfigStruct) Config2Json(outputfile string) error {
+func (c CertificateStruct) Config2Json(outputfile string) error {
 	if outputfile == "" {
 		outputfile = CertConfigFile
 	}

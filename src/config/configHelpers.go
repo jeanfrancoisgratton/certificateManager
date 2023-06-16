@@ -12,3 +12,5 @@ type EnvConfigStruct struct {
 	CertificatesConfigDir string `json:"CertificatesConfigDir"`
 	RemoveDuplicates      bool   `json:"RemoveDuplicates"`
 }
+
+var EnvConfigFile = "defaultEnvConfig.json"

@@ -55,7 +55,7 @@ func createExplanationfile() error {
 }
 
 func createSampleTemplate() error {
-	var sampleCertConfig = CertConfigStruct{
+	var sampleCertConfig = CertificateStruct{
 		Country:              "CA",
 		Province:             "Quebec",
 		Locality:             "Blainville",

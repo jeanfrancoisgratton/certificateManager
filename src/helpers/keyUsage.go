@@ -76,8 +76,8 @@ func GetStringsFromKeyUsage(keyUsage x509.KeyUsage) []string {
 	return usages
 }
 
-// ReindexKeyUsage() : Ensures that the CertConfigStruct.KeyUsage contains only unique values
-func ReindexKeyUsage(cfg certs.CertConfigStruct) x509.KeyUsage {
+// ReindexKeyUsage() : Ensures that the CertificateStruct.KeyUsage contains only unique values
+func ReindexKeyUsage(cfg certs.CertificateStruct) x509.KeyUsage {
 	org := cfg.KeyUsage
 	// We append the CA-related usages
 	org = append(org, "certs sign", "crl sign", "digital signature")

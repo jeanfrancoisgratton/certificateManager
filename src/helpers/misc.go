@@ -1,5 +1,5 @@
 // certificateManager : Écrit par Jean-François Gratton (jean-francois@famillegratton.net)
-// src/misc/main.go
+// src/misc/misc.go
 // 4/16/23 21:35:03
 
 package helpers
