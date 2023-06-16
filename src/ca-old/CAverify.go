@@ -95,7 +95,7 @@ func VerifyCACertificate(certFilePath string) error {
 	}
 
 	if CaVerifyComments {
-		cfg, err := certs.Json2Config()
+		cfg, err := certs.Json2CertConfig()
 		if err != nil {
 			return err
 		}

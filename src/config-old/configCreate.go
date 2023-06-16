@@ -14,7 +14,7 @@ import (
 
 func CreateConfig() error {
 	var err error
-	certs.CertConfig, err = certs.Json2Config()
+	certs.CertConfig, err = certs.Json2CertConfig()
 	if err != nil {
 		if !os.IsNotExist(err) {
 			//if err != os.ErrNotExist {
@@ -27,7 +27,7 @@ func CreateConfig() error {
 	}
 
 	// we now need to reinject the config-old in a json
-	err = certs.CertConfig.Config2Json(helpers.CertConfigFile)
+	err = certs.CertConfig.CertConfig2Json(certs.CertConfigFile)
 	if err != nil {
 		return err
 	}

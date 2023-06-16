@@ -4,6 +4,7 @@
 package cmd
 
 import (
+	"cm/certs"
 	"cm/helpers"
 	"github.com/spf13/cobra"
 	"os"
@@ -37,5 +38,5 @@ func Execute() {
 
 func init() {
 	rootCmd.AddCommand(clCmd)
-	rootCmd.PersistentFlags().StringVarP(&helpers.CertConfigFile, "config-old", "c", "defaultCertConfig.json", "certificate configuration file.")
+	rootCmd.PersistentFlags().StringVarP(&certs.CertConfigFile, "config-old", "c", "defaultCertConfig.json", "certificate configuration file.")
 }

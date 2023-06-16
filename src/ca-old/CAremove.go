@@ -12,7 +12,7 @@ import (
 
 // This is a stub, really, before we get to the actual removal in branch 0.600
 func RemoveCACertificate() error {
-	cfg, err := certs.Json2Config()
+	cfg, err := certs.Json2CertConfig()
 
 	if err != nil {
 		return err

@@ -34,7 +34,7 @@ func CreateRootCA(privateKeySize int) error {
 		return err
 	}
 
-	certs.CertConfig, err = certs.Json2Config()
+	certs.CertConfig, err = certs.Json2CertConfig()
 	if err != nil {
 		return err
 	}

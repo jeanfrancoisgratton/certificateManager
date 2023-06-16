@@ -34,7 +34,7 @@ type CertificateStruct struct {
 	Comments             []string `json:"Comments,omitempty"`
 }
 
-func Json2Config() (CertificateStruct, error) {
+func Json2CertConfig() (CertificateStruct, error) {
 	var payload CertificateStruct
 	var err error
 
@@ -54,7 +54,7 @@ func Json2Config() (CertificateStruct, error) {
 	}
 }
 
-func (c CertificateStruct) Config2Json(outputfile string) error {
+func (c CertificateStruct) CertConfig2Json(outputfile string) error {
 	if outputfile == "" {
 		outputfile = CertConfigFile
 	}

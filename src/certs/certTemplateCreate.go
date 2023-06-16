@@ -75,7 +75,7 @@ func createSampleTemplate() error {
 			"",
 			"Please note that this field offers no functionality and is strictly here for documentation purposes"},
 	}
-	if err := sampleCertConfig.Config2Json("template.json"); err != nil {
+	if err := sampleCertConfig.CertConfig2Json("template.json"); err != nil {
 		return err
 	}
 	return nil
