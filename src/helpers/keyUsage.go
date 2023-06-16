@@ -1,10 +1,11 @@
 // certificateManager : Écrit par Jean-François Gratton (jean-francois@famillegratton.net)
-// src/helpers-old/keyUsage.go
+// src/helpers/keyUsage.go
 // 4/29/23 17:01:24
 
-package helpers_old
+package helpers
 
 import (
+	"cm/certs"
 	"crypto/x509"
 	"strings"
 )
@@ -26,7 +27,7 @@ func GetKeyUsageFromStrings(usageStrings []string) x509.KeyUsage {
 			keyUsage |= x509.KeyUsageDataEncipherment
 		case "key agreement":
 			keyUsage |= x509.KeyUsageKeyAgreement
-		case "cert sign", "certificate sign":
+		case "certs sign", "certificate sign":
 			keyUsage |= x509.KeyUsageCertSign
 		case "crl sign", "crl":
 			keyUsage |= x509.KeyUsageCRLSign
@@ -61,7 +62,7 @@ func GetStringsFromKeyUsage(keyUsage x509.KeyUsage) []string {
 		usages = append(usages, "key agreement")
 	}
 	if keyUsage&x509.KeyUsageCertSign != 0 {
-		usages = append(usages, "cert sign")
+		usages = append(usages, "certs sign")
 	}
 	if keyUsage&x509.KeyUsageCRLSign != 0 {
 		usages = append(usages, "crl sign")
@@ -76,10 +77,10 @@ func GetStringsFromKeyUsage(keyUsage x509.KeyUsage) []string {
 }
 
 // ReindexKeyUsage() : Ensures that the CertConfigStruct.KeyUsage contains only unique values
-func ReindexKeyUsage(cfg CertConfigStruct) x509.KeyUsage {
+func ReindexKeyUsage(cfg certs.CertConfigStruct) x509.KeyUsage {
 	org := cfg.KeyUsage
 	// We append the CA-related usages
-	org = append(org, "cert sign", "crl sign", "digital signature")
+	org = append(org, "certs sign", "crl sign", "digital signature")
 
 	// We map the new slices
 	//[]string to map : https://kylewbanks.com/blog/creating-unique-slices-in-go

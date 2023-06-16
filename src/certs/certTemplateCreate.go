@@ -3,10 +3,9 @@
 // Orininal name: src/config-old/configTemplateCreate.go
 // Original time: 2023/06/03 07:01
 
-package config_old
+package certs
 
 import (
-	"cm/certs"
 	"net"
 	"os"
 	"path/filepath"
@@ -56,7 +55,7 @@ func createExplanationfile() error {
 }
 
 func createSampleTemplate() error {
-	var sampleCertConfig = certs.CertConfigStruct{
+	var sampleCertConfig = CertConfigStruct{
 		Country:              "CA",
 		Province:             "Quebec",
 		Locality:             "Blainville",

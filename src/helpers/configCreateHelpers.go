@@ -1,8 +1,8 @@
 // certificateManager : Écrit par Jean-François Gratton (jean-francois@famillegratton.net)
-// src/helpers-old/configCreateHelpers.go
+// src/helpers/configCreateHelpers.go
 // 4/29/23 17:36:16
 
-package helpers_old
+package helpers
 
 import (
 	"bufio"
@@ -60,7 +60,7 @@ func GetStringSliceFromPrompt(prompt string, valuesPointer *[]string) {
 
 func GetKeyUsageFromPrompt() []string {
 	inputScanner := bufio.NewScanner(os.Stdin)
-	ku := []string{"decipher only", "encipher only", "crl sign", "cert sign", "key agreement",
+	ku := []string{"decipher only", "encipher only", "crl sign", "certs sign", "key agreement",
 		"data encipherment", "key encipherment", "content commitment", "digital signature"}
 	inputs := []string{}
 

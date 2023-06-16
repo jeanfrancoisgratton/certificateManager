@@ -5,7 +5,7 @@ package cmd
 
 import (
 	"cm/ca-old"
-	"cm/helpers-old"
+	"cm/helpers"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
@@ -36,10 +36,10 @@ var caCreateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := ca_old.CreateRootCA(privKeySize)
 		if err != nil {
-			fmt.Printf("%s", helpers_old.Red("Error while creating the root CA:"))
+			fmt.Printf("%s", helpers.Red("Error while creating the root CA:"))
 			fmt.Println(err)
 		} else {
-			fmt.Printf("A %v bits-keysize certificate %s has been created in %s\n", helpers_old.Green(strconv.Itoa(privKeySize)), helpers_old.Green(helpers_old.CertConfig.CertificateName), helpers_old.Green(helpers_old.CertConfig.CertificateDirectory))
+			fmt.Printf("A %v bits-keysize certificate %s has been created in %s\n", helpers.Green(strconv.Itoa(privKeySize)), helpers.Green(helpers.CertConfig.CertificateName), helpers.Green(helpers.CertConfig.CertificateDirectory))
 		}
 	},
 }

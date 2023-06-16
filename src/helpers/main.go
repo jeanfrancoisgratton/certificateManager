@@ -2,7 +2,7 @@
 // src/misc/main.go
 // 4/16/23 21:35:03
 
-package helpers_old
+package helpers
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ func Changelog() {
 	fmt.Print(`
 VERSION		DATE			COMMENT
 -------		----			-------
-0.500		2023.06.03		server cert management
+0.500		2023.06.03		server certs management
 0.400		2023.04.22		config-old management
 0.300		2023.04.20		ca-old edit, ca-old del
 0.200		2023.04.20		ca-old create and ca-old verify

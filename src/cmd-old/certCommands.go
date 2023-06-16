@@ -5,7 +5,7 @@ package cmd
 
 import (
 	"cm/ca-old"
-	"cm/helpers-old"
+	"cm/helpers"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
@@ -13,9 +13,9 @@ import (
 	"strings"
 )
 
-// caCmd represents the cert command
+// caCmd represents the certs command
 var certCmd = &cobra.Command{
-	Use:   "cert",
+	Use:   "certs",
 	Short: "Server certificates management",
 	Long:  `This is where you will manage (add/verify/delete) your server certificates.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -33,10 +33,10 @@ var certCreateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := ca_old.CreateRootCA(privKeySize)
 		if err != nil {
-			fmt.Printf("%s", helpers_old.Red("Error while creating the certificate:"))
+			fmt.Printf("%s", helpers.Red("Error while creating the certificate:"))
 			fmt.Println(err)
 		} else {
-			fmt.Printf("A %v bits-keysize certificate %s has been created in %s\n", helpers_old.Green(strconv.Itoa(privKeySize)), helpers_old.Green(helpers_old.CertConfig.CertificateName), helpers_old.Green(helpers_old.CertConfig.CertificateDirectory))
+			fmt.Printf("A %v bits-keysize certificate %s has been created in %s\n", helpers.Green(strconv.Itoa(privKeySize)), helpers.Green(helpers.CertConfig.CertificateName), helpers.Green(helpers.CertConfig.CertificateDirectory))
 		}
 	},
 }
@@ -61,7 +61,7 @@ var certVerifyCmd = &cobra.Command{
 	},
 }
 
-// Delete a cert based on the config-old file as defined with the -c global flag
+// Delete a certs based on the config-old file as defined with the -c global flag
 var certDeleteCmd = &cobra.Command{
 	Use:     "delete",
 	Aliases: []string{"rm", "del", "remove"},

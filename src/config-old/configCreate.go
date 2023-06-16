@@ -5,7 +5,8 @@
 package config_old
 
 import (
-	"cm/helpers-old"
+	"cm/certs"
+	"cm/helpers"
 	"fmt"
 	"net"
 	"os"
@@ -13,27 +14,27 @@ import (
 
 func CreateConfig() error {
 	var err error
-	helpers_old.CertConfig, err = helpers_old.Json2Config()
+	certs.CertConfig, err = certs.Json2Config()
 	if err != nil {
 		if !os.IsNotExist(err) {
 			//if err != os.ErrNotExist {
 			return err
 		}
 	}
-	err = prompt4values(&helpers_old.CertConfig)
+	err = prompt4values(&certs.CertConfig)
 	if err != nil {
 		return err
 	}
 
 	// we now need to reinject the config-old in a json
-	err = helpers_old.CertConfig.Config2Json(helpers_old.CertConfigFile)
+	err = certs.CertConfig.Config2Json(helpers.CertConfigFile)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func prompt4values(cfg *helpers_old.CertConfigStruct) error {
+func prompt4values(cfg *certs.CertConfigStruct) error {
 	fmt.Println(`
 You will now be prompted to provide values to all of the fields that should
 be part of your config-old file. If a prompt shows a value between [brackets],
@@ -45,25 +46,25 @@ value that can be accepted by just pressing ENTER.`)
 	fmt.Print("Any other answer will be treated as false: ")
 	fmt.Scanln(&cfg.IsCA)
 
-	helpers_old.GetDuration("Please enter the certification duration, in years.\nAn invalid duration would default to 1 year", &cfg.Duration)
-	helpers_old.GetStringValFromPrompt("Please enter the certificate name", &cfg.CertificateName)
-	helpers_old.GetStringValFromPrompt("Please enter the certificate rootdir", &cfg.CertificateDirectory)
-	helpers_old.GetStringValFromPrompt("Please enter the country (C)", &cfg.Country)
-	helpers_old.GetStringValFromPrompt("Please enter the province/state (ST)", &cfg.Province)
-	helpers_old.GetStringValFromPrompt("Please enter the locality (L)", &cfg.Locality)
-	helpers_old.GetStringValFromPrompt("Please enter the organization (O)", &cfg.Organization)
-	helpers_old.GetStringValFromPrompt("Please enter the organizational unit (OU)", &cfg.OrganizationalUnit)
-	helpers_old.GetStringValFromPrompt("Please enter the common name (CN)", &cfg.CommonName)
+	helpers.GetDuration("Please enter the certification duration, in years.\nAn invalid duration would default to 1 year", &cfg.Duration)
+	helpers.GetStringValFromPrompt("Please enter the certificate name", &cfg.CertificateName)
+	helpers.GetStringValFromPrompt("Please enter the certificate rootdir", &cfg.CertificateDirectory)
+	helpers.GetStringValFromPrompt("Please enter the country (C)", &cfg.Country)
+	helpers.GetStringValFromPrompt("Please enter the province/state (ST)", &cfg.Province)
+	helpers.GetStringValFromPrompt("Please enter the locality (L)", &cfg.Locality)
+	helpers.GetStringValFromPrompt("Please enter the organization (O)", &cfg.Organization)
+	helpers.GetStringValFromPrompt("Please enter the organizational unit (OU)", &cfg.OrganizationalUnit)
+	helpers.GetStringValFromPrompt("Please enter the common name (CN)", &cfg.CommonName)
 
-	// A non-CA cert should not have KeyUsage
+	// A non-CA certs should not have KeyUsage
 	if cfg.IsCA {
-		cfg.KeyUsage = helpers_old.GetKeyUsageFromPrompt()
+		cfg.KeyUsage = helpers.GetKeyUsageFromPrompt()
 	} else {
 		cfg.KeyUsage = []string{}
 	}
-	helpers_old.GetStringSliceFromPrompt("Please enter the email address(es) to be included in this certicate", &cfg.EmailAddresses)
-	helpers_old.GetStringSliceFromPrompt("Please enter the DNS name(s) to be included in this certicate", &cfg.DNSNames)
-	helpers_old.GetStringSliceFromPrompt("Please enter the comments to be included in this certicate\n(Note: those are for documentation purposes only, not part of the cert)", &cfg.Comments)
+	helpers.GetStringSliceFromPrompt("Please enter the email address(es) to be included in this certicate", &cfg.EmailAddresses)
+	helpers.GetStringSliceFromPrompt("Please enter the DNS name(s) to be included in this certicate", &cfg.DNSNames)
+	helpers.GetStringSliceFromPrompt("Please enter the comments to be included in this certicate\n(Note: those are for documentation purposes only, not part of the certs)", &cfg.Comments)
 
 	// Still need net.IP...
 	netip := []string{}
@@ -72,7 +73,7 @@ value that can be accepted by just pressing ENTER.`)
 			netip = append(netip, x.String())
 		}
 	}
-	helpers_old.GetStringSliceFromPrompt("Please enter the IP address(es) to be included in this certicate\n(Note: this is NOT recommended in a CA)", &netip)
+	helpers.GetStringSliceFromPrompt("Please enter the IP address(es) to be included in this certicate\n(Note: this is NOT recommended in a CA)", &netip)
 	cfg.IPAddresses = []net.IP{}
 	if len(netip) > 0 {
 		for _, x := range netip {
