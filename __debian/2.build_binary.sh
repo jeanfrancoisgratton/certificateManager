@@ -10,6 +10,7 @@ echo "Building binary from source"
 cd ../src
 go build -o ../__debian/${PKGDIR}/opt/bin/cm .
 strip ../__debian/${PKGDIR}/opt/bin/cm
+chown 0:0 ../__debian/${PKGDIR}/opt/bin/cm
 
 echo "Binary built. Now packaging..."
 cd ../__debian/
