@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-var version = "0.500 (2023.06.03)"
+var version = "0.500-1 (2023.06.17)"
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
