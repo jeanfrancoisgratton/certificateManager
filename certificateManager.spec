@@ -54,6 +54,9 @@ install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryn
 
 
 %changelog
+* Sat Jun 17 2023 builder <builder@famillegratton.net> 0.500-1
+- needed to re-initialise TITO, bogus entry
+
 * Sat Jun 03 2023 builder <builder@famillegratton.net> 0.500-0
 - new package built with tito (reinitialized tito)
 
