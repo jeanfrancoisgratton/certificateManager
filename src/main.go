@@ -21,7 +21,7 @@ func main() {
 	// Second, we create a configuration file if none exists
 	_, err := os.Stat(filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "certificatemanagerConf.json"))
 	if err != nil {
-		config.ConfCreate()
+		config.TemplateConfigCreate()
 	}
 	// Third, we create a sample certificate in that config directory
 	if err := certs.TemplateConfigCreate(); err != nil {

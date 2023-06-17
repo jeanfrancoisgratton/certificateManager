@@ -4,7 +4,7 @@
 package cmd
 
 import (
-	"cm/config-old"
+	"cm/config"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -12,11 +12,11 @@ import (
 
 // configCmd represents the config-old command
 var configCmd = &cobra.Command{
-	Use:   "config-old",
+	Use:   "config",
 	Short: "Configuration file management",
-	Long:  `This is where you can create a templated file, edit/delete an existing config-old file, etc.`,
+	Long:  `This is where you can create a templated file, edit/delete an existing config file, etc.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("config-old called")
+		fmt.Println("config called")
 	},
 }
 
@@ -24,9 +24,9 @@ var configCreateCmd = &cobra.Command{
 	Use:     "create",
 	Aliases: []string{"generate"},
 	Short:   "Generate a configuration file",
-	//Long:  `This is where you can create a templated file, edit/delete an existing config-old file, etc.`,
+	//Long:  `This is where you can create a templated file, edit/delete an existing config file, etc.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := config_old.CreateConfig()
+		err := config.ConfCreate()
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -42,7 +42,7 @@ var configTemplateCmd = &cobra.Command{
 That file will be created in your home directory, under the .config-old/certificatemanager directory,
 alongside with an explicative text file`,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := config_old.TemplateConfigCreate()
+		err := config.TemplateConfigCreate()
 		if err != nil {
 			fmt.Println(err)
 		}

@@ -1,7 +1,7 @@
 {
- "CertificateRootDir" : "/certificates",
- "RootCAdir" : "/certificates/rootCA",
- "ServerCertsDir" : "/certificates/servers",
- "CertificatesConfigDir" : "/certificates/configs",
+ "CertificateRootDir" : "$HOME/.config/certificatemanager/certificates",
+ "RootCAdir" : "rootCA",
+ "ServerCertsDir" : "servers",
+ "CertificatesConfigDir" : "configs",
  "RemoveDuplicates": true
 }
