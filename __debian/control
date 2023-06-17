@@ -1,5 +1,5 @@
 Package: certificatemanager
-Version: 0.500-0
+Version: 0.500-1
 Architecture: amd64
 Maintainer: J.F.Gratton <nexus@famillegratton.net>
 Description: My own certificate manager
