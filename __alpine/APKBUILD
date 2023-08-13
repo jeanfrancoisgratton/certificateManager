@@ -1,0 +1,29 @@
+# Maintainer: J.F.Gratton <jean-francois@famillegratton.net>
+# Packager: Builder <builder@famillegratton.net>
+pkgname="certificateManager"
+pkgver=0.100
+pkgrel=0
+pkgdir=/data/packages
+builddir="$startdir/src/BUILD"
+pkgdesc=Certificates and CA management tool
+url="https://github.com/jeanfrancoisgratton/certificateManager"
+arch=x86_64
+license=GPL2
+#depends="gcompat"
+#install="$pkgname.post-install"
+#source="$pkgname-$pkgver-$pkgrel.tar.bz2::http://localhost/$pkgname-$pkgver-$pkgrel.tar.bz2"
+binaryname="cm"
+
+build() {
+	pwd
+	mkdir -p "$builddir" && cd "$builddir"/.. && rm -rf BUILD && cp -R "$startdir"/../src . && mv src BUILD
+    cd "$builddir"
+    make -f "$startdir"/Makefile prepare
+    CGO_ENABLED=0 go build -o "$binaryname".exe .
+}
+
+package() {
+        make -f "$startdir"/Makefile BUILDDIR="$builddir" PREFIX=/opt PKGNM="$binaryname" DESTDIR="$pkgdir" install
+}
+
+

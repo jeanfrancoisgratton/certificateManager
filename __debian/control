@@ -1,0 +1,7 @@
+Package: certificateManager
+Version: 0.100-0
+Architecture: amd64
+Maintainer: J.F.Gratton <jean-francois@famillegratton.net>
+Description: Certificates and CA management tool
+Section: SSL tools
+Depends: gcc

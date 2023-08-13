@@ -1,0 +1,36 @@
+{
+  "Country": "CA",
+  "Province": "Quebec",
+  "Locality": "Blainville",
+  "Organization": "myorg.net",
+  "OrganizationalUnit": "myorg",
+  "CommonName": "myorg.net root CA",
+  "IsCA": true,
+  "EmailAddresses": [
+    "certs@myorg.net",
+    "certificates@myorg.net"
+  ],
+  "Duration": 10,
+  "KeyUsage": [
+    "cert sign",
+    "crl sign",
+    "digital signature"
+  ],
+  "DNSNames": [
+    "myorg.net",
+    "myorg.com",
+    "lan.myorg.net"
+  ],
+  "IPAddresses": [
+    "10.1.1.11",
+    "127.0.0.1"
+  ],
+  "CertificateDirectory": "/tmp",
+  "CertificateName": "sample_cert",
+  "Comments": [
+    "To see which values to put in the Usage field, see https://pkg.go.dev/crypto/x509#KeyUsage",
+    "Strip off 'KeyUsage' from the const name and there you go.",
+    "",
+    "Please note that this field offers no functionality and is strictly here for documentation purposes"
+  ]
+}
