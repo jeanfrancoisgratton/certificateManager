@@ -16,6 +16,7 @@ import (
 var CertConfig = CertificateStruct{Duration: 1, KeyUsage: []string{"certs sign", "crl sign", "digital signature"}}
 var CertConfigFile = "defaultCertConfig.json"
 
+// This is the full data structure for an SSL certificate and CA
 type CertificateStruct struct {
 	Country              string   `json:"Country"`
 	Province             string   `json:"Province"`
@@ -34,6 +35,9 @@ type CertificateStruct struct {
 	Comments             []string `json:"Comments,omitempty"`
 }
 
+// TODO: FIX FUNCTION NAMES HERE : load should be save, save should be load
+// Save a data structure into a certificate file in the directory defined in the JSON environment config file
+// TODO: fix input path
 func Json2CertConfig() (CertificateStruct, error) {
 	var payload CertificateStruct
 	var err error
@@ -54,6 +58,9 @@ func Json2CertConfig() (CertificateStruct, error) {
 	}
 }
 
+// TODO: FIX FUNCTION NAMES HERE : load should be save, save should be load
+// Loads the certificate config from the certificate file
+// TODO: fix output path
 func (c CertificateStruct) CertConfig2Json(outputfile string) error {
 	if outputfile == "" {
 		outputfile = CertConfigFile
@@ -68,16 +75,46 @@ func (c CertificateStruct) CertConfig2Json(outputfile string) error {
 	return err
 }
 
+// Dispatch both he Explanation file and the Sample cert
 func CreateSampleCert() error {
-	if err := createExplanationfile(); err != nil {
+	if err := createSampleCert(); err != nil {
 		return err
 	}
-	if err := createSampleCert(); err != nil {
+	if err := createExplanationfile(); err != nil {
 		return err
 	}
 	return nil
 }
 
+// Create the sample certificate config file
+func createSampleCert() error {
+	var sampleCertConfig = CertificateStruct{
+		Country:              "CA",
+		Province:             "Quebec",
+		Locality:             "Blainville",
+		Organization:         "myorg.net",
+		OrganizationalUnit:   "myorg",
+		CommonName:           "myorg.net root CA",
+		EmailAddresses:       []string{"certs@myorg.net", "certificates@myorg.net"},
+		Duration:             10,
+		KeyUsage:             []string{"certs sign", "crl sign", "digital signature"},
+		DNSNames:             []string{"myorg.net", "myorg.com", "lan.myorg.net"},
+		IPAddresses:          []net.IP{net.ParseIP("10.1.1.11"), net.ParseIP("127.0.0.1")},
+		CertificateDirectory: "/tmp",
+		CertificateName:      "sample_cert",
+		IsCA:                 true,
+		Comments: []string{"To see which values to put in the Usage field, see https://pkg.go.dev/crypto/x509#KeyUsage",
+			"Strip off 'KeyUsage' from the const name and there you go.",
+			"",
+			"Please note that this field offers no functionality and is strictly here for documentation purposes"},
+	}
+	if err := sampleCertConfig.CertConfig2Json("certificateSample.json"); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Create an explanation (.txt) file
 func createExplanationfile() error {
 	expText := `{
 	"Country" : "CA", -> This is the country of origin for the certificate
@@ -108,32 +145,5 @@ func createExplanationfile() error {
 		return err
 	}
 
-	return nil
-}
-
-func createSampleCert() error {
-	var sampleCertConfig = CertificateStruct{
-		Country:              "CA",
-		Province:             "Quebec",
-		Locality:             "Blainville",
-		Organization:         "myorg.net",
-		OrganizationalUnit:   "myorg",
-		CommonName:           "myorg.net root CA",
-		EmailAddresses:       []string{"certs@myorg.net", "certificates@myorg.net"},
-		Duration:             10,
-		KeyUsage:             []string{"certs sign", "crl sign", "digital signature"},
-		DNSNames:             []string{"myorg.net", "myorg.com", "lan.myorg.net"},
-		IPAddresses:          []net.IP{net.ParseIP("10.1.1.11"), net.ParseIP("127.0.0.1")},
-		CertificateDirectory: "/tmp",
-		CertificateName:      "sample_cert",
-		IsCA:                 true,
-		Comments: []string{"To see which values to put in the Usage field, see https://pkg.go.dev/crypto/x509#KeyUsage",
-			"Strip off 'KeyUsage' from the const name and there you go.",
-			"",
-			"Please note that this field offers no functionality and is strictly here for documentation purposes"},
-	}
-	if err := sampleCertConfig.CertConfig2Json("certificateSample.json"); err != nil {
-		return err
-	}
 	return nil
 }

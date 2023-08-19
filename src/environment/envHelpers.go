@@ -14,6 +14,8 @@ import (
 
 var EnvConfigFile = "defaultEnvConfig.json"
 
+// This structure holds the basic software config but is ignored when the software is invoked with the -s flag
+// This is basically used when we store everything just like in my own internal gitea devops/certificates/ repos
 type EnvironmentStruct struct {
 	CertificateRootDir    string `json:"CertificateRootDir"`
 	RootCAdir             string `json:"RootCAdir"`
@@ -22,6 +24,7 @@ type EnvironmentStruct struct {
 	RemoveDuplicates      bool   `json:"RemoveDuplicates"`
 }
 
+// Save the above structure into a JSON file in the user's .config/certificatemanager directory
 func (e EnvironmentStruct) Json2EnvironmentFile() (EnvironmentStruct, error) {
 	var payload EnvironmentStruct
 	var err error
@@ -42,6 +45,7 @@ func (e EnvironmentStruct) Json2EnvironmentFile() (EnvironmentStruct, error) {
 	}
 }
 
+// Load the configuration from the JSON file in the user's .config/certificatemanager directory into a data structure
 func (e EnvironmentStruct) EnvironmentFile2Json(outputfile string) error {
 	if outputfile == "" {
 		outputfile = EnvConfigFile
@@ -56,6 +60,7 @@ func (e EnvironmentStruct) EnvironmentFile2Json(outputfile string) error {
 	return err
 }
 
+// Create a sample JSON environment file with an explanation .txt file
 func CreateSampleEnv() error {
 	var err error
 	e := EnvironmentStruct{filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "certificates"), "rootCA", "servers", "conf", true}
