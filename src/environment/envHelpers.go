@@ -57,14 +57,14 @@ func (e EnvironmentStruct) EnvironmentFile2Json(outputfile string) error {
 }
 
 func CreateSampleEnv() error {
-	//var err error
-	e := EnvironmentStruct{filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager"), "rootCA", "servers", "conf", true}
+	var err error
+	e := EnvironmentStruct{filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "certificates"), "rootCA", "servers", "conf", true}
 	//e := EnvironmentStruct{filepath.Join(os.Getenv("HOME"),".config","certificatemanager"),"certificates", "rootCA", "servers", "conf", true}
 
-	return e.EnvironmentFile2Json(filepath.Join(os.Getenv("HOME"), ".config", "environmentSample.json"))
-}
+	if err = e.EnvironmentFile2Json("environmentSample.json"); err != nil {
+		return err
+	}
 
-func CreateExplanationFile() error {
 	exptext := `{
  "CertificateRootDir" : "$HOME/.config/certificatemanager/certificates  <-- absolute path, always",
  "RootCAdir" : "rootCA  <-- relative path to CertificateRootDir",

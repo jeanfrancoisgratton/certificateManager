@@ -11,11 +11,11 @@ import (
 	"path/filepath"
 )
 
-func TemplateConfigCreate() error {
+func CreateSampleCert() error {
 	if err := createExplanationfile(); err != nil {
 		return err
 	}
-	if err := createSampleTemplate(); err != nil {
+	if err := createSampleCert(); err != nil {
 		return err
 	}
 	return nil
@@ -40,7 +40,7 @@ func createExplanationfile() error {
 	"Comments": ["To see which values to put in the KeyUsage field, see https://pkg.go.dev/crypto/x509#KeyUsage", "Strip off 'KeyUsage' from the const name and there you go.", "", "Please note that this field offers no functionality and is strictly here for documentation purposes"] -> Those won't appear in the certificate file
 }`
 
-	expFile, err := os.Create(filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "template-README.txt"))
+	expFile, err := os.Create(filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "certificateSample-README.txt"))
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func createExplanationfile() error {
 	return nil
 }
 
-func createSampleTemplate() error {
+func createSampleCert() error {
 	var sampleCertConfig = CertificateStruct{
 		Country:              "CA",
 		Province:             "Quebec",
@@ -75,7 +75,7 @@ func createSampleTemplate() error {
 			"",
 			"Please note that this field offers no functionality and is strictly here for documentation purposes"},
 	}
-	if err := sampleCertConfig.CertConfig2Json("template.json"); err != nil {
+	if err := sampleCertConfig.CertConfig2Json("certificateSample.json"); err != nil {
 		return err
 	}
 	return nil
