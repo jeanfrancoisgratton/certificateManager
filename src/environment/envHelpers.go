@@ -24,8 +24,8 @@ type EnvironmentStruct struct {
 	RemoveDuplicates      bool   `json:"RemoveDuplicates"`
 }
 
-// Save the above structure into a JSON file in the user's .config/certificatemanager directory
-func (e EnvironmentStruct) Json2EnvironmentFile() (EnvironmentStruct, error) {
+// Load the JSON environment file in the user's .config/certificatemanager directory, and store it into a data type (struct)
+func (e EnvironmentStruct) LoadEnvironmentFile() (EnvironmentStruct, error) {
 	var payload EnvironmentStruct
 	var err error
 
@@ -45,8 +45,8 @@ func (e EnvironmentStruct) Json2EnvironmentFile() (EnvironmentStruct, error) {
 	}
 }
 
-// Load the configuration from the JSON file in the user's .config/certificatemanager directory into a data structure
-func (e EnvironmentStruct) EnvironmentFile2Json(outputfile string) error {
+// Save the above structure into a JSON file in the user's .config/certificatemanager directory
+func (e EnvironmentStruct) SaveEnvironmentFile(outputfile string) error {
 	if outputfile == "" {
 		outputfile = EnvConfigFile
 	}
@@ -66,7 +66,7 @@ func CreateSampleEnv() error {
 	e := EnvironmentStruct{filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "certificates"), "rootCA", "servers", "conf", true}
 	//e := EnvironmentStruct{filepath.Join(os.Getenv("HOME"),".config","certificatemanager"),"certificates", "rootCA", "servers", "conf", true}
 
-	if err = e.EnvironmentFile2Json("environmentSample.json"); err != nil {
+	if err = e.SaveEnvironmentFile("environmentSample.json"); err != nil {
 		return err
 	}
 

@@ -24,7 +24,7 @@ func main() {
 	}
 
 	// Third, we create the sample certificate config, and its explanation file
-	if err = certs.CreateSampleCert(); err != nil {
+	if err = certs.CreateSampleCertificate(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

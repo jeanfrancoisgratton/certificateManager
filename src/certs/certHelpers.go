@@ -35,10 +35,8 @@ type CertificateStruct struct {
 	Comments             []string `json:"Comments,omitempty"`
 }
 
-// TODO: FIX FUNCTION NAMES HERE : load should be save, save should be load
-// Save a data structure into a certificate file in the directory defined in the JSON environment config file
-// TODO: fix input path
-func Json2CertConfig() (CertificateStruct, error) {
+// Loads the certificate config from the certificate file
+func LoadCertificateFile() (CertificateStruct, error) {
 	var payload CertificateStruct
 	var err error
 
@@ -58,10 +56,8 @@ func Json2CertConfig() (CertificateStruct, error) {
 	}
 }
 
-// TODO: FIX FUNCTION NAMES HERE : load should be save, save should be load
-// Loads the certificate config from the certificate file
-// TODO: fix output path
-func (c CertificateStruct) CertConfig2Json(outputfile string) error {
+// Save a data structure into a certificate file in the directory defined in the JSON environment config file
+func (c CertificateStruct) SaveCertificateFile(outputfile string) error {
 	if outputfile == "" {
 		outputfile = CertConfigFile
 	}
@@ -76,7 +72,7 @@ func (c CertificateStruct) CertConfig2Json(outputfile string) error {
 }
 
 // Dispatch both he Explanation file and the Sample cert
-func CreateSampleCert() error {
+func CreateSampleCertificate() error {
 	if err := createSampleCert(); err != nil {
 		return err
 	}
@@ -108,7 +104,7 @@ func createSampleCert() error {
 			"",
 			"Please note that this field offers no functionality and is strictly here for documentation purposes"},
 	}
-	if err := sampleCertConfig.CertConfig2Json("certificateSample.json"); err != nil {
+	if err := sampleCertConfig.SaveCertificateFile("certificateSample.json"); err != nil {
 		return err
 	}
 	return nil
