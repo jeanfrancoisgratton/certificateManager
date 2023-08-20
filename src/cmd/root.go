@@ -4,6 +4,7 @@
 package cmd
 
 import (
+	"certificateManager/certs"
 	"certificateManager/helpers"
 	"github.com/spf13/cobra"
 	"os"
@@ -28,6 +29,23 @@ var clCmd = &cobra.Command{
 	},
 }
 
+var certCmd = &cobra.Command{
+	Use:     "cert",
+	Example: "cm cert {create | delete } certificate_name",
+	Short:   "Certificate sub-command",
+	Run: func(cmd *cobra.Command, args []string) {
+		helpers.Changelog()
+	},
+}
+
+var envCmd = &cobra.Command{
+	Use:   "env",
+	Short: "Environment sub-command",
+	Run: func(cmd *cobra.Command, args []string) {
+		helpers.Changelog()
+	},
+}
+
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -38,4 +56,8 @@ func Execute() {
 func init() {
 
 	rootCmd.AddCommand(clCmd)
+	rootCmd.AddCommand(certCmd)
+	rootCmd.AddCommand(envCmd)
+
+	certCmd.PersistentFlags().BoolVarP(&certs.CreateSingleCert, "single", "s", false, "Create a certificate while ignoring a given directory structure.")
 }

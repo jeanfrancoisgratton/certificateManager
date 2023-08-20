@@ -16,6 +16,8 @@ import (
 var CertConfig = CertificateStruct{Duration: 1, KeyUsage: []string{"certs sign", "crl sign", "digital signature"}}
 var CertConfigFile = "defaultCertConfig.json"
 
+var CreateSingleCert bool
+
 // This is the full data structure for an SSL certificate and CA
 type CertificateStruct struct {
 	Country              string   `json:"Country"`
