@@ -38,16 +38,24 @@ type CertificateStruct struct {
 }
 
 // Loads the certificate config from the certificate file
-func LoadCertificateFile() (CertificateStruct, error) {
+func (c CertificateStruct) LoadCertificateFile(certfile string) (CertificateStruct, error) {
 	var payload CertificateStruct
 	var err error
+	var jFile []byte
+	var rcFile string
+
+	// some quick, ugly hacks here to allow to load a cert file ad-hoc
 
 	if !strings.HasSuffix(CertConfigFile, ".json") {
 		CertConfigFile += ".json"
 	}
-	rcFile := filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", CertConfigFile)
-	jFile, err := os.ReadFile(rcFile)
-	if err != nil {
+	if len(certfile) > 0 {
+		rcFile = certfile
+	} else {
+		rcFile = filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", CertConfigFile)
+	}
+
+	if jFile, err = os.ReadFile(rcFile); err != nil {
 		return CertificateStruct{}, err
 	}
 	err = json.Unmarshal(jFile, &payload)
@@ -86,7 +94,7 @@ func CreateSampleCertificate() error {
 
 // Create the sample certificate config file
 func createSampleCert() error {
-	var sampleCertConfig = CertificateStruct{
+	sampleCertConfig := CertificateStruct{
 		Country:              "CA",
 		Province:             "Quebec",
 		Locality:             "Blainville",
@@ -106,7 +114,7 @@ func createSampleCert() error {
 			"",
 			"Please note that this field offers no functionality and is strictly here for documentation purposes"},
 	}
-	if err := sampleCertConfig.SaveCertificateFile("certificateSample.json"); err != nil {
+	if err := sampleCertConfig.SaveCertificateFile("samplee.certconfig.json"); err != nil {
 		return err
 	}
 	return nil
@@ -132,7 +140,7 @@ func createExplanationfile() error {
 	"Comments": ["To see which values to put in the KeyUsage field, see https://pkg.go.dev/crypto/x509#KeyUsage", "Strip off 'KeyUsage' from the const name and there you go.", "", "Please note that this field offers no functionality and is strictly here for documentation purposes"] -> Those won't appear in the certificate file
 }`
 
-	expFile, err := os.Create(filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "certificateSample-README.txt"))
+	expFile, err := os.Create(filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "sample-README.txt"))
 	if err != nil {
 		return err
 	}

@@ -5,9 +5,13 @@
 package helpers
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/jwalton/gchalk"
+	"strconv"
 )
+
+var CertificatesRootDir = ""
 
 func Changelog() {
 	//fmt.Printf("\x1b[2J")
@@ -43,4 +47,42 @@ func Yellow(sentence string) string {
 // FIXME : Normal() is the same as White()
 func Normal(sentence string) string {
 	return fmt.Sprintf("%s", gchalk.WithWhite().Bold(sentence))
+}
+
+// This function takes a string and returns its reverse
+// Thus, "12345" becomes "54321"
+func ReverseString(inputStr string) string {
+	runes := []rune(inputStr)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+	return string(runes)
+}
+
+// This function was originally written in 1993, in C, by my friend Jean-François Gauthier
+// I've ported it in C# in 2011. It is then a third iteration of this function
+// This function transforms a multi-digit number in International Notation; thus 1234567 becomes 1,234,567
+func SI(nombre uint64) string {
+	var strN string
+	var strbR bytes.Buffer
+	var nLen, nPos int
+
+	strN = strconv.FormatUint(nombre, 10)
+	strN = ReverseString(strN)
+	nLen = len(strN)
+
+	for nPos < nLen {
+		if nPos != 0 && nPos%3 == 0 {
+			strbR.WriteString(",")
+			strbR.WriteString(string(strN[nPos]))
+		} else {
+			strbR.WriteString(string(strN[nPos]))
+		}
+		nPos++
+	}
+
+	strN = strbR.String()
+	strN = ReverseString(strN)
+
+	return strN
 }

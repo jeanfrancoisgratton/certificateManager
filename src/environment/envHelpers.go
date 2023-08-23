@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-var EnvConfigFile = "defaultEnvConfig.json"
+var EnvConfigFile string
 
 // This structure holds the basic software config but is ignored when the software is invoked with the -s flag
 // This is basically used when we store everything just like in my own internal gitea devops/certificates/ repos
@@ -90,3 +90,9 @@ func CreateSampleEnv() error {
 
 	return nil
 }
+
+//// Wrapper around e.LoadEnvironment() : if the -e is specified but the file does not exist,
+//// We fall back on the default Env file. If that one does not exist, the software exits
+//func LoadEnv() (EnvironmentStruct, error) {
+//
+//}

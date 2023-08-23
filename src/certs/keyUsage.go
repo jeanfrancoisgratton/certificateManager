@@ -2,10 +2,9 @@
 // src/helpers/keyUsage.go
 // 4/29/23 17:01:24
 
-package helpers
+package certs
 
 import (
-	"certificateManager/certs"
 	"crypto/x509"
 	"strings"
 )
@@ -77,7 +76,7 @@ func GetStringsFromKeyUsage(keyUsage x509.KeyUsage) []string {
 }
 
 // ReindexKeyUsage() : Ensures that the CertificateStruct.KeyUsage contains only unique values
-func ReindexKeyUsage(cfg certs.CertificateStruct) x509.KeyUsage {
+func ReindexKeyUsage(cfg CertificateStruct) x509.KeyUsage {
 	org := cfg.KeyUsage
 	// We append the CA-related usages
 	org = append(org, "certs sign", "crl sign", "digital signature")
