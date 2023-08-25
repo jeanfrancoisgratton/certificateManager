@@ -90,7 +90,7 @@ func verifyCert(certFilePath string) error {
 
 	if parsedCert.KeyUsage != 0 {
 		fmt.Printf("\n   x509v3 Key usage:\n")
-		ku := GetStringsFromKeyUsage(parsedCert.KeyUsage)
+		ku := getStringsFromKeyUsage(parsedCert.KeyUsage)
 		for _, k := range ku {
 			fmt.Printf("\t• %s\n", k)
 		}

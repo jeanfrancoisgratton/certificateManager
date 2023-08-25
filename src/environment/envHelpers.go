@@ -61,12 +61,12 @@ func (e EnvironmentStruct) SaveEnvironmentFile(outputfile string) error {
 }
 
 // Create a sample JSON environment file with an explanation .txt file
-func CreateSampleEnv() error {
+func CreateDefaultEnv() error {
 	var err error
 	e := EnvironmentStruct{filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "certificates"), "rootCA", "servers", "conf", true}
 	//e := EnvironmentStruct{filepath.Join(os.Getenv("HOME"),".config","certificatemanager"),"certificates", "rootCA", "servers", "conf", true}
 
-	if err = e.SaveEnvironmentFile("environmentSample.json"); err != nil {
+	if err = e.SaveEnvironmentFile("defaultEnv.json"); err != nil {
 		return err
 	}
 
@@ -90,9 +90,3 @@ func CreateSampleEnv() error {
 
 	return nil
 }
-
-//// Wrapper around e.LoadEnvironment() : if the -e is specified but the file does not exist,
-//// We fall back on the default Env file. If that one does not exist, the software exits
-//func LoadEnv() (EnvironmentStruct, error) {
-//
-//}
