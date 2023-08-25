@@ -53,7 +53,7 @@ func ListCertificates() error {
 	for _, fi := range fileInfos {
 		var certDomain string
 		CertConfigFile = fi.Name()
-		if certDomain, err = fetchDomainName(filepath.Join(env.CertificateRootDir, fi.Name())); err != nil {
+		if certDomain, err = fetchCN(filepath.Join(env.CertificateRootDir, fi.Name())); err != nil {
 			CertConfigFile = oldCfg
 			return err
 		}
@@ -70,11 +70,11 @@ func ListCertificates() error {
 	return nil
 }
 
-func fetchDomainName(domain string) (string, error) {
+func fetchCN(domain string) (string, error) {
 	var c, domainCert CertificateStruct
 	var err error
 
-	if domainCert, err = c.LoadCertificateFile(domain); err != nil {
+	if domainCert, err = c.LoadCertificateConfFile(domain); err != nil {
 		return "", err
 	}
 	return domainCert.CommonName, nil

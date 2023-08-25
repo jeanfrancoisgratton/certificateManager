@@ -60,6 +60,8 @@ func init() {
 	rootCmd.AddCommand(certCmd)
 	rootCmd.AddCommand(envCmd)
 	certCmd.AddCommand(certlistCmd)
+	certCmd.AddCommand(certVerifyCmd)
+	certCmd.AddCommand(certCreateCmd)
 
 	rootCmd.PersistentFlags().StringVarP(&environment.EnvConfigFile, "env", "e", "defaultEnvConfig.json", "Default environment configuration file; this is a per-user setting.")
 	rootCmd.PersistentFlags().StringVarP(&helpers.CertificatesRootDir, "rootdir", "r", ".", "Certificate root dir; all other directories are relative to this one.")

@@ -6,6 +6,7 @@
 package certs
 
 import (
+	"certificateManager/environment"
 	"encoding/json"
 	"net"
 	"os"
@@ -38,7 +39,7 @@ type CertificateStruct struct {
 }
 
 // Loads the certificate config from the certificate file
-func (c CertificateStruct) LoadCertificateFile(certfile string) (CertificateStruct, error) {
+func (c CertificateStruct) LoadCertificateConfFile(certfile string) (CertificateStruct, error) {
 	var payload CertificateStruct
 	var err error
 	var jFile []byte
@@ -151,5 +152,22 @@ func createExplanationfile() error {
 		return err
 	}
 
+	return nil
+}
+
+func createCertificateRootDirectories() error {
+	e, err := environment.EnvironmentStruct.LoadEnvironmentFile(environment.EnvironmentStruct{})
+	if err != nil {
+		return err
+	}
+	dirRange := []string{filepath.Join(e.CertificateRootDir, e.CertificatesConfigDir),
+		filepath.Join(e.CertificateRootDir, e.RootCAdir, "certs"), filepath.Join(e.CertificateRootDir, e.RootCAdir, "newcerts"), filepath.Join(e.CertificateRootDir, e.RootCAdir, "private"),
+		filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "private"), filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "csr"), filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "certs"), filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java")}
+
+	for _, directory := range dirRange {
+		if err = os.MkdirAll(directory, os.ModePerm); err != nil {
+			return err
+		}
+	}
 	return nil
 }

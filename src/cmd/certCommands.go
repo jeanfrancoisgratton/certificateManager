@@ -25,3 +25,29 @@ var certlistCmd = &cobra.Command{
 		}
 	},
 }
+
+var certVerifyCmd = &cobra.Command{
+	Use: "verify",
+	//Aliases: []string{"ls"},
+	Example: "cm cert verify FILENAME",
+	Short:   "Verifies a certificate, as per the provided filename",
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := certs.Verify(args); err != nil {
+			fmt.Println(err)
+			os.Exit(2)
+		}
+	},
+}
+
+var certCreateCmd = &cobra.Command{
+	Use: "create",
+	//Aliases: []string{"ls"},
+	Example: "cm cert create CONFIGFILE",
+	Short:   "Creates a certificate, specifying the config file to use",
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := certs.Create(); err != nil {
+			fmt.Println(err)
+			os.Exit(2)
+		}
+	},
+}

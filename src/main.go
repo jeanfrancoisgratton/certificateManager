@@ -12,7 +12,7 @@ import (
 func main() {
 	var err error
 	// First, we need to create a configuration directory. This is a per-user config dir
-	if err = os.MkdirAll(filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager"), os.FileMode(0750)); err != nil {
+	if err = os.MkdirAll(filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager"), os.ModePerm); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
