@@ -1,6 +1,6 @@
 // certificateManager
 // Written by J.F. Gratton <jean-francois@famillegratton.net>
-// Original filename: src/cmd/certCommands.go
+// Original filename: src/cmd/certsCommands.go
 // Original timestamp: 2023/08/20 18:40
 
 package cmd

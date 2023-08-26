@@ -1,6 +1,6 @@
 // certificateManager
 // Written by J.F. Gratton <jean-francois@famillegratton.net>
-// Original filename: src/certs/certsList.go
+// Original filename: src/certs/listCerts.go
 // Original timestamp: 2023/08/20 18:43
 
 package certs

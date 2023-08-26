@@ -1,6 +1,6 @@
 // certificateManager
 // Écrit par J.F. Gratton <jean-francois@famillegratton.net>
-// Orininal name: src/certs/certHelpers.go
+// Orininal name: src/certs/certsHelpers.go
 // Original time: 2023/06/16 16:37
 
 package certs
