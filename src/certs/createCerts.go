@@ -5,10 +5,8 @@
 
 package certs
 
-import "certificateManager/certs"
-
 func Create() error {
-	if err := certs.CreateCertificateRootDirectories(); err != nil {
+	if err := createCertificateRootDirectories(); err != nil {
 		return err
 	}
 
