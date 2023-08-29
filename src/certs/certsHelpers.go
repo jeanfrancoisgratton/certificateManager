@@ -7,8 +7,8 @@ package certs
 
 import (
 	"certificateManager/environment"
-	"crypto/x509"
 	"encoding/json"
+	"io"
 	"net"
 	"os"
 	"path/filepath"
@@ -22,21 +22,20 @@ var CreateSingleCert bool
 
 // This is the full data structure for an SSL certificate and CA
 type CertificateStruct struct {
-	Country              string   `json:"Country"`
-	Province             string   `json:"Province"`
-	Locality             string   `json:"Locality"`
-	Organization         string   `json:"Organization"`
-	OrganizationalUnit   string   `json:"OrganizationalUnit,omitempty"`
-	CommonName           string   `json:"CommonName"`
-	IsCA                 bool     `json:"IsCA,omitempty"`
-	EmailAddresses       []string `json:"EmailAddresses,omitempty"`
-	Duration             int      `json:"Duration"`
-	KeyUsage             []string `json:"KeyUsage"`
-	DNSNames             []string `json:"DNSNames,omitempty"`
-	IPAddresses          []net.IP `json:"IPAddresses,omitempty"`
-	CertificateDirectory string   `json:"CertificateDirectory"`
-	CertificateName      string   `json:"CertificateName"`
-	Comments             []string `json:"Comments,omitempty"`
+	Country            string   `json:"Country"`
+	Province           string   `json:"Province"`
+	Locality           string   `json:"Locality"`
+	Organization       string   `json:"Organization"`
+	OrganizationalUnit string   `json:"OrganizationalUnit,omitempty"`
+	CommonName         string   `json:"CommonName"`
+	IsCA               bool     `json:"IsCA,omitempty"`
+	EmailAddresses     []string `json:"EmailAddresses,omitempty"`
+	Duration           int      `json:"Duration"`
+	KeyUsage           []string `json:"KeyUsage"`
+	DNSNames           []string `json:"DNSNames,omitempty"`
+	IPAddresses        []net.IP `json:"IPAddresses,omitempty"`
+	CertificateName    string   `json:"CertificateName"`
+	Comments           []string `json:"Comments,omitempty"`
 }
 
 // Loads the certificate config from the certificate file
@@ -45,8 +44,12 @@ func (c CertificateStruct) LoadCertificateConfFile(certfile string) (Certificate
 	var err error
 	var jFile []byte
 	var rcFile string
+	env := environment.EnvironmentStruct{}
 
-	// some quick, ugly hacks here to allow to load a cert file ad-hoc
+	// fetch environment
+	if env, err = environment.EnvironmentStruct.LoadEnvironmentFile(environment.EnvironmentStruct{}); err != nil {
+		return CertificateStruct{}, err
+	}
 
 	if !strings.HasSuffix(CertConfigFile, ".json") {
 		CertConfigFile += ".json"
@@ -54,7 +57,7 @@ func (c CertificateStruct) LoadCertificateConfFile(certfile string) (Certificate
 	if len(certfile) > 0 {
 		rcFile = certfile
 	} else {
-		rcFile = filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", CertConfigFile)
+		rcFile = filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir, CertConfigFile)
 	}
 
 	if jFile, err = os.ReadFile(rcFile); err != nil {
@@ -70,6 +73,13 @@ func (c CertificateStruct) LoadCertificateConfFile(certfile string) (Certificate
 
 // Save a data structure into a certificate file in the directory defined in the JSON environment config file
 func (c CertificateStruct) SaveCertificateFile(outputfile string) error {
+	var env environment.EnvironmentStruct
+	var err error
+
+	// fetch environment
+	if env, err = environment.EnvironmentStruct.LoadEnvironmentFile(environment.EnvironmentStruct{}); err != nil {
+		return err
+	}
 	if outputfile == "" {
 		outputfile = CertConfigFile
 	}
@@ -77,10 +87,8 @@ func (c CertificateStruct) SaveCertificateFile(outputfile string) error {
 	if err != nil {
 		return err
 	}
-	rcFile := filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", outputfile)
-	err = os.WriteFile(rcFile, jStream, 0600)
-
-	return err
+	rcFile := filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir, outputfile)
+	return os.WriteFile(rcFile, jStream, 0600)
 }
 
 // Dispatch both he Explanation file and the Sample cert
@@ -97,20 +105,19 @@ func CreateSampleCertificate() error {
 // Create the sample certificate config file
 func createSampleCert() error {
 	sampleCertConfig := CertificateStruct{
-		Country:              "CA",
-		Province:             "Quebec",
-		Locality:             "Blainville",
-		Organization:         "myorg.net",
-		OrganizationalUnit:   "myorg",
-		CommonName:           "myorg.net root CA",
-		EmailAddresses:       []string{"certs@myorg.net", "certificates@myorg.net"},
-		Duration:             10,
-		KeyUsage:             []string{"certs sign", "crl sign", "digital signature"},
-		DNSNames:             []string{"myorg.net", "myorg.com", "lan.myorg.net"},
-		IPAddresses:          []net.IP{net.ParseIP("10.1.1.11"), net.ParseIP("127.0.0.1")},
-		CertificateDirectory: "/tmp",
-		CertificateName:      "sample_cert",
-		IsCA:                 true,
+		Country:            "CA",
+		Province:           "Quebec",
+		Locality:           "Blainville",
+		Organization:       "myorg.net",
+		OrganizationalUnit: "myorg",
+		CommonName:         "myorg.net root CA",
+		EmailAddresses:     []string{"certs@myorg.net", "certificates@myorg.net"},
+		Duration:           10,
+		KeyUsage:           []string{"certs sign", "crl sign", "digital signature"},
+		DNSNames:           []string{"myorg.net", "myorg.com", "lan.myorg.net"},
+		IPAddresses:        []net.IP{net.ParseIP("10.1.1.11"), net.ParseIP("127.0.0.1")},
+		CertificateName:    "sample_cert",
+		IsCA:               true,
 		Comments: []string{"To see which values to put in the Usage field, see https://pkg.go.dev/crypto/x509#KeyUsage",
 			"Strip off 'KeyUsage' from the const name and there you go.",
 			"",
@@ -174,88 +181,30 @@ func createCertificateRootDirectories() error {
 	return nil
 }
 
-// getKeyUsageFromStrings() : converts a slice of strings into
-// A x509.KeyUsage value. We use slices of strings because x509.KeyUsage
-// Can hold multiple operations at once
-func getKeyUsageFromStrings(usageStrings []string) x509.KeyUsage {
-	keyUsage := x509.KeyUsage(0)
-	for _, usage := range usageStrings {
-		switch strings.ToLower(usage) {
-		case "digital signature":
-			keyUsage |= x509.KeyUsageDigitalSignature
-		case "content commitment":
-			keyUsage |= x509.KeyUsageContentCommitment
-		case "key encipherment":
-			keyUsage |= x509.KeyUsageKeyEncipherment
-		case "data encipherment":
-			keyUsage |= x509.KeyUsageDataEncipherment
-		case "key agreement":
-			keyUsage |= x509.KeyUsageKeyAgreement
-		case "certs sign", "certificate sign":
-			keyUsage |= x509.KeyUsageCertSign
-		case "crl sign", "crl":
-			keyUsage |= x509.KeyUsageCRLSign
-		case "encipheronly", "encipher":
-			keyUsage |= x509.KeyUsageEncipherOnly
-		case "decipheronly", "decipher":
-			keyUsage |= x509.KeyUsageDecipherOnly
+// copyFile() : if original file already exists, we copy it onto "destfile"
+// Parameters :
+// - source file, dest file (string)
+// Returns :
+// - error code if IO error
+func copyFile(source, dest string) error {
+	// if the file does not exist, this means we are using a brand-new setup,
+	_, err := os.Stat(source)
+	if os.IsExist(err) {
+		sfile, err := os.Open(source)
+		if err != nil {
+			return err
+		}
+		defer sfile.Close()
+
+		dfile, err := os.Create(dest)
+		if err != nil {
+			return err
+		}
+		defer dfile.Close()
+		_, err = io.Copy(dfile, sfile)
+		if err != nil {
+			return err
 		}
 	}
-	return keyUsage
-}
-
-// getStringsFromKeyUsage(): takes the x509.KeyUsage numerical value
-// And converts it in a slice of human-readable strings,
-// As KeyUsage can hold multiple operations at once.
-func getStringsFromKeyUsage(keyUsage x509.KeyUsage) []string {
-	var usages []string
-
-	if keyUsage&x509.KeyUsageDigitalSignature != 0 {
-		usages = append(usages, "digital signature")
-	}
-	if keyUsage&x509.KeyUsageContentCommitment != 0 {
-		usages = append(usages, "content commitment")
-	}
-	if keyUsage&x509.KeyUsageKeyEncipherment != 0 {
-		usages = append(usages, "key encipherment")
-	}
-	if keyUsage&x509.KeyUsageDataEncipherment != 0 {
-		usages = append(usages, "data encipherment")
-	}
-	if keyUsage&x509.KeyUsageKeyAgreement != 0 {
-		usages = append(usages, "key agreement")
-	}
-	if keyUsage&x509.KeyUsageCertSign != 0 {
-		usages = append(usages, "certs sign")
-	}
-	if keyUsage&x509.KeyUsageCRLSign != 0 {
-		usages = append(usages, "crl sign")
-	}
-	if keyUsage&x509.KeyUsageEncipherOnly != 0 {
-		usages = append(usages, "encipher only")
-	}
-	if keyUsage&x509.KeyUsageDecipherOnly != 0 {
-		usages = append(usages, "decipher only")
-	}
-	return usages
-}
-
-// reindexKeyUsage() : Ensures that the CertificateStruct.KeyUsage contains only unique values
-func reindexKeyUsage(cfg CertificateStruct) x509.KeyUsage {
-	org := cfg.KeyUsage
-	// We append the CA-related usages
-	org = append(org, "certs sign", "crl sign", "digital signature")
-
-	// We map the new slices
-	//[]string to map : https://kylewbanks.com/blog/creating-unique-slices-in-go
-	s := make([]string, 0, len(org))
-	m := make(map[string]bool)
-
-	for _, value := range org {
-		if _, ok := m[value]; !ok {
-			m[value] = true
-			s = append(s, value)
-		}
-	}
-	return getKeyUsageFromStrings(s)
+	return nil
 }

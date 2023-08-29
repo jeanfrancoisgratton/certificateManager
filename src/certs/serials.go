@@ -59,19 +59,19 @@ func setSerialNumber(serialNo uint64) error {
 	if err != nil {
 		return err
 	}
-	serialPath := filepath.Join(e.CertificateRootDir, e.RootCAdir, "serial")
 
-	// if the serial file does not exist, this means we are using a brand new setup,
+	// if the file does not exist, this means we are using a brand-new setup,
 	// thus the serial # is 1
-	_, err = os.Stat(serialPath)
+	//if err := copyFile(filepath.Join(e.CertificateRootDir, e.RootCAdir, "serial"), filepath.Join(e.CertificateRootDir, e.RootCAdir, "serial.old")); err != nil {
+	_, err = os.Stat(filepath.Join(e.CertificateRootDir, e.RootCAdir, "serial"))
 	if os.IsExist(err) {
-		sfile, err := os.Open(serialPath)
+		sfile, err := os.Open(filepath.Join(e.CertificateRootDir, e.RootCAdir, "serial"))
 		if err != nil {
 			return err
 		}
 		defer sfile.Close()
 
-		dfile, err := os.Create(serialPath + ".old")
+		dfile, err := os.Create(filepath.Join(e.CertificateRootDir, e.RootCAdir, "serial.old"))
 		if err != nil {
 			return err
 		}
@@ -81,7 +81,7 @@ func setSerialNumber(serialNo uint64) error {
 			return err
 		}
 	} else {
-		ffile, err := os.Create(serialPath)
+		ffile, err := os.Create(filepath.Join(e.CertificateRootDir, e.RootCAdir, "serial"))
 		if err != nil {
 			return err
 		}

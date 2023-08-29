@@ -23,18 +23,18 @@ func ListCertificates() error {
 	env := environment.EnvironmentStruct{}
 
 	// fetch environment
-	if env, err = env.LoadEnvironmentFile(); err != nil {
+	if env, err = environment.EnvironmentStruct.LoadEnvironmentFile(environment.EnvironmentStruct{}); err != nil {
 		return err
 	}
 	// We need to preserve the current Certconfigfile name as it'll get overwritten down here
 	oldCfg := CertConfigFile
 
-	// list environment files
-	err = filepath.Walk(env.CertificateRootDir, func(path string, info os.FileInfo, err error) error {
+	// list certificate files
+	err = filepath.Walk(filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir), func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if !info.IsDir() && strings.HasSuffix(info.Name(), ".certconfig.json") {
+		if !info.IsDir() && strings.HasSuffix(info.Name(), ".json") {
 			fileInfos = append(fileInfos, info)
 		}
 		return nil
@@ -53,7 +53,7 @@ func ListCertificates() error {
 	for _, fi := range fileInfos {
 		var certDomain string
 		CertConfigFile = fi.Name()
-		if certDomain, err = fetchCN(filepath.Join(env.CertificateRootDir, fi.Name())); err != nil {
+		if certDomain, err = fetchCN(filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir, fi.Name())); err != nil {
 			CertConfigFile = oldCfg
 			return err
 		}
