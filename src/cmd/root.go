@@ -99,6 +99,7 @@ func Execute() {
 
 func init() {
 
+	rootCmd.DisableAutoGenTag = true
 	rootCmd.AddCommand(clCmd)
 	rootCmd.AddCommand(certCmd)
 	rootCmd.AddCommand(envCmd)
@@ -106,7 +107,7 @@ func init() {
 	certCmd.AddCommand(certVerifyCmd)
 	certCmd.AddCommand(certCreateCmd)
 
-	rootCmd.PersistentFlags().StringVarP(&environment.EnvConfigFile, "env", "e", "defaultEnvConfig.json", "Default environment configuration file; this is a per-user setting.")
+	rootCmd.PersistentFlags().StringVarP(&environment.EnvConfigFile, "env", "e", "defaultEnv.json", "Default environment configuration file; this is a per-user setting.")
 	rootCmd.PersistentFlags().StringVarP(&helpers.CertificatesRootDir, "rootdir", "r", ".", "Certificate root dir; all other directories are relative to this one.")
 
 	certCmd.PersistentFlags().BoolVarP(&certs.CreateSingleCert, "single", "s", false, "Create a certificate while ignoring a given directory structure.")

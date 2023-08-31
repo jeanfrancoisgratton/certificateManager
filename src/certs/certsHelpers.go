@@ -104,6 +104,12 @@ func CreateSampleCertificate() error {
 
 // Create the sample certificate config file
 func createSampleCert() error {
+	var env environment.EnvironmentStruct
+	var err error
+	if env, err = environment.EnvironmentStruct.LoadEnvironmentFile(environment.EnvironmentStruct{}); err != nil {
+		return err
+	}
+
 	sampleCertConfig := CertificateStruct{
 		Country:            "CA",
 		Province:           "Quebec",
@@ -123,7 +129,10 @@ func createSampleCert() error {
 			"",
 			"Please note that this field offers no functionality and is strictly here for documentation purposes"},
 	}
-	if err := sampleCertConfig.SaveCertificateFile("samplee.certconfig.json"); err != nil {
+	if !strings.HasSuffix(sampleCertConfig.CertificateName, ".json") {
+		sampleCertConfig.CertificateName += ".json"
+	}
+	if err := sampleCertConfig.SaveCertificateFile(filepath.Join(env.CertificatesConfigDir, sampleCertConfig.CertificateName)); err != nil {
 		return err
 	}
 	return nil
