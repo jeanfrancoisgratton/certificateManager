@@ -83,11 +83,20 @@ func (c CertificateStruct) SaveCertificateFile(outputfile string) error {
 	if outputfile == "" {
 		outputfile = CertConfigFile
 	}
+	if _, err := os.Stat(filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir)); os.IsNotExist(err) {
+		os.MkdirAll(filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir), os.ModePerm)
+	}
+
 	jStream, err := json.MarshalIndent(c, "", "  ")
 	if err != nil {
 		return err
 	}
-	rcFile := filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir, outputfile)
+	rcFile := filepath.Join(env.CertificateRootDir, outputfile)
+	//remove file if exists
+	if _, err := os.Stat(rcFile); os.IsExist(err) {
+		os.Remove(rcFile)
+	}
+
 	return os.WriteFile(rcFile, jStream, 0600)
 }
 
@@ -124,7 +133,7 @@ func createSampleCert() error {
 		IPAddresses:        []net.IP{net.ParseIP("10.1.1.11"), net.ParseIP("127.0.0.1")},
 		CertificateName:    "sample_cert",
 		IsCA:               true,
-		Comments: []string{"To see which values to put in the Usage field, see https://pkg.go.dev/crypto/x509#KeyUsage",
+		Comments: []string{"To see which values to put in the KeyUsage field, see https://pkg.go.dev/crypto/x509#KeyUsage",
 			"Strip off 'KeyUsage' from the const name and there you go.",
 			"",
 			"Please note that this field offers no functionality and is strictly here for documentation purposes"},
