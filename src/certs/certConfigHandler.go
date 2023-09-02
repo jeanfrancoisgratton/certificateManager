@@ -5,18 +5,72 @@
 
 package certs
 
-// getCertificateConfig() : fetches an SSL certificate configuration and returns it in a data structure
-// Params:
-// - name (string) : the name of the certificate
-// Returns:
-// - the certificate config in a CertificateStruct
-// - the error code, if any
-func getCertificateConfig(name string) (CertificateStruct, error) {
-	var c, sslCertConfig CertificateStruct
-	var err error
+import (
+	"certificateManager/environment"
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"strings"
+)
 
-	if sslCertConfig, err = c.LoadCertificateConfFile(name); err != nil {
+// Loads the certificate config from the certificate file
+func LoadCertificateConfFile(certfile string) (CertificateStruct, error) {
+	var payload CertificateStruct
+	var err error
+	var jFile []byte
+	var rcFile string
+	env := environment.EnvironmentStruct{}
+
+	// fetch environment
+	if env, err = environment.LoadEnvironmentFile(); err != nil {
 		return CertificateStruct{}, err
 	}
-	return sslCertConfig, nil
+
+	if !strings.HasSuffix(CertConfigFile, ".json") {
+		CertConfigFile += ".json"
+	}
+	if len(certfile) > 0 {
+		rcFile = certfile
+	} else {
+		rcFile = filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir, CertConfigFile)
+	}
+
+	if jFile, err = os.ReadFile(rcFile); err != nil {
+		return CertificateStruct{}, err
+	}
+	err = json.Unmarshal(jFile, &payload)
+	if err != nil {
+		return CertificateStruct{}, err
+	} else {
+		return payload, nil
+	}
+}
+
+// Save a data structure into a certificate file in the directory defined in the JSON environment config file
+func (c CertificateStruct) SaveCertificateFile(outputfile string) error {
+	var env environment.EnvironmentStruct
+	var err error
+
+	// fetch environment
+	if env, err = environment.LoadEnvironmentFile(); err != nil {
+		return err
+	}
+	if outputfile == "" {
+		outputfile = CertConfigFile
+	}
+	if _, err := os.Stat(filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir)); os.IsNotExist(err) {
+		os.MkdirAll(filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir), os.ModePerm)
+	}
+
+	jStream, err := json.MarshalIndent(c, "", "  ")
+	if err != nil {
+		return err
+	}
+	rcFile := filepath.Join(env.CertificateRootDir, outputfile)
+	//remove file if exists
+	if _, err := os.Stat(rcFile); os.IsExist(err) {
+		os.Remove(rcFile)
+	}
+
+	return os.WriteFile(rcFile, jStream, 0600)
 }

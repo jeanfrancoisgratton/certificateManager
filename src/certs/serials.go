@@ -22,7 +22,7 @@ import (
 // - the error code
 func getSerialNumber() (uint64, error) {
 	// We need the environment file
-	e, err := environment.EnvironmentStruct.LoadEnvironmentFile(environment.EnvironmentStruct{})
+	e, err := environment.LoadEnvironmentFile()
 	if err != nil {
 		return 0, err
 	}
@@ -55,7 +55,7 @@ func getSerialNumber() (uint64, error) {
 // We will also keep a backup of the serial file
 func setSerialNumber(serialNo uint64) error {
 	// We need the environment file
-	e, err := environment.EnvironmentStruct.LoadEnvironmentFile(environment.EnvironmentStruct{})
+	e, err := environment.LoadEnvironmentFile()
 	if err != nil {
 		return err
 	}

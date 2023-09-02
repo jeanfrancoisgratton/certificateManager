@@ -23,7 +23,7 @@ func ListCertificates() error {
 	env := environment.EnvironmentStruct{}
 
 	// fetch environment
-	if env, err = environment.EnvironmentStruct.LoadEnvironmentFile(environment.EnvironmentStruct{}); err != nil {
+	if env, err = environment.LoadEnvironmentFile(); err != nil {
 		return err
 	}
 	// We need to preserve the current Certconfigfile name as it'll get overwritten down here
@@ -71,10 +71,10 @@ func ListCertificates() error {
 }
 
 func fetchCN(domain string) (string, error) {
-	var c, domainCert CertificateStruct
+	var domainCert CertificateStruct
 	var err error
 
-	if domainCert, err = c.LoadCertificateConfFile(domain); err != nil {
+	if domainCert, err = LoadCertificateConfFile(domain); err != nil {
 		return "", err
 	}
 	return domainCert.CommonName, nil

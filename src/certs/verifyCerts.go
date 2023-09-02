@@ -108,7 +108,7 @@ func verifyCert(certFilePath string) error {
 	if CaVerifyComments {
 		var c CertificateStruct
 		var err error
-		if c, err = c.LoadCertificateConfFile(""); err != nil {
+		if c, err = LoadCertificateConfFile(""); err != nil {
 			return err
 		}
 		if len(c.Comments) > 0 {

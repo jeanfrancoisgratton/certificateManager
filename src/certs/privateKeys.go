@@ -6,6 +6,7 @@
 package certs
 
 import (
+	"certificateManager/environment"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
@@ -22,16 +23,29 @@ import (
 // Returns:
 // - A pointer to the private key
 // - the error code, if any
-func createPrivateKey(filename string, pkrootdir string) (*rsa.PrivateKey, error) {
+func (c CertificateStruct) createPrivateKey() (*rsa.PrivateKey, error) {
 	var pk *rsa.PrivateKey
 	var err error = nil
 	var pkFile *os.File
+	var pkfile string
+	var env environment.EnvironmentStruct
+
+	if env, err = environment.LoadEnvironmentFile(); err != nil {
+		return nil, err
+	}
 
 	if pk, err = rsa.GenerateKey(rand.Reader, 4096); err != nil {
 		return nil, err
 	}
 
-	if pkFile, err = os.Create(filepath.Join(pkrootdir, "private", filename+".key")); err != nil {
+	// rootCAs do not store the key at the same place as other certs
+	if c.IsCA {
+		pkfile = filepath.Join(env.CertificateRootDir, env.RootCAdir, "private", c.CertificateName+".key")
+	} else {
+		pkfile = filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "private", c.CertificateName+".key")
+	}
+
+	if pkFile, err = os.Create(pkfile); err != nil {
 		return nil, err
 	}
 	defer pkFile.Close()

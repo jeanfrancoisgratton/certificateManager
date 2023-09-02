@@ -5,10 +5,25 @@
 
 package certs
 
-func Create() error {
-	if err := createCertificateRootDirectories(); err != nil {
+import "crypto/rsa"
+
+func Create(certconfigfile string) error {
+	var privateKey *rsa.PrivateKey
+	var err error
+	var cert CertificateStruct
+
+	if cert, err = LoadCertificateConfFile(certconfigfile); err != nil {
 		return err
 	}
 
+	if err = createCertificateRootDirectories(); err != nil {
+		return err
+	}
+
+	if privateKey, err = cert.createPrivateKey(); err != nil {
+		return err
+	}
+
+	privateKey = nil
 	return nil
 }

@@ -18,7 +18,7 @@ import (
 // - none
 // Returns : the eventual IO error, if any
 func writeAttributeFile() error {
-	e, err := environment.EnvironmentStruct.LoadEnvironmentFile(environment.EnvironmentStruct{})
+	e, err := environment.LoadEnvironmentFile()
 	if err != nil {
 		return err
 	}
@@ -42,7 +42,7 @@ func writeAttributeFile() error {
 //_, err = ffile.WriteString("unique_subject = yes")
 
 func writeIndexFile(ndxLine string) error {
-	e, err := environment.EnvironmentStruct.LoadEnvironmentFile(environment.EnvironmentStruct{})
+	e, err := environment.LoadEnvironmentFile()
 	if err != nil {
 		return err
 	}
