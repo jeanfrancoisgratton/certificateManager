@@ -25,7 +25,7 @@ type EnvironmentStruct struct {
 }
 
 // Load the JSON environment file in the user's .config/certificatemanager directory, and store it into a data type (struct)
-func (e EnvironmentStruct) LoadEnvironmentFile() (EnvironmentStruct, error) {
+func LoadEnvironmentFile() (EnvironmentStruct, error) {
 	var payload EnvironmentStruct
 	var err error
 

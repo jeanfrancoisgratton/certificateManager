@@ -16,6 +16,7 @@ import (
 
 var CertConfig = CertificateStruct{Duration: 1, KeyUsage: []string{"certs sign", "crl sign", "digital signature"}}
 var CertConfigFile = "defaultCertConfig.json"
+var CertName = ""
 
 var CreateSingleCert bool
 
@@ -34,6 +35,7 @@ type CertificateStruct struct {
 	DNSNames           []string `json:"DNSNames,omitempty"`
 	IPAddresses        []net.IP `json:"IPAddresses,omitempty"`
 	CertificateName    string   `json:"CertificateName"`
+	SerialNumber       uint64   `json:"SerialNumber"`
 	Comments           []string `json:"Comments,omitempty"`
 }
 
@@ -70,6 +72,7 @@ func createSampleCert() error {
 		IPAddresses:        []net.IP{net.ParseIP("10.1.1.11"), net.ParseIP("127.0.0.1")},
 		CertificateName:    "sample_cert",
 		IsCA:               true,
+		SerialNumber:       1,
 		Comments: []string{"To see which values to put in the KeyUsage field, see https://pkg.go.dev/crypto/x509#KeyUsage",
 			"Strip off 'KeyUsage' from the const name and there you go.",
 			"",
@@ -101,6 +104,7 @@ func createExplanationfile() error {
 	"CertificateDirectory" : "/tmp/", -> directory where to write the certs
 	"CertificateName" : "sample_cert", -> certs filename, no extension to the filename
 	"IsCA": true, -> Are we creating a CA or a "normal" server certs ?
+	"SerialNumber": this is an unsigned int64, handled by the software; put here any positive value
 	"Comments": ["To see which values to put in the KeyUsage field, see https://pkg.go.dev/crypto/x509#KeyUsage", "Strip off 'KeyUsage' from the const name and there you go.", "", "Please note that this field offers no functionality and is strictly here for documentation purposes"] -> Those won't appear in the certificate file
 }`
 

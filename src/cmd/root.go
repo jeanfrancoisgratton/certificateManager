@@ -80,10 +80,14 @@ var certVerifyCmd = &cobra.Command{
 var certCreateCmd = &cobra.Command{
 	Use: "create",
 	//Aliases: []string{"ls"},
-	Example: "cm cert create CONFIGFILE",
+	Example: "cm cert create CERTICATE_CONFIG_FILE",
 	Short:   "Creates a certificate, specifying the config file to use",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := certs.Create(); err != nil {
+		certname := ""
+		if len(args) != 0 {
+			certname = args[0]
+		}
+		if err := certs.Create(certname); err != nil {
 			fmt.Println(err)
 			os.Exit(2)
 		}
@@ -112,4 +116,5 @@ func init() {
 
 	certCmd.PersistentFlags().BoolVarP(&certs.CreateSingleCert, "single", "s", false, "Create a certificate while ignoring a given directory structure.")
 
+	certCreateCmd.PersistentFlags().StringVarP(&certs.CertName, "file", "f", "", "JSON file holding the certificate config.")
 }

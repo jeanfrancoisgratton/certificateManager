@@ -1,10 +1,13 @@
 <H1>certificateManager</H1>
 
-A tool to generate and sign all of your SSL certificates
+A GO tool to generate and sign all of your SSL certificates
 
 <H2>Overview</H2>
 
-This tool uses GO's x509 package to generate, sign and verify all of your SSL certificates, your custom Root Certificate Authority (Root CA) certs, and even your Java certs in the .JKS (Java Keystore) certificates.
+This tool uses GO's x509 package to:<br>
+- Generate<br>
+- Sign<br>
+- Verify all of your SSL certificates, your custom Root Certificate Authority (Root CA) certs, and even your Java certs in the .JKS (Java Keystore) certificates.
 
 <H3>What that tool does do</H3>
 - Create a directory structure to hold all of the infrastructure needed to maintain a root CA and its dependent certs<br>

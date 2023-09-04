@@ -32,7 +32,7 @@ func getSerialNumber() (uint64, error) {
 	// thus the serial # is 1
 	_, err = os.Stat(serialPath)
 	if os.IsNotExist(err) {
-		return 1, nil
+		return 0, nil
 	}
 	// Read serial from file
 	content, err := os.ReadFile(serialPath)
