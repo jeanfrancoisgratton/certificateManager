@@ -9,9 +9,10 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
-func GetDuration(prompt string, value *int) {
+func GetIntValFromPrompt(prompt string, value *int) {
 	var err error
 	inputScanner := bufio.NewScanner(os.Stdin)
 	fmt.Printf("%s [%d]: ", prompt, *value)
@@ -23,6 +24,17 @@ func GetDuration(prompt string, value *int) {
 		if err != nil {
 			*value = 1
 		}
+	}
+}
+
+func GetBoolValFromPrompt(prompt string, value *bool) {
+	fmt.Printf("%s (any values not starting with T or t will be treated as FALSE): ", prompt)
+	bval := ""
+	*value = false
+
+	fmt.Scanln(&bval)
+	if strings.HasSuffix(strings.ToLower(bval), "t") {
+		*value = true
 	}
 }
 
@@ -58,7 +70,7 @@ func GetStringSliceFromPrompt(prompt string, valuesPointer *[]string) {
 	*valuesPointer = slice
 }
 
-func GetKeyUsageFromPrompt() []string {
+func GetKeyUsage() []string {
 	inputScanner := bufio.NewScanner(os.Stdin)
 	ku := []string{"decipher only", "encipher only", "crl sign", "certs sign", "key agreement",
 		"data encipherment", "key encipherment", "content commitment", "digital signature"}

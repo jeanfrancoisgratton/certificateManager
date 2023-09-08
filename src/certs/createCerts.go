@@ -5,7 +5,12 @@
 
 package certs
 
-import "certificateManager/helpers"
+import (
+	"certificateManager/environment"
+	"certificateManager/helpers"
+	"fmt"
+	"path/filepath"
+)
 
 // Create() : Create a certificate file. "Plain" SSL cert, or CA cert
 // Parameters:
@@ -30,6 +35,7 @@ import "certificateManager/helpers"
 func Create(certconfigfile string) error {
 	//var privateKey *rsa.PrivateKey
 	var err error
+	var env environment.EnvironmentStruct
 	var cert CertificateStruct
 
 	// 1. Create the directory structure to hold all of those files
@@ -43,6 +49,7 @@ func Create(certconfigfile string) error {
 	}
 
 	// 3. Populate the certificate structure with user-provided values
+	fmt.Printf("An example of a certificate can be found at %s\n", helpers.Green(filepath.Join(env.CertificatesConfigDir, "sample_cert.json")))
 	if err = populateCertificateStructure(&cert); err != nil {
 		return err
 	}
@@ -57,6 +64,24 @@ func Create(certconfigfile string) error {
 	return nil
 }
 
+// This is a beyond-f*ckin' ugly method, only there because I want to ship this software ASAP
+// and won't bother (for now) for a better solution
 func populateCertificateStructure(cs *CertificateStruct) error {
-	helpers.GetStringValFromPrompt("Please enter the certificate's country", &cs.Country)
+	//var err error
+
+	helpers.GetBoolValFromPrompt("Is this certificate a CA certificate ?", &cs.IsCA)
+	helpers.GetStringValFromPrompt("Please enter the certificate's country (C): ", &cs.Country)
+	helpers.GetStringValFromPrompt("Please enter the certificate's province (ST): ", &cs.Province)
+	helpers.GetStringValFromPrompt("Please enter the certificate's locality (L): ", &cs.Locality)
+	helpers.GetStringValFromPrompt("Please enter the certificate's organization (O): ", &cs.Organization)
+	helpers.GetStringValFromPrompt("Please enter the certificate's organizational unit (OU): ", &cs.OrganizationalUnit)
+	helpers.GetStringValFromPrompt("Please enter the certificate's common name (CN):  ", &cs.CommonName)
+	helpers.GetStringSliceFromPrompt("Please enter all email addresses you want to include: ", &cs.EmailAddresses)
+	helpers.GetIntValFromPrompt("Please enter the certificate lifespan (duration): ", &cs.Duration)
+	// Key usage is glitchy, suboptimal....
+	cs.KeyUsage = helpers.GetKeyUsage()
+	helpers.GetStringSliceFromPrompt("Please enter all DNS names this cert is tied to: ", &cs.DNSNames)
+	helpers.GetStringValFromPrompt("Please enter the certificate's common name (CN):  ", &cs.CommonName)
+
+	return nil
 }

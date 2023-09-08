@@ -38,7 +38,7 @@ func (c CertificateStruct) createPrivateKey() (*rsa.PrivateKey, error) {
 		return nil, err
 	}
 
-	// rootCAs do not store the key at the same place as other certs
+	// rootCA keys are not stored at the same place as other SSL keys
 	if c.IsCA {
 		pkfile = filepath.Join(env.CertificateRootDir, env.RootCAdir, "private", c.CertificateName+".key")
 	} else {
