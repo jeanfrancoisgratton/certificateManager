@@ -8,7 +8,9 @@ package certs
 import (
 	"certificateManager/environment"
 	"certificateManager/helpers"
+	"crypto/rsa"
 	"fmt"
+	"net"
 	"path/filepath"
 )
 
@@ -18,22 +20,21 @@ import (
 // Returns:
 // error code
 // UPDATE:		I got rid of the certconfigfile string param, as I will be prompting for args if -f is unset
-// UPDATE 2:	New switch, -f... we will load/create CSR, private keys, etc, as before, but if -f is set,
+// UPDATE 2:	New switch, -f... we will load/create CSR, private keys, etc., as before, but if -f is set,
 //
 //	I will use that filename as the basic config file for the following operations
 
 // Workflow :
 // 1. Create the directory structure
-// 2. Fetch the current serial number
-// 3. Populate the cert structure with user-defined values
+// 2. Populate the cert structure with user-defined values
+// 3. Fetch the current serial number, increment it
 // 4. Generate private key
 // 5. Generate CSR
-// 6. Populate the Certificate structure with default values
+// 6. Sign certificate
 // 7. Update index.txt, index.attr.txt, serial
-// 8. Sign certificate
 
 func Create(certconfigfile string) error {
-	//var privateKey *rsa.PrivateKey
+	var privateKey *rsa.PrivateKey
 	var err error
 	var env environment.EnvironmentStruct
 	var cert CertificateStruct
@@ -43,33 +44,61 @@ func Create(certconfigfile string) error {
 		return err
 	}
 
-	// 2. Get the current serial number
+	// 2. Populate the certificate structure with user-provided values or a file
+	if certconfigfile != "" {
+		fmt.Printf("An example of a certificate can be found at %s\n", helpers.Green(filepath.Join(env.CertificatesConfigDir, "sample_cert.json")))
+		if err = populateCertificateStructure(&cert); err != nil {
+			return err
+		}
+	} else {
+		if cert, err = LoadCertificateConfFile(certconfigfile); err != nil {
+			return err
+		}
+	}
+
+	// 3. Get the current serial number
 	if cert.SerialNumber, err = getSerialNumber(); err != nil {
 		return err
+	} else {
+		cert.SerialNumber++
 	}
 
-	// 3. Populate the certificate structure with user-provided values
-	fmt.Printf("An example of a certificate can be found at %s\n", helpers.Green(filepath.Join(env.CertificatesConfigDir, "sample_cert.json")))
-	if err = populateCertificateStructure(&cert); err != nil {
+	// 4. Generate a private key
+	// Destination is either ServerCertsDir/private or RootCAdir
+	if privateKey, err = cert.createPrivateKey(); err != nil {
 		return err
 	}
 
-	//// We need to create a private key
-	//// Destination is either ServerCertsDir/private or RootCAdir/private
-	//if privateKey, err = cert.createPrivateKey(); err != nil {
-	//	return err
-	//}
+	// 5. Generate the CSR (if not a CA cert)
+	if !cert.IsCA {
+		if err = cert.generateCSR(env, privateKey); err != nil {
+			return err
+		}
+	} else {
+		if err = populateCertificateStructure(&cert); err != nil {
+			return err
+		}
+		return nil
+	}
 
+	// 6. Sign the certificate
+	// NOTE: this function has a function receiver of type CertificateStruct. Unsure yet
+	// If it holds the value of the var "cert" from here. To be tested
+	if err := cert.signCert(env); err != nil {
+		return err
+	}
 	//	privateKey = nil
 	return nil
 }
 
-// This is a beyond-f*ckin' ugly method, only there because I want to ship this software ASAP
+// This is a beyond ugly method, only there because I want to ship this software ASAP
 // and won't bother (for now) for a better solution
 func populateCertificateStructure(cs *CertificateStruct) error {
-	//var err error
+	var err error
+	var ips []string
 
-	helpers.GetBoolValFromPrompt("Is this certificate a CA certificate ?", &cs.IsCA)
+	helpers.GetStringValFromPrompt("Please enter the certificate's name: ", &cs.CertificateName)
+	helpers.GetBoolValFromPrompt("Is this certificate a CA certificate ? ", &cs.IsCA)
 	helpers.GetStringValFromPrompt("Please enter the certificate's country (C): ", &cs.Country)
 	helpers.GetStringValFromPrompt("Please enter the certificate's province (ST): ", &cs.Province)
 	helpers.GetStringValFromPrompt("Please enter the certificate's locality (L): ", &cs.Locality)
@@ -79,9 +108,22 @@ func populateCertificateStructure(cs *CertificateStruct) error {
 	helpers.GetStringSliceFromPrompt("Please enter all email addresses you want to include: ", &cs.EmailAddresses)
 	helpers.GetIntValFromPrompt("Please enter the certificate lifespan (duration): ", &cs.Duration)
 	// Key usage is glitchy, suboptimal....
-	cs.KeyUsage = helpers.GetKeyUsage()
+	helpers.GetKeyUsage(&cs.KeyUsage)
 	helpers.GetStringSliceFromPrompt("Please enter all DNS names this cert is tied to: ", &cs.DNSNames)
 	helpers.GetStringValFromPrompt("Please enter the certificate's common name (CN):  ", &cs.CommonName)
-
+	helpers.GetStringSliceFromPrompt("Please enter the certificate's IP address(es): ", &ips)
+	if len(ips) > 0 {
+		for _, val := range ips {
+			cs.IPAddresses = append(cs.IPAddresses, net.ParseIP(val))
+		}
+	} else {
+		cs.IPAddresses = []net.IP{}
+	}
+	if cs.SerialNumber, err = getSerialNumber(); err != nil {
+		return err
+	} else {
+		cs.SerialNumber++
+	}
+	helpers.GetStringSliceFromPrompt("Please enter optional comments: ", &cs.Comments)
 	return nil
 }

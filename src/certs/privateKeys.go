@@ -40,9 +40,9 @@ func (c CertificateStruct) createPrivateKey() (*rsa.PrivateKey, error) {
 
 	// rootCA keys are not stored at the same place as other SSL keys
 	if c.IsCA {
-		pkfile = filepath.Join(env.CertificateRootDir, env.RootCAdir, "private", c.CertificateName+".key")
+		pkfile = filepath.Join(env.CertificateRootDir, env.RootCAdir, c.CertificateName+".key")
 	} else {
-		pkfile = filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "private", c.CertificateName+".key")
+		pkfile = filepath.Join(env.CertificateRootDir, env.ServerCertsDir, c.CertificateName+".key")
 	}
 
 	if pkFile, err = os.Create(pkfile); err != nil {

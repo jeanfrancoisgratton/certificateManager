@@ -13,6 +13,7 @@ import (
 	"strings"
 )
 
+// LoadCertificateConfFile :
 // Loads the certificate config from the certificate file
 func LoadCertificateConfFile(certfile string) (CertificateStruct, error) {
 	var payload CertificateStruct
@@ -46,8 +47,9 @@ func LoadCertificateConfFile(certfile string) (CertificateStruct, error) {
 	}
 }
 
+// SaveCertificateConfFile :
 // Save a data structure into a certificate file in the directory defined in the JSON environment config file
-func (c CertificateStruct) SaveCertificateFile(outputfile string) error {
+func (c CertificateStruct) SaveCertificateConfFile(outputfile string) error {
 	var env environment.EnvironmentStruct
 	var err error
 

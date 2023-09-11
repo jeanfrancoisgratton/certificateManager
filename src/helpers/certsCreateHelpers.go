@@ -70,7 +70,7 @@ func GetStringSliceFromPrompt(prompt string, valuesPointer *[]string) {
 	*valuesPointer = slice
 }
 
-func GetKeyUsage() []string {
+func GetKeyUsage(keys *[]string) {
 	inputScanner := bufio.NewScanner(os.Stdin)
 	ku := []string{"decipher only", "encipher only", "crl sign", "certs sign", "key agreement",
 		"data encipherment", "key encipherment", "content commitment", "digital signature"}
@@ -98,7 +98,8 @@ func GetKeyUsage() []string {
 	}
 	// if the array is empty, we return a default value
 	if len(inputs) == 0 {
-		return []string{"digital signature"}
+		*keys = []string{"digital signature"}
+		return
 	}
 	// now we need to ensure that we do not have any duplicates
 	s := make([]string, 0, len(inputs))
@@ -110,7 +111,7 @@ func GetKeyUsage() []string {
 			s = append(s, value)
 		}
 	}
-	return s
+	*keys = s
 }
 
 func valueInList(in string, list []string) bool {

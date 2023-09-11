@@ -14,11 +14,20 @@ import (
 	"strings"
 )
 
-var CertConfig = CertificateStruct{Duration: 1, KeyUsage: []string{"certs sign", "crl sign", "digital signature"}}
+// var CertConfig = CertificateStruct{Duration: 1, KeyUsage: []string{"certs sign", "crl sign", "digital signature"}}
 var CertConfigFile = "defaultCertConfig.json"
 var CertName = ""
 
 var CreateSingleCert bool
+
+// CustomError implements the error interface
+type CustomError struct {
+	Message string
+}
+
+func (e CustomError) Error() string {
+	return e.Message
+}
 
 // This is the full data structure for an SSL certificate and CA
 type CertificateStruct struct {
@@ -69,7 +78,7 @@ func createSampleCert() error {
 		Duration:           10,
 		KeyUsage:           []string{"certs sign", "crl sign", "digital signature"},
 		DNSNames:           []string{"myorg.net", "myorg.com", "lan.myorg.net"},
-		IPAddresses:        []net.IP{net.ParseIP("10.1.1.11"), net.ParseIP("127.0.0.1")},
+		IPAddresses:        []net.IP{net.ParseIP("10.0.0.1"), net.ParseIP("127.0.0.1")},
 		CertificateName:    "sample_cert",
 		IsCA:               true,
 		SerialNumber:       1,
@@ -81,7 +90,7 @@ func createSampleCert() error {
 	if !strings.HasSuffix(sampleCertConfig.CertificateName, ".json") {
 		sampleCertConfig.CertificateName += ".json"
 	}
-	if err := sampleCertConfig.SaveCertificateFile(filepath.Join(env.CertificatesConfigDir, sampleCertConfig.CertificateName)); err != nil {
+	if err := sampleCertConfig.SaveCertificateConfFile(filepath.Join(env.CertificatesConfigDir, sampleCertConfig.CertificateName)); err != nil {
 		return err
 	}
 	return nil
@@ -101,7 +110,6 @@ func createExplanationfile() error {
 	"KeyUsage" : ["Digital Signature", "Certificate Sign", "CRL Sign"], -> Certificate usage. This here are common values for CAs
 	"DNSNames" : ["myorg.net","myorg.com","lan.myorg.net"], -> DNS names assigned to this certs
 	"IPAddresses" : ["10.1.1.11", "127.0.0.1"], -> IP addresses assigned to this certs (never a good idea to assign IPs to a CA)
-	"CertificateDirectory" : "/tmp/", -> directory where to write the certs
 	"CertificateName" : "sample_cert", -> certs filename, no extension to the filename
 	"IsCA": true, -> Are we creating a CA or a "normal" server certs ?
 	"SerialNumber": this is an unsigned int64, handled by the software; put here any positive value
@@ -129,8 +137,9 @@ func createCertificateRootDirectories() error {
 		return err
 	}
 	dirRange := []string{filepath.Join(e.CertificateRootDir, e.CertificatesConfigDir),
-		filepath.Join(e.CertificateRootDir, e.RootCAdir, "certs"), filepath.Join(e.CertificateRootDir, e.RootCAdir, "newcerts"), filepath.Join(e.CertificateRootDir, e.RootCAdir, "private"),
-		filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "private"), filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "csr"), filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "certs"), filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java")}
+		filepath.Join(e.CertificateRootDir, e.RootCAdir, "certs"), filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "private"),
+		filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "csr"), filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "certs"),
+		filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java")}
 
 	for _, directory := range dirRange {
 		if err = os.MkdirAll(directory, os.ModePerm); err != nil {
