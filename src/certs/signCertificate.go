@@ -26,6 +26,7 @@ import (
 // 3. Load & parse the CSR file
 // 4. Populate a x509 cert template with the CertificateStruct values
 // 5. Create (sign) the certificate
+// 6. Save to disk
 func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	var caCertBytes, caKeyBytes, csrBytes []byte
 	var csrRequest *x509.CertificateRequest

@@ -82,12 +82,24 @@ func Create(certconfigfile string) error {
 	}
 
 	// 6. Sign the certificate
-	// NOTE: this function has a function receiver of type CertificateStruct. Unsure yet
-	// If it holds the value of the var "cert" from here. To be tested
 	if err := cert.signCert(env); err != nil {
 		return err
 	}
-	//	privateKey = nil
+
+	// 7. Update serial, index.txt.attr and index.txt
+	// serial
+	if err = setSerialNumber(cert.SerialNumber); err != nil {
+		return err
+	}
+	// index.txt.attr
+	if err = writeAttributeFile(); err != nil {
+		return err
+	}
+	// index.txt
+	if err = writeIndexFile(cert); err != nil {
+		return err
+	}
+
 	return nil
 }
 

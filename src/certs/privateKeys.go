@@ -42,7 +42,7 @@ func (c CertificateStruct) createPrivateKey() (*rsa.PrivateKey, error) {
 	if c.IsCA {
 		pkfile = filepath.Join(env.CertificateRootDir, env.RootCAdir, c.CertificateName+".key")
 	} else {
-		pkfile = filepath.Join(env.CertificateRootDir, env.ServerCertsDir, c.CertificateName+".key")
+		pkfile = filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "private", c.CertificateName+".key")
 	}
 
 	if pkFile, err = os.Create(pkfile); err != nil {
