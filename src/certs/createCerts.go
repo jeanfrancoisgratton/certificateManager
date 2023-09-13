@@ -38,14 +38,16 @@ func Create(certconfigfile string) error {
 	var err error
 	var env environment.EnvironmentStruct
 	var cert CertificateStruct
-
+	if env, err = environment.LoadEnvironmentFile(); err != nil {
+		return err
+	}
 	// 1. Create the directory structure to hold all of those files
 	if err = createCertificateRootDirectories(); err != nil {
 		return err
 	}
 
 	// 2. Populate the certificate structure with user-provided values or a file
-	if certconfigfile != "" {
+	if certconfigfile == "" {
 		fmt.Printf("An example of a certificate can be found at %s\n", helpers.Green(filepath.Join(env.CertificatesConfigDir, "sample_cert.json")))
 		if err = populateCertificateStructure(&cert); err != nil {
 			return err
@@ -107,23 +109,22 @@ func Create(certconfigfile string) error {
 // and won't bother (for now) for a better solution
 func populateCertificateStructure(cs *CertificateStruct) error {
 	var err error
-	var ips []string
-
-	helpers.GetStringValFromPrompt("Please enter the certificate's name: ", &cs.CertificateName)
-	helpers.GetBoolValFromPrompt("Is this certificate a CA certificate ? ", &cs.IsCA)
-	helpers.GetStringValFromPrompt("Please enter the certificate's country (C): ", &cs.Country)
-	helpers.GetStringValFromPrompt("Please enter the certificate's province (ST): ", &cs.Province)
-	helpers.GetStringValFromPrompt("Please enter the certificate's locality (L): ", &cs.Locality)
-	helpers.GetStringValFromPrompt("Please enter the certificate's organization (O): ", &cs.Organization)
-	helpers.GetStringValFromPrompt("Please enter the certificate's organizational unit (OU): ", &cs.OrganizationalUnit)
-	helpers.GetStringValFromPrompt("Please enter the certificate's common name (CN):  ", &cs.CommonName)
-	helpers.GetStringSliceFromPrompt("Please enter all email addresses you want to include: ", &cs.EmailAddresses)
-	helpers.GetIntValFromPrompt("Please enter the certificate lifespan (duration): ", &cs.Duration)
+	//var ips []string
+	fmt.Println("Entries with multiple values (ip addresses, emails, key usage are separated with ENTER, with another ENTER pressed at the end.\n")
+	cs.CertificateName = helpers.GetStringValFromPrompt("Please enter the certificate's name: ")
+	cs.IsCA = helpers.GetBoolValFromPrompt("Is this certificate a CA certificate ? ")
+	cs.Country = helpers.GetStringValFromPrompt("Please enter the certificate's country (C): ")
+	cs.Province = helpers.GetStringValFromPrompt("Please enter the certificate's province (ST): ")
+	cs.Locality = helpers.GetStringValFromPrompt("Please enter the certificate's locality (L): ")
+	cs.Organization = helpers.GetStringValFromPrompt("Please enter the certificate's organization (O): ")
+	cs.OrganizationalUnit = helpers.GetStringValFromPrompt("Please enter the certificate's organizational unit (OU): ")
+	cs.CommonName = helpers.GetStringValFromPrompt("Please enter the certificate's common name (CN):  ")
+	cs.EmailAddresses = helpers.GetStringSliceFromPrompt("Please enter all email addresses you want to include: ")
+	cs.Duration = helpers.GetIntValFromPrompt("Please enter the certificate lifespan (duration): ")
 	// Key usage is glitchy, suboptimal....
-	helpers.GetKeyUsage(&cs.KeyUsage)
-	helpers.GetStringSliceFromPrompt("Please enter all DNS names this cert is tied to: ", &cs.DNSNames)
-	helpers.GetStringValFromPrompt("Please enter the certificate's common name (CN):  ", &cs.CommonName)
-	helpers.GetStringSliceFromPrompt("Please enter the certificate's IP address(es): ", &ips)
+	cs.KeyUsage = helpers.GetKeyUsage()
+	cs.DNSNames = helpers.GetStringSliceFromPrompt("Please enter all DNS names this cert is tied to: ")
+	ips := helpers.GetStringSliceFromPrompt("Please enter the certificate's IP address(es): ")
 	if len(ips) > 0 {
 		for _, val := range ips {
 			cs.IPAddresses = append(cs.IPAddresses, net.ParseIP(val))
@@ -136,6 +137,6 @@ func populateCertificateStructure(cs *CertificateStruct) error {
 	} else {
 		cs.SerialNumber++
 	}
-	helpers.GetStringSliceFromPrompt("Please enter optional comments: ", &cs.Comments)
+	cs.Comments = helpers.GetStringSliceFromPrompt("Please enter optional comments: ")
 	return nil
 }

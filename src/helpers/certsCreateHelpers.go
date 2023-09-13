@@ -12,65 +12,68 @@ import (
 	"strings"
 )
 
-func GetIntValFromPrompt(prompt string, value *int) {
+func GetIntValFromPrompt(prompt string) int {
 	var err error
+	value := 0
 	inputScanner := bufio.NewScanner(os.Stdin)
-	fmt.Printf("%s [%d]: ", prompt, *value)
+	fmt.Printf("%s: ", prompt)
 	inputScanner.Scan()
 	nval := inputScanner.Text()
 
 	if nval != "" {
-		*value, err = strconv.Atoi(nval)
+		value, err = strconv.Atoi(nval)
 		if err != nil {
-			*value = 1
+			value = 1
 		}
 	}
+	return value
 }
 
-func GetBoolValFromPrompt(prompt string, value *bool) {
+func GetBoolValFromPrompt(prompt string) bool {
 	fmt.Printf("%s (any values not starting with T or t will be treated as FALSE): ", prompt)
 	bval := ""
-	*value = false
+	var value = false
 
 	fmt.Scanln(&bval)
-	if strings.HasSuffix(strings.ToLower(bval), "t") {
-		*value = true
+	if strings.HasPrefix(strings.ToLower(bval), "t") {
+		value = true
 	}
+	return value
 }
 
-func GetStringValFromPrompt(prompt string, value *string) {
+func GetStringValFromPrompt(prompt string) string {
 	inputScanner := bufio.NewScanner(os.Stdin)
-	fmt.Printf("%s [%s]: ", prompt, *value)
+	fmt.Printf("%s: ", prompt)
 	inputScanner.Scan()
 	nval := inputScanner.Text()
+	value := ""
 
 	if nval != "" {
-		*value = nval
+		value = nval
 	}
+	return value
 }
 
-func GetStringSliceFromPrompt(prompt string, valuesPointer *[]string) {
-	slice := *valuesPointer
+func GetStringSliceFromPrompt(prompt string) []string {
+	slice := []string{}
 	scanner := bufio.NewScanner(os.Stdin)
 
 	fmt.Printf("%s\n", prompt)
-	for i := range slice {
-		fmt.Println("A value of '' is an empty string to be inserted in the slice (array)")
-		fmt.Println("A value of '.' means that we're done and may exit the current loop")
+	for {
+		fmt.Println("Just press enter to end the loop")
 		scanner.Scan()
 		input := scanner.Text()
 		if input == "" {
-			slice[i] = ""
-		}
-		if input == "." {
-			*valuesPointer = slice
-			return
+			break
+		} else {
+			slice = append(slice, input)
 		}
 	}
-	*valuesPointer = slice
+	return slice
 }
 
-func GetKeyUsage(keys *[]string) {
+func GetKeyUsage() []string {
+	var keys []string
 	inputScanner := bufio.NewScanner(os.Stdin)
 	ku := []string{"decipher only", "encipher only", "crl sign", "certs sign", "key agreement",
 		"data encipherment", "key encipherment", "content commitment", "digital signature"}
@@ -98,8 +101,8 @@ func GetKeyUsage(keys *[]string) {
 	}
 	// if the array is empty, we return a default value
 	if len(inputs) == 0 {
-		*keys = []string{"digital signature"}
-		return
+		keys = []string{"digital signature"}
+		return keys
 	}
 	// now we need to ensure that we do not have any duplicates
 	s := make([]string, 0, len(inputs))
@@ -111,7 +114,8 @@ func GetKeyUsage(keys *[]string) {
 			s = append(s, value)
 		}
 	}
-	*keys = s
+	keys = s
+	return keys
 }
 
 func valueInList(in string, list []string) bool {
