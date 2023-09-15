@@ -48,6 +48,56 @@ var envCmd = &cobra.Command{
 	},
 }
 
+var envListCmd = &cobra.Command{
+	Use:     "list",
+	Aliases: []string{"ls"},
+	Example: "cm env list [directory]",
+	Short:   "Lists all environment files",
+	Run: func(cmd *cobra.Command, args []string) {
+		argument := ""
+		if len(args) > 0 {
+			argument = args[0]
+		}
+		if err := environment.ListEnvironments(argument); err != nil {
+			fmt.Println(err)
+			os.Exit(2)
+		}
+	},
+}
+
+var envRmCmd = &cobra.Command{
+	Use:     "remove",
+	Aliases: []string{"rm"},
+	Example: "cm env remove FILE[.json]",
+	Short:   "Removes the environment FILE",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) == 0 {
+			fmt.Println("You need to provide a filename.")
+			os.Exit(1)
+		}
+		if err := environment.RemoveEnvFile(args[0]); err != nil {
+			fmt.Println(err)
+			os.Exit(2)
+		}
+	},
+}
+
+var envAddCmd = &cobra.Command{
+	Use:     "add",
+	Example: "cm env add FILE[.json]",
+	Short:   "Adds the environment FILE",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) == 0 {
+			fmt.Println("You need to provide a filename.")
+			os.Exit(1)
+		}
+		if err := environment.AddEnvFile(args[0]); err != nil {
+			fmt.Println(err)
+			os.Exit(2)
+		}
+	},
+}
+
 // Lists all certificates in conf directory as per $HOME/.config/certificatemanager/*.json (defined with -e flag)
 var certlistCmd = &cobra.Command{
 	Use:     "list",
@@ -104,12 +154,16 @@ func Execute() {
 func init() {
 
 	rootCmd.DisableAutoGenTag = true
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
 	rootCmd.AddCommand(clCmd)
 	rootCmd.AddCommand(certCmd)
 	rootCmd.AddCommand(envCmd)
 	certCmd.AddCommand(certlistCmd)
 	certCmd.AddCommand(certVerifyCmd)
 	certCmd.AddCommand(certCreateCmd)
+	envCmd.AddCommand(envListCmd)
+	envCmd.AddCommand(envRmCmd)
+	envCmd.AddCommand(envAddCmd)
 
 	rootCmd.PersistentFlags().StringVarP(&environment.EnvConfigFile, "env", "e", "defaultEnv.json", "Default environment configuration file; this is a per-user setting.")
 	rootCmd.PersistentFlags().StringVarP(&helpers.CertificatesRootDir, "rootdir", "r", ".", "Certificate root dir; all other directories are relative to this one.")
