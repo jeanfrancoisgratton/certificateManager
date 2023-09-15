@@ -9,20 +9,30 @@ import (
 	"certificateManager/helpers"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
 func RemoveEnvFile(envfile string) error {
-	if err := os.Remove(envfile); err != nil {
+	if !strings.HasSuffix(envfile, ".json") {
+		envfile += ".json"
+	}
+	if err := os.Remove(filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", envfile)); err != nil {
 		return err
 	}
 
+	fmt.Printf("%s removed succesfully\n", envfile)
 	return nil
 }
 
 func AddEnvFile(envfile string) error {
 	var env EnvironmentStruct
 	var err error
+
+	if !strings.HasSuffix(envfile, ".json") {
+		envfile += ".json"
+	}
+
 	if env, err = prompt4EnvironmentValues(); err != nil {
 		return err
 	} else {
@@ -51,5 +61,5 @@ func prompt4EnvironmentValues() (EnvironmentStruct, error) {
 		return EnvironmentStruct{}, helpers.CustomError{Message: fmt.Sprintf("%s %s\n", env.CertificatesConfigDir, helpers.Red("must be an absolute path"))}
 	}
 	env.RemoveDuplicates = true
-	return EnvironmentStruct{}, nil
+	return env, nil
 }

@@ -7,7 +7,6 @@ import (
 	"certificateManager/certs"
 	"certificateManager/environment"
 	"certificateManager/helpers"
-	"fmt"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -16,7 +15,7 @@ var version = "0.100-0 (2023.08.13)"
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:     "certificateManager",
+	Use:     "cm",
 	Short:   "Add a short description here",
 	Long:    "Add a long description here",
 	Version: version,
@@ -28,119 +27,6 @@ var clCmd = &cobra.Command{
 	Short:   "Shows changelog",
 	Run: func(cmd *cobra.Command, args []string) {
 		helpers.Changelog()
-	},
-}
-
-var certCmd = &cobra.Command{
-	Use:     "cert",
-	Example: "cm cert { {create | delete} } certificate_name | list }",
-	Short:   "Certificate sub-command",
-	Run: func(cmd *cobra.Command, args []string) {
-		helpers.Changelog()
-	},
-}
-
-var envCmd = &cobra.Command{
-	Use:   "env",
-	Short: "Environment sub-command",
-	Run: func(cmd *cobra.Command, args []string) {
-		helpers.Changelog()
-	},
-}
-
-var envListCmd = &cobra.Command{
-	Use:     "list",
-	Aliases: []string{"ls"},
-	Example: "cm env list [directory]",
-	Short:   "Lists all environment files",
-	Run: func(cmd *cobra.Command, args []string) {
-		argument := ""
-		if len(args) > 0 {
-			argument = args[0]
-		}
-		if err := environment.ListEnvironments(argument); err != nil {
-			fmt.Println(err)
-			os.Exit(2)
-		}
-	},
-}
-
-var envRmCmd = &cobra.Command{
-	Use:     "remove",
-	Aliases: []string{"rm"},
-	Example: "cm env remove FILE[.json]",
-	Short:   "Removes the environment FILE",
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) == 0 {
-			fmt.Println("You need to provide a filename.")
-			os.Exit(1)
-		}
-		if err := environment.RemoveEnvFile(args[0]); err != nil {
-			fmt.Println(err)
-			os.Exit(2)
-		}
-	},
-}
-
-var envAddCmd = &cobra.Command{
-	Use:     "add",
-	Example: "cm env add FILE[.json]",
-	Short:   "Adds the environment FILE",
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) == 0 {
-			fmt.Println("You need to provide a filename.")
-			os.Exit(1)
-		}
-		if err := environment.AddEnvFile(args[0]); err != nil {
-			fmt.Println(err)
-			os.Exit(2)
-		}
-	},
-}
-
-// Lists all certificates in conf directory as per $HOME/.config/certificatemanager/*.json (defined with -e flag)
-var certlistCmd = &cobra.Command{
-	Use:     "list",
-	Aliases: []string{"ls"},
-	Example: "cm cert list",
-	Short:   "Lists all certificates in defined rootDir",
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := certs.ListCertificates(); err != nil {
-			fmt.Println(err)
-			os.Exit(2)
-		}
-	},
-}
-
-// Verify a given certificate
-var certVerifyCmd = &cobra.Command{
-	Use: "verify",
-	//Aliases: []string{"ls"},
-	Example: "cm cert verify FILENAME",
-	Short:   "Verifies a certificate, as per the provided filename",
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := certs.Verify(args); err != nil {
-			fmt.Println(err)
-			os.Exit(2)
-		}
-	},
-}
-
-// The biggie: create a CA or "normal" SSL certificate
-var certCreateCmd = &cobra.Command{
-	Use: "create",
-	//Aliases: []string{"ls"},
-	Example: "cm cert create CERTICATE_CONFIG_FILE",
-	Short:   "Creates a certificate, specifying the config file to use",
-	Run: func(cmd *cobra.Command, args []string) {
-		certname := ""
-		if len(args) != 0 {
-			certname = args[0]
-		}
-		if err := certs.Create(certname); err != nil {
-			fmt.Println(err)
-			os.Exit(2)
-		}
 	},
 }
 
