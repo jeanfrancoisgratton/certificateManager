@@ -48,6 +48,23 @@ var envCmd = &cobra.Command{
 	},
 }
 
+var envListCmd = &cobra.Command{
+	Use:     "list",
+	Aliases: []string{"ls"},
+	Example: "cm env list",
+	Short:   "Lists all environment files",
+	Run: func(cmd *cobra.Command, args []string) {
+		argument := ""
+		if len(args) > 0 {
+			argument = args[0]
+		}
+		if err := environment.ListEnvironments(argument); err != nil {
+			fmt.Println(err)
+			os.Exit(2)
+		}
+	},
+}
+
 // Lists all certificates in conf directory as per $HOME/.config/certificatemanager/*.json (defined with -e flag)
 var certlistCmd = &cobra.Command{
 	Use:     "list",
@@ -110,6 +127,7 @@ func init() {
 	certCmd.AddCommand(certlistCmd)
 	certCmd.AddCommand(certVerifyCmd)
 	certCmd.AddCommand(certCreateCmd)
+	envCmd.AddCommand(envListCmd)
 
 	rootCmd.PersistentFlags().StringVarP(&environment.EnvConfigFile, "env", "e", "defaultEnv.json", "Default environment configuration file; this is a per-user setting.")
 	rootCmd.PersistentFlags().StringVarP(&helpers.CertificatesRootDir, "rootdir", "r", ".", "Certificate root dir; all other directories are relative to this one.")
