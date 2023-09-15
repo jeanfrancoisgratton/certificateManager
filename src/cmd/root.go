@@ -121,6 +121,7 @@ func Execute() {
 func init() {
 
 	rootCmd.DisableAutoGenTag = true
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
 	rootCmd.AddCommand(clCmd)
 	rootCmd.AddCommand(certCmd)
 	rootCmd.AddCommand(envCmd)
