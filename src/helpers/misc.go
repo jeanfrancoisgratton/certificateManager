@@ -13,6 +13,15 @@ import (
 
 var CertificatesRootDir = ""
 
+// CustomError implements the error interface
+type CustomError struct {
+	Message string
+}
+
+func (e CustomError) Error() string {
+	return e.Message
+}
+
 func Changelog() {
 	//fmt.Printf("\x1b[2J")
 	fmt.Printf("\x1bc")

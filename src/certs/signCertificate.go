@@ -37,19 +37,19 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	// Ensure there is a single file in CA/certs directory and fetch its name
 	caCertFiles, err := filepath.Glob(filepath.Join(env.CertificateRootDir, env.RootCAdir, "*.crt"))
 	if err != nil {
-		return CustomError{Message: "Error listing CA certificate files: " + err.Error()}
+		return helpers.CustomError{Message: "Error listing CA certificate files: " + err.Error()}
 	}
 	if len(caCertFiles) != 1 {
-		return CustomError{Message: "Expected one CA certificate file, found " + helpers.Red(string(len(caCertFiles)))}
+		return helpers.CustomError{Message: "Expected one CA certificate file, found " + helpers.Red(string(len(caCertFiles)))}
 	}
 	baseFN := filepath.Base(caCertFiles[0])
 
 	// 1. Load the CA cert and key files
 	if caCertBytes, err = os.ReadFile(filepath.Join(env.CertificateRootDir, env.RootCAdir, baseFN+".crt")); err != nil {
-		return CustomError{Message: "Error reading CA certificate: " + err.Error()}
+		return helpers.CustomError{Message: "Error reading CA certificate: " + err.Error()}
 	}
 	if caKeyBytes, err = os.ReadFile(filepath.Join(env.CertificateRootDir, env.RootCAdir, baseFN+".key")); err != nil {
-		return CustomError{Message: "Error reading CA private key: " + err.Error()}
+		return helpers.CustomError{Message: "Error reading CA private key: " + err.Error()}
 	}
 
 	// 2. Parse the cert and key files

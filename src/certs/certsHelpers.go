@@ -20,15 +20,6 @@ var CertName = ""
 
 var CreateSingleCert bool
 
-// CustomError implements the error interface
-type CustomError struct {
-	Message string
-}
-
-func (e CustomError) Error() string {
-	return e.Message
-}
-
 // This is the full data structure for an SSL certificate and CA
 type CertificateStruct struct {
 	Country            string   `json:"Country"`
