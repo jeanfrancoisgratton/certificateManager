@@ -1,6 +1,6 @@
 // certificateManager
 // Écrit par J.F.Gratton (jean-francois@famillegratton.net)
-// serials.go, jfgratton : 2023-08-26
+// createSerials.go, jfgratton : 2023-08-26
 
 package certs
 

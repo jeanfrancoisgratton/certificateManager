@@ -1,6 +1,6 @@
 // certificateManager
 // Written by J.F. Gratton <jean-francois@famillegratton.net>
-// Original filename: src/certs/csr.go
+// Original filename: src/certs/createCSR.go
 // Original timestamp: 2023/09/09 09:25
 
 package certs
