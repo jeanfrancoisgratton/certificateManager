@@ -35,7 +35,7 @@ func GetBoolValFromPrompt(prompt string) bool {
 	var value = false
 
 	fmt.Scanln(&bval)
-	if strings.HasPrefix(strings.ToLower(bval), "t") {
+	if strings.HasPrefix(strings.ToLower(bval), "t") || bval == "1" {
 		value = true
 	}
 	return value

@@ -7,7 +7,6 @@ package certs
 
 import (
 	"certificateManager/environment"
-	"io"
 	"net"
 	"os"
 	"path/filepath"
@@ -134,34 +133,6 @@ func createCertificateRootDirectories() error {
 
 	for _, directory := range dirRange {
 		if err = os.MkdirAll(directory, os.ModePerm); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// copyFile() : if original file already exists, we copy it onto "destfile"
-// Parameters :
-// - source file, dest file (string)
-// Returns :
-// - error code if IO error
-func copyFile(source, dest string) error {
-	// if the file does not exist, this means we are using a brand-new setup,
-	_, err := os.Stat(source)
-	if os.IsExist(err) {
-		sfile, err := os.Open(source)
-		if err != nil {
-			return err
-		}
-		defer sfile.Close()
-
-		dfile, err := os.Create(dest)
-		if err != nil {
-			return err
-		}
-		defer dfile.Close()
-		_, err = io.Copy(dfile, sfile)
-		if err != nil {
 			return err
 		}
 	}

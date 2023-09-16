@@ -7,7 +7,6 @@ package certs
 import (
 	"certificateManager/environment"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -60,35 +59,13 @@ func setSerialNumber(serialNo uint64) error {
 		return err
 	}
 
-	// if the file does not exist, this means we are using a brand-new setup,
-	// thus the serial # is 1
-	//if err := copyFile(filepath.Join(e.CertificateRootDir, e.RootCAdir, "serial"), filepath.Join(e.CertificateRootDir, e.RootCAdir, "serial.old")); err != nil {
-	_, err = os.Stat(filepath.Join(e.CertificateRootDir, e.RootCAdir, "serial"))
-	if os.IsExist(err) {
-		sfile, err := os.Open(filepath.Join(e.CertificateRootDir, e.RootCAdir, "serial"))
-		if err != nil {
-			return err
-		}
-		defer sfile.Close()
-
-		dfile, err := os.Create(filepath.Join(e.CertificateRootDir, e.RootCAdir, "serial.old"))
-		if err != nil {
-			return err
-		}
-		defer dfile.Close()
-		_, err = io.Copy(dfile, sfile)
-		if err != nil {
-			return err
-		}
-	} else {
-		ffile, err := os.Create(filepath.Join(e.CertificateRootDir, e.RootCAdir, "serial"))
-		if err != nil {
-			return err
-		}
-		_, err = ffile.WriteString(fmt.Sprint("%X04\n", serialNo))
-		if err != nil {
-			return err
-		}
+	ffile, err := os.Create(filepath.Join(e.CertificateRootDir, e.RootCAdir, "serial"))
+	if err != nil {
+		return err
+	}
+	_, err = ffile.WriteString(fmt.Sprintf("%04X\n", serialNo))
+	if err != nil {
+		return err
 	}
 	return nil
 }

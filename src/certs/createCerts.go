@@ -72,20 +72,14 @@ func Create(certconfigfile string) error {
 	}
 
 	// 5. Generate the CSR (if not a CA cert)
+	// 6. Sign the certificate
 	if !cert.IsCA {
 		if err = cert.generateCSR(env, privateKey); err != nil {
 			return err
 		}
-	} else {
-		if err = populateCertificateStructure(&cert); err != nil {
+		if err := cert.signCert(env); err != nil {
 			return err
 		}
-		return nil
-	}
-
-	// 6. Sign the certificate
-	if err := cert.signCert(env); err != nil {
-		return err
 	}
 
 	// 7. Update serial, index.txt.attr and index.txt

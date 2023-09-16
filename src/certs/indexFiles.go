@@ -15,8 +15,8 @@ import (
 	"time"
 )
 
-// writeAttributeFile() : this function is trivial in the sense that we simply ensure that index.attr and index.attr.old
-// hold the same value, which is : "unique_subject = yes". This is used for a CA functionality that this software does
+// writeAttributeFile() : this function is trivial in the sense that we simply ensure that  index.attr.old
+// holds the same value every run, which is : "unique_subject = yes". This is used for a CA functionality that this software does
 // not act upon
 // Parameters:
 // - none
@@ -27,48 +27,53 @@ func writeAttributeFile() error {
 		return err
 	}
 
-	// if the file does not exist, this means we are using a brand-new setup,
-	if err := copyFile(filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt.attr"), filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt.attr.old")); err != nil {
+	ffile, err := os.Create(filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt.attr"))
+	if err != nil {
 		return err
-	} else {
-		ffile, err := os.Create(filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt.attr"))
-		if err != nil {
-			return err
-		}
-		_, err = ffile.WriteString("unique_subject = yes")
-		if err != nil {
-			return err
-		}
+	}
+	_, err = ffile.WriteString("unique_subject = yes")
+	if err != nil {
+		return err
 	}
 	return nil
 }
 
 func writeIndexFile(c CertificateStruct) error {
+	var filedesc *os.File
+	//string2replace := fmt.Sprintf("/C=%s/ST=%s/L=%s/O=%s/CN=%s/emailAddress=%s", c.Country, c.Province,
+	//	c.Locality, c.Organization, c.CommonName, c.EmailAddresses[0])
 	e, err := environment.LoadEnvironmentFile()
 	if err != nil {
 		return err
 	}
 
-	// if the file does not exist, this means we are using a brand-new setup,
-	if err := copyFile(filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt"), filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt.old")); err != nil {
-		return err
+	if _, err = os.Stat(filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt")); os.IsNotExist(err) {
+		if filedesc, err = os.Create(filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt")); err != nil {
+			return err
+		}
+		defer filedesc.Close()
+		newline := fmt.Sprintf("V\t%sZ\t\t%s\t%s\tunknown\t%s/C=%s/ST=%s/L=%s/O=%s/CN=%s/emailAddress=%s", time.Now().UTC().Format("060102150405"),
+			fmt.Sprintf("%04x", c.SerialNumber), c.Country, c.Province, c.Locality, c.Organization, c.CommonName, c.EmailAddresses[0])
+		if _, err = filedesc.WriteString(newline); err != nil {
+			return err
+		}
 	} else {
-		if err := inPlaceReplace(c, filepath.Join(e.CertificateRootDir, e.RootCAdir)); err != nil {
+		if err := replaceStringInIndex(c, filepath.Join(e.CertificateRootDir, e.RootCAdir)); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func inPlaceReplace(c CertificateStruct, sourcedir string) error {
-	string2replace := fmt.Sprintf("/C=%s/ST=%s/L=%s/O=%s/%s/CN=%s", c.Country, c.Province,
+func replaceStringInIndex(c CertificateStruct, sourcedir string) error {
+	string2replace := fmt.Sprintf("/C=%s/ST=%s/L=%s/O=%s/CN=%s", c.Country, c.Province,
 		c.Locality, c.Organization, c.CommonName)
-	sf, err := os.Open(filepath.Join(sourcedir, "index.txt.old"))
+	sf, err := os.Open(filepath.Join(sourcedir, "index.txt"))
 	if err != nil {
 		return err
 	}
 	defer sf.Close()
-	of, err := os.Create(filepath.Join(sourcedir, "index.txt"))
+	of, err := os.Create(filepath.Join(sourcedir, "index.txt.tmp"))
 	if err != nil {
 		return err
 	}
@@ -80,7 +85,6 @@ func inPlaceReplace(c CertificateStruct, sourcedir string) error {
 		if strings.Contains(line, string2replace) {
 			continue // we will not write this line in the target file
 		}
-
 		_, err := fmt.Fprintln(of, line)
 		if err != nil {
 			return err
@@ -90,6 +94,9 @@ func inPlaceReplace(c CertificateStruct, sourcedir string) error {
 		c.SerialNumber, string2replace)
 	_, err = fmt.Fprintln(of, newline)
 	if err != nil {
+		return err
+	}
+	if err := os.Rename(filepath.Join(sourcedir, "index.txt.tmp"), filepath.Join(sourcedir, "index.txt")); err != nil {
 		return err
 	}
 	return nil

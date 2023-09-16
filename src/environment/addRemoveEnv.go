@@ -45,7 +45,7 @@ func prompt4EnvironmentValues() (EnvironmentStruct, error) {
 	var env EnvironmentStruct
 	fmt.Println("The root dir value should be an absolute path, and all other values relative to it")
 	env.CertificateRootDir = helpers.GetStringValFromPrompt("Enter the certificate root dir (where the PKI directories will sit): ")
-	if !strings.HasPrefix(env.CertificateRootDir, "/") {
+	if !strings.HasPrefix(env.CertificateRootDir, "/") && !strings.HasPrefix(env.CertificateRootDir, "$HOME") && !strings.HasPrefix(env.CertificateRootDir, "~") {
 		return EnvironmentStruct{}, helpers.CustomError{Message: fmt.Sprintf("%s %s\n", env.CertificatesConfigDir, helpers.Red("is not an absolute path"))}
 	}
 	env.RootCAdir = helpers.GetStringValFromPrompt("Enter the rootCA directory name: ")
