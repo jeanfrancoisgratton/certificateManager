@@ -69,3 +69,20 @@ var envAddCmd = &cobra.Command{
 		}
 	},
 }
+
+var envInfoCmd = &cobra.Command{
+	Use:     "info",
+	Aliases: []string{"explain"},
+	Example: "cm env info FILE[.json]",
+	Short:   "Prints the environment FILE information",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) == 0 {
+			fmt.Println("You need to provide at least one filename.")
+			os.Exit(1)
+		}
+		if err := environment.ExplainEnvFile(args); err != nil {
+			fmt.Println(err)
+			os.Exit(2)
+		}
+	},
+}
