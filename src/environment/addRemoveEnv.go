@@ -29,9 +29,6 @@ func AddEnvFile(envfile string) error {
 	var env EnvironmentStruct
 	var err error
 
-	if envfile == "" {
-		envfile = EnvConfigFile
-	}
 	if !strings.HasSuffix(envfile, ".json") {
 		envfile += ".json"
 	}

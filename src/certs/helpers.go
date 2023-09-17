@@ -51,12 +51,6 @@ func CreateSampleCertificate() error {
 
 // Create the sample certificate config file
 func createSampleCert() error {
-	var env environment.EnvironmentStruct
-	var err error
-	if env, err = environment.LoadEnvironmentFile(); err != nil {
-		return err
-	}
-
 	sampleCertConfig := CertificateStruct{
 		Country:            "CA",
 		Province:           "Quebec",
@@ -80,7 +74,7 @@ func createSampleCert() error {
 	if !strings.HasSuffix(sampleCertConfig.CertificateName, ".json") {
 		sampleCertConfig.CertificateName += ".json"
 	}
-	if err := sampleCertConfig.SaveCertificateConfFile(filepath.Join(env.CertificatesConfigDir, sampleCertConfig.CertificateName)); err != nil {
+	if err := sampleCertConfig.SaveCertificateConfFile(filepath.Join(os.Getenv("HOME"), ".config", "certificatemananger", sampleCertConfig.CertificateName)); err != nil {
 		return err
 	}
 	return nil

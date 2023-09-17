@@ -61,11 +61,13 @@ var envAddCmd = &cobra.Command{
 	Long: `The extension (.json) is implied and will be added if missing. Moreover, not specifying a filename
 Will create a defaultEnv.json file, which is the application's default file.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		fname := ""
 		if len(args) == 0 {
-			fmt.Println("You need to provide a filename.")
-			os.Exit(1)
+			fname = "defaultEnv.json"
+		} else {
+			fname = args[0]
 		}
-		if err := environment.AddEnvFile(args[0]); err != nil {
+		if err := environment.AddEnvFile(fname); err != nil {
 			fmt.Println(err)
 			os.Exit(2)
 		}
@@ -75,8 +77,9 @@ Will create a defaultEnv.json file, which is the application's default file.`,
 var envInfoCmd = &cobra.Command{
 	Use:     "info",
 	Aliases: []string{"explain"},
-	Example: "cm env info FILE[.json]",
-	Short:   "Prints the environment FILE information",
+	Example: "cm env info FILE1[.json] FILE2[.json]... FILEn[.json]",
+	Short:   "Prints the environment FILE[12n] information",
+	Long:    `You can list as many environment files as you wish, here`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			fmt.Println("You need to provide at least one filename.")
