@@ -31,7 +31,6 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	var caCertBytes, caKeyBytes, csrBytes []byte
 	var csrRequest *x509.CertificateRequest
 	var caCert *x509.Certificate
-
 	var caKey *rsa.PrivateKey
 	var err error
 
@@ -60,7 +59,6 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	if caKey, err = x509.ParsePKCS1PrivateKey(caKeyBytes); err != nil {
 		return err
 	}
-
 	// 3. Load and parse the CSR file
 	if csrBytes, err = os.ReadFile(filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "csr", c.CertificateName+".csr")); err != nil {
 		return err
@@ -82,9 +80,11 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 		IPAddresses:           c.IPAddresses,
 		EmailAddresses:        c.EmailAddresses,
 	}
-	if c.IsCA {
-		template.KeyUsage = reindexKeyUsage(c)
-	}
+	//// why the next ???
+	//if c.IsCA {
+	//	template.KeyUsage = reindexKeyUsage(c)
+	//}
+
 	// 5. Create (sign) the certificate
 	certDER, err := x509.CreateCertificate(rand.Reader, &template, caCert, csrRequest.PublicKey, caKey)
 	if err != nil {
@@ -92,13 +92,13 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	}
 
 	// 6. Encode, save to disk
-	certpath := ""
-	if c.IsCA {
-		certpath = filepath.Join(env.CertificateRootDir, env.RootCAdir, c.CertificateName+".crt")
-	} else {
-		certpath = filepath.Join(env.CertificateRootDir, env.ServerCertsDir, c.CertificateName+".crt")
-	}
-	certFile, err := os.Create(certpath)
+	//certpath := ""
+	//if c.IsCA {
+	//	certpath = filepath.Join(env.CertificateRootDir, env.RootCAdir, c.CertificateName+".crt")
+	//} else {
+	//	certpath = filepath.Join(env.CertificateRootDir, env.ServerCertsDir, c.CertificateName+".crt")
+	//}
+	certFile, err := os.Create(filepath.Join(env.CertificateRootDir, env.ServerCertsDir, c.CertificateName+".crt"))
 	if err != nil {
 		return err
 	}
@@ -108,6 +108,40 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 		return err
 	}
 
-	//certificate, err := x509.CreateCertificate(rand.Reader, &c, caCert, )
+	return nil
+}
+
+// createCA and signCert are very similar: one is for non-CA certs, the other (below) for CA certs
+// I *could* fold both into a single function, with tons if "if c.IsCA" clauses, but it's not worth
+// the readability headache it'd bring
+func (c CertificateStruct) createCA(env environment.EnvironmentStruct, privateKey *rsa.PrivateKey) error {
+	var cabytes []byte
+	var err error
+
+	template := x509.Certificate{
+		SerialNumber:          big.NewInt(1),
+		Subject:               pkix.Name{CommonName: c.CommonName, Locality: []string{c.Locality}, Country: []string{c.Country}, Organization: []string{c.Organization}, OrganizationalUnit: []string{c.OrganizationalUnit}, Province: []string{c.Province}},
+		NotBefore:             time.Now(),
+		NotAfter:              time.Now().AddDate(c.Duration, 0, 0),
+		KeyUsage:              getKeyUsageFromStrings(c.KeyUsage),
+		IsCA:                  c.IsCA,
+		BasicConstraintsValid: true,
+		DNSNames:              c.DNSNames,
+		IPAddresses:           c.IPAddresses,
+		EmailAddresses:        c.EmailAddresses,
+	}
+	if cabytes, err = x509.CreateCertificate(rand.Reader, &template, &template, &privateKey.PublicKey, privateKey); err != nil {
+		return err
+	}
+
+	cafile, err := os.Create(filepath.Join(env.CertificateRootDir, env.RootCAdir, c.CertificateName+".crt"))
+	if err != nil {
+		return err
+	}
+	defer cafile.Close()
+
+	if err = pem.Encode(cafile, &pem.Block{Type: "CERTIFICATE", Bytes: cabytes}); err != nil {
+		return err
+	}
 	return nil
 }

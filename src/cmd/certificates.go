@@ -54,8 +54,8 @@ var certVerifyCmd = &cobra.Command{
 var certCreateCmd = &cobra.Command{
 	Use: "create",
 	//Aliases: []string{"ls"},
-	Example: "cm cert create CERTICATE_CONFIG_FILE",
-	Short:   "Creates a certificate, specifying the config file to use",
+	Example: "cm cert create [CERTICATE_CONFIG_FILE]",
+	Short:   "Creates a certificate, specifying (or not) the config file to use",
 	Run: func(cmd *cobra.Command, args []string) {
 		certname := ""
 		if len(args) != 0 {

@@ -32,6 +32,7 @@ import (
 // 5. Generate CSR
 // 6. Sign certificate
 // 7. Update index.txt, index.attr.txt, serial
+// 8. Save the certificate config file in the config directory
 
 func Create(certconfigfile string) error {
 	var privateKey *rsa.PrivateKey
@@ -72,11 +73,18 @@ func Create(certconfigfile string) error {
 	}
 
 	// 5. Generate the CSR (if not a CA cert)
-	// 6. Sign the certificate
 	if !cert.IsCA {
 		if err = cert.generateCSR(env, privateKey); err != nil {
 			return err
 		}
+	}
+
+	// 6. Generate / sign the certificate
+	if cert.IsCA {
+		if err := cert.createCA(env, privateKey); err != nil {
+			return err
+		}
+	} else {
 		if err := cert.signCert(env); err != nil {
 			return err
 		}
@@ -96,6 +104,10 @@ func Create(certconfigfile string) error {
 		return err
 	}
 
+	// 8. Save JSON config file
+	if err = cert.SaveCertificateConfFile(cert.CertificateName); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -105,20 +117,21 @@ func populateCertificateStructure(cs *CertificateStruct) error {
 	var err error
 	//var ips []string
 	fmt.Println("Entries with multiple values (ip addresses, emails, key usage are separated with ENTER, with another ENTER pressed at the end.\n")
-	cs.CertificateName = helpers.GetStringValFromPrompt("Please enter the certificate's name: ")
-	cs.IsCA = helpers.GetBoolValFromPrompt("Is this certificate a CA certificate ? ")
-	cs.Country = helpers.GetStringValFromPrompt("Please enter the certificate's country (C): ")
-	cs.Province = helpers.GetStringValFromPrompt("Please enter the certificate's province (ST): ")
-	cs.Locality = helpers.GetStringValFromPrompt("Please enter the certificate's locality (L): ")
-	cs.Organization = helpers.GetStringValFromPrompt("Please enter the certificate's organization (O): ")
-	cs.OrganizationalUnit = helpers.GetStringValFromPrompt("Please enter the certificate's organizational unit (OU): ")
-	cs.CommonName = helpers.GetStringValFromPrompt("Please enter the certificate's common name (CN):  ")
-	cs.EmailAddresses = helpers.GetStringSliceFromPrompt("Please enter all email addresses you want to include: ")
-	cs.Duration = helpers.GetIntValFromPrompt("Please enter the certificate lifespan (duration): ")
+	cs.CertificateName = helpers.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s ", helpers.Green("name")))
+	cs.CommonName = helpers.GetStringValFromPrompt(fmt.Sprintf("Please enter the %s (CN): ", helpers.Green("common name")))
+	cs.IsCA = helpers.GetBoolValFromPrompt(fmt.Sprintf("Is this certificate a %s ? ", helpers.Green("CA certificate")))
+	cs.Country = helpers.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (C): ", helpers.Green("country")))
+	cs.Province = helpers.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (ST): ", helpers.Green("province/state")))
+	cs.Locality = helpers.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (L): ", helpers.Green("locality")))
+	cs.Organization = helpers.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (O): ", helpers.Green("organization")))
+	cs.OrganizationalUnit = helpers.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (OU): ", helpers.Green("organizational unit")))
+	cs.EmailAddresses = helpers.GetStringSliceFromPrompt(fmt.Sprintf("Please enter the certificate's %s: ", helpers.Green("email addresses")))
+	cs.Duration = helpers.GetIntValFromPrompt(fmt.Sprintf("\nPlease enter the certificate's lifespan (%s): ", helpers.Green("duration")))
 	// Key usage is glitchy, suboptimal....
+	fmt.Printf("Please enter the %s intended for this certificate:\n", helpers.Green("key usage"))
 	cs.KeyUsage = helpers.GetKeyUsage()
-	cs.DNSNames = helpers.GetStringSliceFromPrompt("Please enter all DNS names this cert is tied to: ")
-	ips := helpers.GetStringSliceFromPrompt("Please enter the certificate's IP address(es): ")
+	cs.DNSNames = helpers.GetStringSliceFromPrompt(fmt.Sprintf("Please enter all %s this cert is tied to: ", helpers.Green("DNS names")))
+	ips := helpers.GetStringSliceFromPrompt(fmt.Sprintf("\nPlease enter the certificate's %s: ", helpers.Green("IP address(es)")))
 	if len(ips) > 0 {
 		for _, val := range ips {
 			cs.IPAddresses = append(cs.IPAddresses, net.ParseIP(val))
@@ -131,6 +144,6 @@ func populateCertificateStructure(cs *CertificateStruct) error {
 	} else {
 		cs.SerialNumber++
 	}
-	cs.Comments = helpers.GetStringSliceFromPrompt("Please enter optional comments: ")
+	cs.Comments = helpers.GetStringSliceFromPrompt(fmt.Sprintf("\nPlease enter optional %s: ", helpers.Green("comments")))
 	return nil
 }

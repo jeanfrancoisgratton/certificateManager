@@ -30,7 +30,7 @@ func GetIntValFromPrompt(prompt string) int {
 }
 
 func GetBoolValFromPrompt(prompt string) bool {
-	fmt.Printf("%s (any values not starting with T or t will be treated as FALSE): ", prompt)
+	fmt.Printf("%s(any values not starting with T,t or 1 will be treated as FALSE): ", prompt)
 	bval := ""
 	var value = false
 
