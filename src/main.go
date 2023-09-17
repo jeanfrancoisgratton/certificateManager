@@ -26,7 +26,7 @@ func main() {
 	}
 
 	// Second, we create the sample environment file with an explanation file
-	if err = environment.CreateDefaultEnv(); err != nil {
+	if err = environment.CreateSampleEnv(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

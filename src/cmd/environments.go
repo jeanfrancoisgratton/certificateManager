@@ -56,8 +56,10 @@ var envRmCmd = &cobra.Command{
 
 var envAddCmd = &cobra.Command{
 	Use:     "add",
-	Example: "cm env add FILE[.json]",
+	Example: "cm env add [FILE[.json]]",
 	Short:   "Adds the environment FILE",
+	Long: `The extension (.json) is implied and will be added if missing. Moreover, not specifying a filename
+Will create a defaultEnv.json file, which is the application's default file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			fmt.Println("You need to provide a filename.")

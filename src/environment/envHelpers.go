@@ -61,12 +61,12 @@ func (e EnvironmentStruct) SaveEnvironmentFile(outputfile string) error {
 }
 
 // Create a sample JSON environment file with an explanation .txt file
-func CreateDefaultEnv() error {
+func CreateSampleEnv() error {
 	var err error
 	e := EnvironmentStruct{filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "certificates"), "rootCA", "servers", "conf", true}
 	//e := EnvironmentStruct{filepath.Join(os.Getenv("HOME"),".config","certificatemanager"),"certificates", "rootCA", "servers", "conf", true}
 
-	if err = e.SaveEnvironmentFile("defaultEnv.json"); err != nil {
+	if err = e.SaveEnvironmentFile("sampleEnv.json"); err != nil {
 		return err
 	}
 
@@ -77,7 +77,7 @@ func CreateDefaultEnv() error {
  "CertificatesConfigDir" : "conf"  <-- relative path to CertificateRootDir,
  "RemoveDuplicates": true  <-- should always be set to true, there is no use-case yet to set it to false
 }`
-	expFile, err := os.Create(filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "environmentSample-README.txt"))
+	expFile, err := os.Create(filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "sampleEnv-README.txt"))
 	if err != nil {
 		return err
 	}
