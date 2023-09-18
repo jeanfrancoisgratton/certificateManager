@@ -53,6 +53,9 @@ func (c CertificateStruct) SaveCertificateConfFile(outputfile string) error {
 	var env environment.EnvironmentStruct
 	var err error
 
+	if outputfile == "" {
+
+	}
 	// fetch environment
 	if env, err = environment.LoadEnvironmentFile(); err != nil {
 		return err
