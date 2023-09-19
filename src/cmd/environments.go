@@ -38,8 +38,8 @@ var envListCmd = &cobra.Command{
 }
 
 var envRmCmd = &cobra.Command{
-	Use:     "remove",
-	Aliases: []string{"rm"},
+	Use:     "rm",
+	Aliases: []string{"remove"},
 	Example: "cm env remove FILE[.json]",
 	Short:   "Removes the environment FILE",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -56,6 +56,7 @@ var envRmCmd = &cobra.Command{
 
 var envAddCmd = &cobra.Command{
 	Use:     "add",
+	Aliases: []string{"create"},
 	Example: "cm env add [FILE[.json]]",
 	Short:   "Adds the environment FILE",
 	Long: `The extension (.json) is implied and will be added if missing. Moreover, not specifying a filename

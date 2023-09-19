@@ -63,7 +63,7 @@ func createSampleCert() error {
 		KeyUsage:           []string{"certs sign", "crl sign", "digital signature"},
 		DNSNames:           []string{"myorg.net", "myorg.com", "lan.myorg.net"},
 		IPAddresses:        []net.IP{net.ParseIP("10.0.0.1"), net.ParseIP("127.0.0.1")},
-		CertificateName:    "sample_cert",
+		CertificateName:    "sampleCert",
 		IsCA:               true,
 		SerialNumber:       1,
 		Comments: []string{"To see which values to put in the KeyUsage field, see https://pkg.go.dev/crypto/x509#KeyUsage",
@@ -74,7 +74,7 @@ func createSampleCert() error {
 	if !strings.HasSuffix(sampleCertConfig.CertificateName, ".json") {
 		sampleCertConfig.CertificateName += ".json"
 	}
-	if err := sampleCertConfig.SaveCertificateConfFile(filepath.Join(os.Getenv("HOME"), ".config", "certificatemananger", sampleCertConfig.CertificateName)); err != nil {
+	if err := sampleCertConfig.SaveCertificateConfFile(filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", sampleCertConfig.CertificateName)); err != nil {
 		return err
 	}
 	return nil
@@ -100,7 +100,7 @@ func createExplanationfile() error {
 	"Comments": ["To see which values to put in the KeyUsage field, see https://pkg.go.dev/crypto/x509#KeyUsage", "Strip off 'KeyUsage' from the const name and there you go.", "", "Please note that this field offers no functionality and is strictly here for documentation purposes"] -> Those won't appear in the certificate file
 }`
 
-	expFile, err := os.Create(filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "sample-README.txt"))
+	expFile, err := os.Create(filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "sampleCert-README.txt"))
 	if err != nil {
 		return err
 	}

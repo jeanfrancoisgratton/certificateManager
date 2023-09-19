@@ -27,7 +27,7 @@ func ListEnvironments(envdir string) error {
 		if err != nil {
 			return err
 		}
-		if !info.IsDir() && strings.HasSuffix(info.Name(), ".json") && info.Name() != "sample_cert.json" {
+		if !info.IsDir() && strings.HasSuffix(info.Name(), ".json") && !strings.HasPrefix(info.Name(), "sample") {
 			fileInfos = append(fileInfos, info)
 		}
 		return nil
@@ -65,7 +65,7 @@ func ExplainEnvFile(envfiles []string) error {
 
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"Certificate root dir", "CA dir", "Server certificates dir", "Certificates config dir"})
+	t.AppendHeader(table.Row{"Environment file", "Certificate root dir", "CA dir", "Server certificates dir", "Certificates config dir"})
 
 	for _, envfile := range envfiles {
 		EnvConfigFile = envfile
@@ -74,12 +74,14 @@ func ExplainEnvFile(envfiles []string) error {
 			EnvConfigFile = oldEnvFile
 			return err
 		} else {
-			t.AppendRow([]interface{}{helpers.Green(e.CertificateRootDir), helpers.Green(e.RootCAdir),
+			t.AppendRow([]interface{}{helpers.Green(envfile + ".json"), helpers.Green(e.CertificateRootDir), helpers.Green(e.RootCAdir),
 				helpers.Green(e.ServerCertsDir), helpers.Green(e.CertificatesConfigDir)})
 		}
 
 	}
-
+	t.SortBy([]table.SortBy{
+		{Name: "Environment file", Mode: table.Asc},
+	})
 	t.SetStyle(table.StyleBold)
 	t.Style().Format.Header = text.FormatDefault
 	t.Render()

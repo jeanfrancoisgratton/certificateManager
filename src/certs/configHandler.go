@@ -49,33 +49,50 @@ func LoadCertificateConfFile(certfile string) (CertificateStruct, error) {
 
 // SaveCertificateConfFile :
 // Save a data structure into a certificate file in the directory defined in the JSON environment config file
-func (c CertificateStruct) SaveCertificateConfFile(outputfile string) error {
+func (c CertificateStruct) SaveCertificateConfFile(outfile string) error {
 	var env environment.EnvironmentStruct
 	var err error
+	basedir := ""
 
-	if outputfile == "" {
+	if outfile == "" {
+		// fetch environment
+		if env, err = environment.LoadEnvironmentFile(); err != nil {
+			return err
+		}
+		basedir = filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir)
+	}
 
-	}
-	// fetch environment
-	if env, err = environment.LoadEnvironmentFile(); err != nil {
-		return err
-	}
-	if outputfile == "" {
-		outputfile = CertConfigFile
-	}
-	if _, err := os.Stat(filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir)); os.IsNotExist(err) {
-		os.MkdirAll(filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir), os.ModePerm)
-	}
+	// why the next ?
+	//if outfile == "" {
+	//	outfile = CertConfigFile
+	//}
 
 	jStream, err := json.MarshalIndent(c, "", "  ")
 	if err != nil {
 		return err
 	}
-	rcFile := filepath.Join(env.CertificateRootDir, outputfile)
-	//remove file if exists
-	if _, err := os.Stat(rcFile); os.IsExist(err) {
-		os.Remove(rcFile)
+	rcFile := filepath.Join(basedir, outfile)
+
+	// Check if the file exists
+	if _, err := os.Stat(rcFile); !os.IsNotExist(err) {
+		// Remove the file if it exists
+		if err := os.Remove(rcFile); err != nil {
+			return err
+		}
 	}
 
-	return os.WriteFile(rcFile, jStream, 0600)
+	// Create the file
+	file, err := os.Create(rcFile)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Write the JSON data to the file
+	_, err = file.Write(jStream)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
