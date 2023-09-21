@@ -76,7 +76,7 @@ func GetKeyUsage() []string {
 	var keys []string
 	inputScanner := bufio.NewScanner(os.Stdin)
 	ku := []string{"decipher only", "encipher only", "crl sign", "certs sign", "key agreement",
-		"data encipherment", "key encipherment", "content commitment", "digital signature"}
+		"data encipherment", "key encipherment", "content commitment", "digital signature", "CADEFAULTS"}
 	inputs := []string{}
 
 	fmt.Println("The valid key usage values are:")
@@ -86,7 +86,7 @@ func GetKeyUsage() []string {
 		}
 		fmt.Printf("'%s' ", White(j))
 	}
-	fmt.Println()
+	fmt.Println("CADEFAULTS is a catch-all for default values of a root CA")
 	for {
 		input := ""
 		fmt.Print("Please enter a value from the above list, just press ENTER to end : ")
@@ -95,8 +95,12 @@ func GetKeyUsage() []string {
 		if input == "" {
 			break
 		}
-		if valueInList(input, ku) {
-			inputs = append(inputs, input)
+		if input == "CADEFAULTS" {
+			inputs = append(inputs, "digital signature", "certs sign", "crl sign")
+		} else {
+			if valueInList(input, ku) {
+				inputs = append(inputs, input)
+			}
 		}
 	}
 	// if the array is empty, we return a default value

@@ -11,6 +11,7 @@ import (
 	"crypto/rsa"
 	"fmt"
 	"net"
+	"os"
 	"path/filepath"
 )
 
@@ -42,6 +43,7 @@ func Create(certconfigfile string) error {
 	if env, err = environment.LoadEnvironmentFile(); err != nil {
 		return err
 	}
+
 	// 1. Create the directory structure to hold all of those files
 	if err = createCertificateRootDirectories(); err != nil {
 		return err
@@ -49,7 +51,7 @@ func Create(certconfigfile string) error {
 
 	// 2. Populate the certificate structure with user-provided values or a file
 	if certconfigfile == "" {
-		fmt.Printf("An example of a certificate can be found at %s\n", helpers.Green(filepath.Join(env.CertificatesConfigDir, "sample_cert.json")))
+		fmt.Printf("An example of a certificate can be found at %s\n", helpers.Green(filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "sampleCert.json")))
 		if err = populateCertificateStructure(&cert); err != nil {
 			return err
 		}
@@ -105,7 +107,7 @@ func Create(certconfigfile string) error {
 	}
 
 	// 8. Save JSON config file
-	if err = cert.SaveCertificateConfFile(cert.CertificateName); err != nil {
+	if err = cert.SaveCertificateConfFile(""); err != nil {
 		return err
 	}
 	return nil
@@ -126,7 +128,8 @@ func populateCertificateStructure(cs *CertificateStruct) error {
 	cs.Organization = helpers.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (O): ", helpers.Green("organization")))
 	cs.OrganizationalUnit = helpers.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (OU): ", helpers.Green("organizational unit")))
 	cs.EmailAddresses = helpers.GetStringSliceFromPrompt(fmt.Sprintf("Please enter the certificate's %s: ", helpers.Green("email addresses")))
-	cs.Duration = helpers.GetIntValFromPrompt(fmt.Sprintf("\nPlease enter the certificate's lifespan (%s): ", helpers.Green("duration")))
+	cs.Duration = helpers.GetIntValFromPrompt(fmt.Sprintf("\nPlease enter the certificate's lifespan (%s) in years, ENTER is 1: ", helpers.Green("duration")))
+
 	// Key usage is glitchy, suboptimal....
 	fmt.Printf("Please enter the %s intended for this certificate:\n", helpers.Green("key usage"))
 	cs.KeyUsage = helpers.GetKeyUsage()

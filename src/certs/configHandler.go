@@ -27,13 +27,15 @@ func LoadCertificateConfFile(certfile string) (CertificateStruct, error) {
 		return CertificateStruct{}, err
 	}
 
-	if !strings.HasSuffix(CertConfigFile, ".json") {
-		CertConfigFile += ".json"
-	}
-	if len(certfile) > 0 {
-		rcFile = certfile
-	} else {
-		rcFile = filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir, CertConfigFile)
+	// why is that....
+	//if !strings.HasSuffix(CertConfigFile, ".json") {
+	//	CertConfigFile += ".json"
+	//}
+	if certfile != "" {
+		if !strings.HasSuffix(certfile, ".json") {
+			certfile += ".json"
+		}
+		rcFile = filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir, filepath.Base(certfile))
 	}
 
 	if jFile, err = os.ReadFile(rcFile); err != nil {
@@ -52,16 +54,20 @@ func LoadCertificateConfFile(certfile string) (CertificateStruct, error) {
 func (c CertificateStruct) SaveCertificateConfFile(outfile string) error {
 	var env environment.EnvironmentStruct
 	var err error
-	basedir := ""
+	//basedir := filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir)
+	//basedir := ""
 
 	if outfile == "" {
 		// fetch environment
 		if env, err = environment.LoadEnvironmentFile(); err != nil {
 			return err
 		}
-		basedir = filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir)
+		outfile = filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir, c.CertificateName+".json")
 	}
 
+	if !strings.HasSuffix(outfile, ".json") {
+		outfile += ".json"
+	}
 	// why the next ?
 	//if outfile == "" {
 	//	outfile = CertConfigFile
@@ -71,18 +77,18 @@ func (c CertificateStruct) SaveCertificateConfFile(outfile string) error {
 	if err != nil {
 		return err
 	}
-	rcFile := filepath.Join(basedir, outfile)
+	//rcFile := filepath.Join(basedir, outfile)
 
 	// Check if the file exists
-	if _, err := os.Stat(rcFile); !os.IsNotExist(err) {
+	if _, err := os.Stat(outfile); !os.IsNotExist(err) {
 		// Remove the file if it exists
-		if err := os.Remove(rcFile); err != nil {
+		if err := os.Remove(outfile); err != nil {
 			return err
 		}
 	}
 
 	// Create the file
-	file, err := os.Create(rcFile)
+	file, err := os.Create(outfile)
 	if err != nil {
 		return err
 	}
