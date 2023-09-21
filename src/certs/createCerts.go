@@ -33,7 +33,7 @@ import (
 // 5. Generate CSR
 // 6. Sign certificate
 // 7. Update index.txt, index.attr.txt, serial
-// 8. Save the certificate config file in the config directory
+// 8. Save/update the certificate config file in the config directory
 
 func Create(certconfigfile string) error {
 	var privateKey *rsa.PrivateKey
@@ -60,6 +60,11 @@ func Create(certconfigfile string) error {
 			return err
 		}
 	}
+	// Corner case : as EmailAddress is part of a certificate signature (ie: this is part on how
+	// We differentiate the registered certs), we need to have a value in this field.
+	if len(cert.EmailAddresses) == 0 {
+		cert.EmailAddresses = []string{"none"}
+	}
 
 	// 3. Get the current serial number
 	if cert.SerialNumber, err = getSerialNumber(); err != nil {
@@ -81,7 +86,7 @@ func Create(certconfigfile string) error {
 		}
 	}
 
-	// 6. Generate / sign the certificate
+	// 6. Generate the certificate, also sign it if non-CA cert
 	if cert.IsCA {
 		if err := cert.createCA(env, privateKey); err != nil {
 			return err
@@ -127,7 +132,7 @@ func populateCertificateStructure(cs *CertificateStruct) error {
 	cs.Locality = helpers.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (L): ", helpers.Green("locality")))
 	cs.Organization = helpers.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (O): ", helpers.Green("organization")))
 	cs.OrganizationalUnit = helpers.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (OU): ", helpers.Green("organizational unit")))
-	cs.EmailAddresses = helpers.GetStringSliceFromPrompt(fmt.Sprintf("Please enter the certificate's %s: ", helpers.Green("email addresses")))
+	cs.EmailAddresses = helpers.GetStringSliceFromPrompt(fmt.Sprintf("Please enter the certificate's %s: ", helpers.Green("email address")))
 	cs.Duration = helpers.GetIntValFromPrompt(fmt.Sprintf("\nPlease enter the certificate's lifespan (%s) in years, ENTER is 1: ", helpers.Green("duration")))
 
 	// Key usage is glitchy, suboptimal....

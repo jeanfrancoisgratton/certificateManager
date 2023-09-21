@@ -58,7 +58,7 @@ func createSampleCert() error {
 		Organization:       "myorg.net",
 		OrganizationalUnit: "myorg",
 		CommonName:         "myorg.net root CA",
-		EmailAddresses:     []string{"certs@myorg.net", "certificates@myorg.net"},
+		EmailAddresses:     []string{"certs@myorg.net", "certs@org,net"},
 		Duration:           10,
 		KeyUsage:           []string{"certs sign", "crl sign", "digital signature"},
 		DNSNames:           []string{"myorg.net", "myorg.com", "lan.myorg.net"},
@@ -89,7 +89,7 @@ func createExplanationfile() error {
 	"Organization" : "myorg.net", -> Organization of origin
 	"OrganizationalUnit" : "myorg", -> Sub-organization of origin
 	"CommonName" : "myorg.net root CA", -> The name of the certificate
-	"EmailAddresses" : ["certs@myorg.net", "certificates@myorg.net"], -> Array of email addresses responsible for this certs
+	"EmailAddresses" : ["certs@myorg.net", "certs@org.net"], -> Email addresses responsible for this cert
 	"Duration" : 10, -> CA duration, in years
 	"KeyUsage" : ["Digital Signature", "Certificate Sign", "CRL Sign"], -> Certificate usage. This here are common values for CAs
 	"DNSNames" : ["myorg.net","myorg.com","lan.myorg.net"], -> DNS names assigned to this certs

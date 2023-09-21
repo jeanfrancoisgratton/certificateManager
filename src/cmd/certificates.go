@@ -7,7 +7,6 @@ package cmd
 
 import (
 	"certificateManager/certs"
-	"certificateManager/helpers"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
@@ -15,10 +14,11 @@ import (
 
 var certCmd = &cobra.Command{
 	Use:     "cert",
-	Example: "cm cert { {create | delete} } certificate_name | list }",
+	Example: "cm cert { {create | delete | verify } } certificate_name | list }",
 	Short:   "Certificate sub-command",
 	Run: func(cmd *cobra.Command, args []string) {
-		helpers.Changelog()
+		fmt.Println("You need to specify one of the following subcommand: add | delete | verify | list")
+		os.Exit(0)
 	},
 }
 

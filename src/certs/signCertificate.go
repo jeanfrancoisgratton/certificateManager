@@ -16,25 +16,27 @@ import (
 	"math/big"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
 // signCert: Sign the certificate against the root CA currently held in our custom PKI
 // Steps:
+// 0. Ensure that there is a single CA (.crt) file in the CA directory
 // 1. Load the CA cert and private key
-// 2. Parse them
+// 2. Decode and parse them
 // 3. Load & parse the CSR file
 // 4. Populate a x509 cert template with the CertificateStruct values
-// 5. Create (sign) the certificate
+// 5. Sign (create) the certificate
 // 6. Save to disk
 func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
-	var caCertBytes, caKeyBytes, csrBytes []byte
+	var csrBytes, caCertPEM, caKeyPEM []byte
 	var csrRequest *x509.CertificateRequest
 	var caCert *x509.Certificate
 	var caKey *rsa.PrivateKey
 	var err error
 
-	// Ensure there is a single file in CA/certs directory and fetch its name
+	// Ensure there is a single file in the CA directory and fetch its name
 	caCertFiles, err := filepath.Glob(filepath.Join(env.CertificateRootDir, env.RootCAdir, "*.crt"))
 	if err != nil {
 		return helpers.CustomError{Message: "Error listing CA certificate files: " + err.Error()}
@@ -42,29 +44,39 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	if len(caCertFiles) != 1 {
 		return helpers.CustomError{Message: "Expected one CA certificate file, found " + helpers.Red(string(len(caCertFiles)))}
 	}
-	baseFN := filepath.Base(caCertFiles[0])
+	baseFN := strings.TrimSuffix(filepath.Base(caCertFiles[0]), filepath.Ext(filepath.Base(caCertFiles[0])))
 
 	// 1. Load the CA cert and key files
-	if caCertBytes, err = os.ReadFile(filepath.Join(env.CertificateRootDir, env.RootCAdir, baseFN+".crt")); err != nil {
+	if caCertPEM, err = os.ReadFile(filepath.Join(env.CertificateRootDir, env.RootCAdir, baseFN+".crt")); err != nil {
 		return helpers.CustomError{Message: "Error reading CA certificate: " + err.Error()}
 	}
-	if caKeyBytes, err = os.ReadFile(filepath.Join(env.CertificateRootDir, env.RootCAdir, baseFN+".key")); err != nil {
+	if caKeyPEM, err = os.ReadFile(filepath.Join(env.CertificateRootDir, env.RootCAdir, baseFN+".key")); err != nil {
 		return helpers.CustomError{Message: "Error reading CA private key: " + err.Error()}
 	}
 
 	// 2. Parse the cert and key files
-	if caCert, err = x509.ParseCertificate(caCertBytes); err != nil {
+	caCertBlock, _ := pem.Decode(caCertPEM)
+	caKeyBlock, _ := pem.Decode(caKeyPEM)
+	if caCertBlock == nil || caKeyBlock == nil {
+		return helpers.CustomError{Message: "Error PEM-decoding the CA certificate or its private key"}
+	}
+	if caCert, err = x509.ParseCertificate(caCertBlock.Bytes); err != nil {
 		return err
 	}
-	if caKey, err = x509.ParsePKCS1PrivateKey(caKeyBytes); err != nil {
+	if caKey, err = x509.ParsePKCS1PrivateKey(caKeyBlock.Bytes); err != nil {
 		return err
 	}
-	// 3. Load and parse the CSR file
+
+	// 3. Load, decode and parse the CSR file
 	if csrBytes, err = os.ReadFile(filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "csr", c.CertificateName+".csr")); err != nil {
 		return err
 	}
-	if csrRequest, err = x509.ParseCertificateRequest(csrBytes); err != nil {
-		return nil
+	if csrBlock, _ := pem.Decode(csrBytes); csrBlock == nil {
+		return helpers.CustomError{"Error PEM-decoding the CSR file"}
+	} else {
+		if csrRequest, err = x509.ParseCertificateRequest(csrBlock.Bytes); err != nil {
+			return err
+		}
 	}
 
 	// 4. Populate x509 template
@@ -92,13 +104,7 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	}
 
 	// 6. Encode, save to disk
-	//certpath := ""
-	//if c.IsCA {
-	//	certpath = filepath.Join(env.CertificateRootDir, env.RootCAdir, c.CertificateName+".crt")
-	//} else {
-	//	certpath = filepath.Join(env.CertificateRootDir, env.ServerCertsDir, c.CertificateName+".crt")
-	//}
-	certFile, err := os.Create(filepath.Join(env.CertificateRootDir, env.ServerCertsDir, c.CertificateName+".crt"))
+	certFile, err := os.Create(filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "certs", c.CertificateName+".crt"))
 	if err != nil {
 		return err
 	}
@@ -112,8 +118,8 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 }
 
 // createCA and signCert are very similar: one is for non-CA certs, the other (below) for CA certs
-// I *could* fold both into a single function, with tons if "if c.IsCA" clauses, but it's not worth
-// the readability headache it'd bring
+// I *could* fold both into a single function, with tons of "if c.IsCA{}" clauses, but it's not worth
+// the readability headache that it'd bring
 func (c CertificateStruct) createCA(env environment.EnvironmentStruct, privateKey *rsa.PrivateKey) error {
 	var cabytes []byte
 	var err error

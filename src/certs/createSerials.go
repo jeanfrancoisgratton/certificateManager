@@ -41,6 +41,10 @@ func getSerialNumber() (uint64, error) {
 
 	// Convert content to a string and remove any leading/trailing whitespace
 	hexString := strings.TrimSpace(string(content))
+	// Corner case: file (serialPath) exists, but is of zero byte length
+	if hexString == "" {
+		hexString = "0"
+	}
 
 	// Convert hexadecimal string to a uint64
 	decimalValue, err := strconv.ParseUint(hexString, 16, 64)

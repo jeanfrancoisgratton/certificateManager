@@ -40,8 +40,6 @@ func writeAttributeFile() error {
 
 func writeIndexFile(c CertificateStruct) error {
 	var filedesc *os.File
-	//string2replace := fmt.Sprintf("/C=%s/ST=%s/L=%s/O=%s/CN=%s/emailAddress=%s", c.Country, c.Province,
-	//	c.Locality, c.Organization, c.CommonName, c.EmailAddresses[0])
 	e, err := environment.LoadEnvironmentFile()
 	if err != nil {
 		return err
@@ -52,8 +50,8 @@ func writeIndexFile(c CertificateStruct) error {
 			return err
 		}
 		defer filedesc.Close()
-		newline := fmt.Sprintf("V\t%sZ\t\t%s\t%s\tunknown\t%s/C=%s/ST=%s/L=%s/O=%s/CN=%s/emailAddress=%s", time.Now().UTC().Format("060102150405"),
-			fmt.Sprintf("%04x", c.SerialNumber), c.Country, c.Province, c.Locality, c.Organization, c.CommonName, c.EmailAddresses[0])
+		newline := fmt.Sprintf("V\t%sZ\t%s\tunknown\t/C=%s/ST=%s/L=%s/O=%s/OU=%s/CN=%s/emailAddress=%s\n", time.Now().UTC().Format("060102150405"),
+			fmt.Sprintf("%04x", c.SerialNumber), c.Country, c.Province, c.Locality, c.Organization, c.OrganizationalUnit, c.CommonName, c.EmailAddresses[0])
 		if _, err = filedesc.WriteString(newline); err != nil {
 			return err
 		}
@@ -66,8 +64,9 @@ func writeIndexFile(c CertificateStruct) error {
 }
 
 func replaceStringInIndex(c CertificateStruct, sourcedir string) error {
-	string2replace := fmt.Sprintf("/C=%s/ST=%s/L=%s/O=%s/CN=%s", c.Country, c.Province,
-		c.Locality, c.Organization, c.CommonName)
+	string2replace := fmt.Sprintf("/C=%s/ST=%s/L=%s/O=%s/OU=%s/CN=%s/emailaddress=%s", c.Country, c.Province,
+		c.Locality, c.Organization, c.OrganizationalUnit, c.CommonName, c.EmailAddresses[0])
+
 	sf, err := os.Open(filepath.Join(sourcedir, "index.txt"))
 	if err != nil {
 		return err
@@ -90,8 +89,8 @@ func replaceStringInIndex(c CertificateStruct, sourcedir string) error {
 			return err
 		}
 	}
-	newline := fmt.Sprintf("V\t%sZ\t\t%s\t%s\tunknown\t%s", time.Now().UTC().Format("060102150405"),
-		c.SerialNumber, string2replace)
+	newline := fmt.Sprintf("V\t%sZ\t%s\tunknown\t%s\n", time.Now().UTC().Format("060102150405"),
+		fmt.Sprintf("%04X", c.SerialNumber), string2replace)
 	_, err = fmt.Fprintln(of, newline)
 	if err != nil {
 		return err
