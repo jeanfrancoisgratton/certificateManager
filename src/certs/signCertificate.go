@@ -15,7 +15,9 @@ import (
 	"encoding/pem"
 	"math/big"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"software.sslmate.com/src/go-pkcs12"
 	"strings"
 	"time"
 )
@@ -54,7 +56,7 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 		return helpers.CustomError{Message: "Error reading CA private key: " + err.Error()}
 	}
 
-	// 2. Parse the cert and key files
+	// 2. Parse the CA cert and key files
 	caCertBlock, _ := pem.Decode(caCertPEM)
 	caKeyBlock, _ := pem.Decode(caKeyPEM)
 	if caCertBlock == nil || caKeyBlock == nil {
@@ -114,6 +116,12 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 		return err
 	}
 
+	if CertJava {
+		if err = c.createJavaCert(env, caCert, caKey); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -121,7 +129,7 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 // I *could* fold both into a single function, with tons of "if c.IsCA{}" clauses, but it's not worth
 // the readability headache that it'd bring
 func (c CertificateStruct) createCA(env environment.EnvironmentStruct, privateKey *rsa.PrivateKey) error {
-	var cabytes []byte
+	var caBytes []byte
 	var err error
 
 	template := x509.Certificate{
@@ -136,7 +144,7 @@ func (c CertificateStruct) createCA(env environment.EnvironmentStruct, privateKe
 		IPAddresses:           c.IPAddresses,
 		EmailAddresses:        c.EmailAddresses,
 	}
-	if cabytes, err = x509.CreateCertificate(rand.Reader, &template, &template, &privateKey.PublicKey, privateKey); err != nil {
+	if caBytes, err = x509.CreateCertificate(rand.Reader, &template, &template, &privateKey.PublicKey, privateKey); err != nil {
 		return err
 	}
 
@@ -146,8 +154,89 @@ func (c CertificateStruct) createCA(env environment.EnvironmentStruct, privateKe
 	}
 	defer cafile.Close()
 
-	if err = pem.Encode(cafile, &pem.Block{Type: "CERTIFICATE", Bytes: cabytes}); err != nil {
+	if err = pem.Encode(cafile, &pem.Block{Type: "CERTIFICATE", Bytes: caBytes}); err != nil {
 		return err
 	}
+	return nil
+}
+
+// createJavaCert:
+// Many software still use the Java Keystore (JKS) format, which has been deemed obsolete for some time.
+// The process is thus, so far:
+// 1. Load the CA cert file, key, server cert file, key
+// 2. Convert the server .crt to PKCS#12 (.p12) format
+// 3. Convert the .p12 file to .JKS
+// I'll keep the .p12 file in storage, just in case that whatever software needing a JKS comes to its senses
+// And asks for a .p12 instead
+// All files will be stored in the java/ directory
+
+// SIGNATURE: (environment, parsed cacert, parsed cacert key) returns error
+func (c CertificateStruct) createJavaCert(e environment.EnvironmentStruct, caCert *x509.Certificate, caKey *rsa.PrivateKey) error {
+	//var certPEM, p12Data []byte
+	var certPEM []byte
+	var certBlock *pem.Block
+	var err error
+	var serverCert *x509.Certificate
+	var serverKey *rsa.PrivateKey
+	certPasswd := ""
+	//var jksFile *os.File
+
+	// Fetch the server's private key
+	if serverKey, err = c.getPrivateKey(e); err != nil {
+		return err
+	}
+
+	// Load, decode and parse the current server cert
+	if certPEM, err = os.ReadFile(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "certs", c.CertificateName+".crt")); err != nil {
+		return helpers.CustomError{Message: "Error reading CA certificate: " + err.Error()}
+	}
+	certBlock, _ = pem.Decode(certPEM)
+	if serverCert, err = x509.ParseCertificate(certBlock.Bytes); err != nil {
+		return err
+	}
+
+	// PKCS#12 requires the file to be password-protected
+	certPasswd = helpers.GetPassword("Please provide a password for this Java certificate: ")
+
+	// Convert cert to PKCS#12
+	pkcs12Data, err := pkcs12.Encode(rand.Reader, serverKey, serverCert, []*x509.Certificate{caCert}, certPasswd)
+	if err != nil {
+		return helpers.CustomError{Message: "Error encoding the certificate in PKCS#12: " + err.Error()}
+	}
+
+	if err = os.WriteFile(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", c.CertificateName+".p12"), pkcs12Data, 0644); err != nil {
+		return err
+	}
+
+	// FOLLOWING COMMENTED CODE IS THERE IN CASE I FIND A SOLUTION TO REPLACE cmd:= exec.Command(), a bit below
+
+	// Now, it's a bit stupid, but I need to re-decode the P12 file to then encode it in JKS
+	//if p12Data, err = os.ReadFile(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", c.CertificateName+".p12")); err != nil {
+	//	return err
+	//}
+	//if p12, _, err := pkcs12.Decode(p12Data, certPasswd); err != nil {
+	//	return err
+	//}
+	//
+	//// Create Keystore, encode
+	//if jksFile, err = os.Create(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", c.CertificateName+".jks")); err != nil {
+	//	return err
+	//}
+	//defer jksFile.Close()
+
+	// No other way for now <sigh>
+	cmd := exec.Command("keytool", "-importkeystore", "-srcstorepass", certPasswd,
+		"-deststorepass", certPasswd,
+		"-destkeystore", filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", c.CertificateName+".jks"),
+		"-srckeystore", filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", c.CertificateName+".p12"),
+		"-srcstoretype", "PKCS12")
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Run(); err != nil {
+		return helpers.CustomError{Message: "Keytool command failed: " + err.Error()}
+	}
+
 	return nil
 }

@@ -7,6 +7,7 @@ package certs
 
 import (
 	"certificateManager/environment"
+	"certificateManager/helpers"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
@@ -61,4 +62,33 @@ func (c CertificateStruct) createPrivateKey() (*rsa.PrivateKey, error) {
 		return nil, err
 	}
 	return pk, err
+}
+
+func (c CertificateStruct) getPrivateKey(env environment.EnvironmentStruct) (*rsa.PrivateKey, error) {
+	var err error
+	var pKeyFile []byte
+	var pkey *rsa.PrivateKey
+	keyDir := env.CertificateRootDir
+
+	// root CAs store their key somewhere else
+	if c.IsCA {
+		keyDir += filepath.Join(env.RootCAdir)
+	} else {
+		keyDir += filepath.Join(env.CertificatesConfigDir, "private")
+	}
+	// Load keyfile
+	if pKeyFile, err = os.ReadFile(filepath.Join(keyDir, c.CertificateName+".key")); err != nil {
+		return nil, helpers.CustomError{Message: "Error reading the private key: " + err.Error()}
+	}
+
+	// Decode keyfile
+	if key, _ := pem.Decode(pKeyFile); key == nil {
+		return nil, helpers.CustomError{Message: "Unable to PEM-decode the private key"}
+	} else {
+		// Parse keyfile
+		if pkey, err = x509.ParsePKCS1PrivateKey(key.Bytes); err != nil {
+			return nil, err
+		}
+	}
+	return pkey, nil
 }
