@@ -50,7 +50,7 @@ func writeIndexFile(c CertificateStruct) error {
 			return err
 		}
 		defer filedesc.Close()
-		newline := fmt.Sprintf("V\t%sZ\t%s\tunknown\t/C=%s/ST=%s/L=%s/O=%s/OU=%s/CN=%s/emailAddress=%s\n", time.Now().UTC().Format("060102150405"),
+		newline := fmt.Sprintf("V\t%sZ\t%s\tunknown\t/C=%s/ST=%s/L=%s/O=%s/OU=%s/CN=%s/emailAddress=%s", time.Now().UTC().Format("060102150405"),
 			fmt.Sprintf("%04x", c.SerialNumber), c.Country, c.Province, c.Locality, c.Organization, c.OrganizationalUnit, c.CommonName, c.EmailAddresses[0])
 		if _, err = filedesc.WriteString(newline); err != nil {
 			return err
@@ -89,7 +89,7 @@ func replaceStringInIndex(c CertificateStruct, sourcedir string) error {
 			return err
 		}
 	}
-	newline := fmt.Sprintf("V\t%sZ\t%s\tunknown\t%s\n", time.Now().UTC().Format("060102150405"),
+	newline := fmt.Sprintf("V\t%sZ\t%s\tunknown\t%s", time.Now().UTC().Format("060102150405"),
 		fmt.Sprintf("%04X", c.SerialNumber), string2replace)
 	_, err = fmt.Fprintln(of, newline)
 	if err != nil {

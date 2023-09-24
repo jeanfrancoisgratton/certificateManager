@@ -54,5 +54,5 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVarP(&environment.EnvConfigFile, "env", "e", "defaultEnv.json", "Default environment configuration file; this is a per-user setting.")
 	certCreateCmd.PersistentFlags().StringVarP(&certs.CertName, "file", "f", "", "JSON file holding the certificate config.")
-	certCreateCmd.PersistentFlags().BoolVarP(&certs.CertJava, "java", "j", false, "Do we create a Java (JKS) cert or not.")
+	certCreateCmd.PersistentFlags().BoolVarP(&certs.CertJava, "java", "j", false, "Also create a Java Keystore (JKS).")
 }

@@ -13,6 +13,7 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
+	"fmt"
 	"math/big"
 	"os"
 	"os/exec"
@@ -116,6 +117,20 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 		return err
 	}
 
+	// We also need to save the new certificate in the rootCA "newcerts" directory
+	if err = os.Mkdir(filepath.Join(env.CertificateRootDir, env.RootCAdir, "newcerts"), os.ModePerm); err != nil && !os.IsExist(err) {
+		return err
+	}
+	newcertFile, err := os.Create(filepath.Join(env.CertificateRootDir, env.RootCAdir, "newcerts", fmt.Sprintf("%04X.pem", c.SerialNumber)))
+	if err != nil {
+		return helpers.CustomError{Message: "Unable to create the certificate within root CA's PKI: " + err.Error()}
+	}
+	defer newcertFile.Close()
+	if pem.Encode(newcertFile, &pem.Block{Type: "CERTIFICATE", Bytes: certDER}); err != nil {
+		return err
+	}
+
+	// Now, we check if we need to create a JKS.... yuck
 	if CertJava {
 		if err = c.createJavaCert(env, caCert, caKey); err != nil {
 			return err
