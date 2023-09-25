@@ -72,9 +72,9 @@ func (c CertificateStruct) getPrivateKey(env environment.EnvironmentStruct) (*rs
 
 	// root CAs store their key somewhere else
 	if c.IsCA {
-		keyDir += filepath.Join(env.RootCAdir)
+		keyDir = filepath.Join(keyDir, env.RootCAdir)
 	} else {
-		keyDir += filepath.Join(env.CertificatesConfigDir, "private")
+		keyDir = filepath.Join(keyDir, env.ServerCertsDir, "private")
 	}
 	// Load keyfile
 	if pKeyFile, err = os.ReadFile(filepath.Join(keyDir, c.CertificateName+".key")); err != nil {

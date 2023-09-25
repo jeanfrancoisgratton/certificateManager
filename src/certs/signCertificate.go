@@ -187,7 +187,6 @@ func (c CertificateStruct) createCA(env environment.EnvironmentStruct, privateKe
 
 // SIGNATURE: (environment, parsed cacert, parsed cacert key) returns error
 func (c CertificateStruct) createJavaCert(e environment.EnvironmentStruct, caCert *x509.Certificate, caKey *rsa.PrivateKey) error {
-	//var certPEM, p12Data []byte
 	var certPEM []byte
 	var certBlock *pem.Block
 	var err error
