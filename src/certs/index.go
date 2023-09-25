@@ -1,6 +1,6 @@
 // certificateManager
 // Written by J.F. Gratton <jean-francois@famillegratton.net>
-// Original filename: src/certs/createIndexFiles.go
+// Original filename: src/certs/index.go
 // Original timestamp: 2023/08/26 12:26
 
 package certs

@@ -1,6 +1,6 @@
 // certificateManager
 // Written by J.F. Gratton <jean-francois@famillegratton.net>
-// Original filename: src/certs/signCertificate.go
+// Original filename: src/certs/sign.go
 // Original timestamp: 2023/09/11 10:28
 
 package certs
