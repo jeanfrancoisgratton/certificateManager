@@ -38,7 +38,7 @@ func (c CertificateStruct) createPrivateKey() (*rsa.PrivateKey, error) {
 		return nil, err
 	}
 
-	if pk, err = rsa.GenerateKey(rand.Reader, 4096); err != nil {
+	if pk, err = rsa.GenerateKey(rand.Reader, CertPKsize); err != nil {
 		return nil, err
 	}
 

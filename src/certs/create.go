@@ -15,6 +15,8 @@ import (
 	"path/filepath"
 )
 
+var CertPKsize int
+
 // Create() : Create a certificate file. "Plain" SSL cert, or CA cert
 // Parameters:
 // - none
