@@ -44,9 +44,12 @@ func init() {
 	rootCmd.AddCommand(clCmd)
 	rootCmd.AddCommand(certCmd)
 	rootCmd.AddCommand(envCmd)
+
 	certCmd.AddCommand(certlistCmd)
 	certCmd.AddCommand(certVerifyCmd)
 	certCmd.AddCommand(certCreateCmd)
+	certCmd.AddCommand(certRevokeCmd)
+
 	envCmd.AddCommand(envListCmd)
 	envCmd.AddCommand(envRmCmd)
 	envCmd.AddCommand(envAddCmd)
@@ -55,4 +58,5 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&environment.EnvConfigFile, "env", "e", "defaultEnv.json", "Default environment configuration file; this is a per-user setting.")
 	certCreateCmd.PersistentFlags().StringVarP(&certs.CertName, "file", "f", "", "JSON file holding the certificate config.")
 	certCreateCmd.PersistentFlags().BoolVarP(&certs.CertJava, "java", "j", false, "Also create a Java Keystore (JKS).")
+	certRevokeCmd.PersistentFlags().BoolVarP(&certs.CertRemoveFiles, "remove", "r", false, "Remove all files from, not just the index.txt entry.")
 }

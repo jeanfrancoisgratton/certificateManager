@@ -67,3 +67,20 @@ var certCreateCmd = &cobra.Command{
 		}
 	},
 }
+
+var certRevokeCmd = &cobra.Command{
+	Use:     "revoke",
+	Aliases: []string{"rm", "remove"},
+	Example: "cm cert revoke [CERTICATE_CONFIG_FILE]",
+	Short:   "Revokes (deletes) a certificate, specifying the config file to use",
+	Run: func(cmd *cobra.Command, args []string) {
+		certname := ""
+		if len(args) != 0 {
+			certname = args[0]
+		}
+		if err := certs.Revoke(certname); err != nil {
+			fmt.Println(err)
+			os.Exit(2)
+		}
+	},
+}

@@ -17,8 +17,7 @@ import (
 var CertConfigFile = "defaultCertConfig.json"
 var CertName = ""
 var CertJava = false
-
-var CreateSingleCert bool
+var CertRemoveFiles = false
 
 // This is the full data structure for an SSL certificate and CA
 type CertificateStruct struct {
@@ -39,19 +38,8 @@ type CertificateStruct struct {
 	Comments           []string `json:"Comments,omitempty"`
 }
 
-// Dispatch both he Explanation file and the Sample cert
-func CreateSampleCertificate() error {
-	if err := createSampleCert(); err != nil {
-		return err
-	}
-	if err := createExplanationfile(); err != nil {
-		return err
-	}
-	return nil
-}
-
 // Create the sample certificate config file
-func createSampleCert() error {
+func CreateSampleCert() error {
 	sampleCertConfig := CertificateStruct{
 		Country:            "CA",
 		Province:           "Quebec",
@@ -82,7 +70,7 @@ func createSampleCert() error {
 }
 
 // Create an explanation (.txt) file
-func createExplanationfile() error {
+func CreateExplanationfile() error {
 	expText := `{
 	"Country" : "CA", -> This is the country of origin for the certificate
 	"Provice" : "Quebec", -> State of province of origin
