@@ -27,7 +27,7 @@ type CertificateStruct struct {
 	Organization       string   `json:"Organization"`
 	OrganizationalUnit string   `json:"OrganizationalUnit,omitempty"`
 	CommonName         string   `json:"CommonName"`
-	IsCA               bool     `json:"IsCA,omitempty"`
+	IsCA               bool     `json:"IsCA"`
 	EmailAddresses     []string `json:"EmailAddresses,omitempty"`
 	Duration           int      `json:"Duration"`
 	KeyUsage           []string `json:"KeyUsage"`
