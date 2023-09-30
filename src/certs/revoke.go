@@ -82,6 +82,7 @@ func putRevokeFlag(e environment.EnvironmentStruct, certname string, country str
 	if err != nil {
 		return helpers.CustomError{Message: "Unable to create temp index file: " + err.Error()}
 	}
+	defer outFile.Close()
 
 	// Now we scan the infile to find the substring in parameters
 	scanner := bufio.NewScanner(inFile)
@@ -120,6 +121,9 @@ func putRevokeFlag(e environment.EnvironmentStruct, certname string, country str
 		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", certfilename+".p12"))
 		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", certfilename+".jks"))
 	}
+
+	// Rename new file to index.txt
+	os.Rename(filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt.new"), filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt"))
 
 	return nil
 }
