@@ -135,7 +135,7 @@ func populateCertificateStructure(cs *CertificateStruct) error {
 	fmt.Println("Entries with multiple values (ip addresses, emails, key usage are separated with ENTER, with another ENTER pressed at the end.\n")
 	cs.CertificateName = helpers.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s ", helpers.Green("name")))
 	cs.CommonName = helpers.GetStringValFromPrompt(fmt.Sprintf("Please enter the %s (CN): ", helpers.Green("common name")))
-	cs.IsCA = helpers.GetBoolValFromPrompt(fmt.Sprintf("Is this certificate a %s ? ", helpers.Green("CA certificate")))
+	cs.IsCA = helpers.GetBoolValFromPrompt(fmt.Sprintf("[any values not starting with T,t or 1 will be treated as FALSE] Is this certificate a %s ? ", helpers.Green("CA certificate")))
 	cs.Country = helpers.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (C): ", helpers.Green("country")))
 	cs.Province = helpers.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (ST): ", helpers.Green("province/state")))
 	cs.Locality = helpers.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (L): ", helpers.Green("locality")))

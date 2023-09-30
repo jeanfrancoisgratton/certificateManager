@@ -6,12 +6,13 @@
 package certs
 
 import (
+	"bufio"
 	"certificateManager/environment"
 	"certificateManager/helpers"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
-	"time"
 )
 
 // Revoke:
@@ -28,7 +29,6 @@ func Revoke(certname string) error {
 	var err error
 	e := environment.EnvironmentStruct{}
 	c := CertificateStruct{}
-	targetLine := fmt.Sprintf("V\t%sZ\t", time.Now().UTC().Format("060102150405"))
 
 	if e, err = environment.LoadEnvironmentFile(); err != nil {
 		return err
@@ -38,32 +38,88 @@ func Revoke(certname string) error {
 		certname += ".json"
 	}
 
+	// We need to load the cert's config in order to find the info needed to remove it from the index DB
 	if c, err = LoadCertificateConfFile(filepath.Join(e.CertificateRootDir, e.CertificatesConfigDir, certname)); err != nil {
 		return err
 	}
-	//targetLine += fmt.Sprintf("%s\tunknown\t", fm)
-	if err = removeFromIndex(c.Country, c.Province, c.Locality, c.Organization,
-		c.OrganizationalUnit, c.CommonName, c.EmailAddresses); err != nil {
-		return helpers.CustomError{Message: "Unable to remove entry from index.txt: " + err.Error()}
+
+	if err = putRevokeFlag(e, certname, c.Country, c.Province, c.Locality, c.Organization,
+		c.OrganizationalUnit, c.CommonName); err != nil {
+		return err
 	}
 
 	return nil
 }
 
-// removeFromIndex: remove entry from index.txt, and unlink (delete) the certificate from newcerts/
+// putRevokeFlag: remove entry from index.txt, and unlink (delete) the certificate from newcerts/
 // We scan the index.txt file, tracking an entry that contains "targetString"
 // If the entry is found, we extract the serial number (the 4 digit hex number, 3rd field of the line)
 // We then rewrite index.txt without that entry
 // If found, we then unlink newcerts/$SERIAL_NUM.pem
-func removeFromIndex(country string, province string, locality string, org string, ou string,
-	cn string, email []string) error {
-	indexValue := ""
+func putRevokeFlag(e environment.EnvironmentStruct, certname string, country string, province string,
+	locality string, org string, ou string, cn string) error {
+	serialField := ""
+	certfilename := ""
 
-	targetString := fmt.Sprintf("/C=%s/ST=%s/L=%s/O=%s/OU=%s/CN=%s/emailAddress=%s",
-		country, province, locality, org, ou, cn, email)
+	// Remove extension from filename
+	dotPos := strings.LastIndex(certname, ".")
+	if dotPos >= 0 {
+		certfilename = certname[:dotPos]
+	} else {
+		certfilename = certname
+	}
+
+	// This is the substring we use to track the correct certificate
+	targetString := fmt.Sprintf("/C=%s/ST=%s/L=%s/O=%s/OU=%s/CN=%s", country, province, locality, org, ou, cn)
+
+	// Open in and out files
+	inFile, err := os.Open(filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt"))
+	if err != nil {
+		return helpers.CustomError{Message: "Unable to open index.txt: " + err.Error()}
+	}
+	defer inFile.Close()
+	outFile, err := os.Create(filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt.new"))
+	if err != nil {
+		return helpers.CustomError{Message: "Unable to create temp index file: " + err.Error()}
+	}
+
+	// Now we scan the infile to find the substring in parameters
+	scanner := bufio.NewScanner(inFile)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		fields := strings.Fields(line)
+
+		// Check if the line contains the search string
+		if strings.Contains(line, targetString) {
+			// Extract the 3rd field (certificate number)
+			if len(fields) >= 3 {
+				fields[0] = "R"
+				serialField = fields[2]
+
+				// Write the modified line to the output file
+				newLine := strings.Join(fields, "\t") + "\n"
+				outFile.WriteString(newLine)
+			}
+		} else {
+			// Write unmodified lines to the output file
+			outFile.WriteString(line + "\n")
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return helpers.CustomError{Message: "Unable to read index.txt: " + err.Error()}
+	}
+
+	if CertRemoveFiles {
+		os.Remove(filepath.Join(e.CertificateRootDir, e.RootCAdir, "newcerts", strings.ToUpper(serialField)+".pem"))
+		os.Remove(filepath.Join(e.CertificateRootDir, e.CertificatesConfigDir, certfilename+".json"))
+		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "certs", certfilename+".crt"))
+		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "csr", certfilename+".csr"))
+		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "private", certfilename+".key"))
+		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", certfilename+".p12"))
+		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", certfilename+".jks"))
+	}
 
 	return nil
 }
-
-// ALTERNATE APPROACH : RECOPY LINE, WITH R PREFIX INSTEAD OF V
-// WE WOULD NOT NEED TO UNLINK FILE FROM newcerts/ and srv/{certs,private,csr}

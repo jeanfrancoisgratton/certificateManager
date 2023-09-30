@@ -16,7 +16,7 @@ func GetIntValFromPrompt(prompt string) int {
 	var err error
 	value := 0
 	inputScanner := bufio.NewScanner(os.Stdin)
-	fmt.Printf("%s: ", prompt)
+	fmt.Printf("%s", prompt)
 	inputScanner.Scan()
 	nval := inputScanner.Text()
 
@@ -30,7 +30,7 @@ func GetIntValFromPrompt(prompt string) int {
 }
 
 func GetBoolValFromPrompt(prompt string) bool {
-	fmt.Printf("%s(any values not starting with T,t or 1 will be treated as FALSE): ", prompt)
+	fmt.Printf("%s", prompt)
 	bval := ""
 	var value = false
 
@@ -43,7 +43,7 @@ func GetBoolValFromPrompt(prompt string) bool {
 
 func GetStringValFromPrompt(prompt string) string {
 	inputScanner := bufio.NewScanner(os.Stdin)
-	fmt.Printf("%s: ", prompt)
+	fmt.Printf("%s", prompt)
 	inputScanner.Scan()
 	nval := inputScanner.Text()
 	value := ""
@@ -76,7 +76,7 @@ func GetKeyUsage() []string {
 	var keys []string
 	inputScanner := bufio.NewScanner(os.Stdin)
 	ku := []string{"decipher only", "encipher only", "crl sign", "certs sign", "key agreement",
-		"data encipherment", "key encipherment", "content commitment", "digital signature", "CADEFAULTS"}
+		"data encipherment", "key encipherment", "content commitment", "digital signature", "CADEFAULTS", "CERTDEFAULTS"}
 	inputs := []string{}
 
 	fmt.Println("The valid key usage values are:")
@@ -86,7 +86,8 @@ func GetKeyUsage() []string {
 		}
 		fmt.Printf("'%s' ", White(j))
 	}
-	fmt.Println("CADEFAULTS is a catch-all for default values of a root CA")
+	fmt.Println("\nCADEFAULTS is a catch-all for default values of a root CA")
+	fmt.Println("ERTDEFAULTS is a catch-all for default values of a standard certificate")
 	for {
 		input := ""
 		fmt.Print("Please enter a value from the above list, just press ENTER to end : ")
@@ -95,8 +96,13 @@ func GetKeyUsage() []string {
 		if input == "" {
 			break
 		}
-		if input == "CADEFAULTS" {
-			inputs = append(inputs, "digital signature", "certs sign", "crl sign")
+		if input == "CADEFAULTS" || input == "CERTDEFAULTS" {
+			if input == "CADEFAULTS" {
+				inputs = append(inputs, "digital signature", "certs sign", "crl sign")
+			} else {
+				inputs = append(inputs, "digital signature", "key encipherment",
+					"data encipherment", "key agreement")
+			}
 		} else {
 			if valueInList(input, ku) {
 				inputs = append(inputs, input)
