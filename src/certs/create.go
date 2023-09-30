@@ -36,7 +36,6 @@ var CertPKsize int
 // 6. Sign certificate
 // 7. Update index.txt, index.attr.txt, serial
 // 8. Save/update the certificate config file in the config directory
-// 9. Optionally, create a JKS (Java) cert
 
 func Create(certconfigfile string) error {
 	var privateKey *rsa.PrivateKey
@@ -118,11 +117,6 @@ func Create(certconfigfile string) error {
 	if err = cert.SaveCertificateConfFile(""); err != nil {
 		return err
 	}
-
-	//// 9. Create a Java (JKS) certificate (optional)
-	//if CertJava {
-	//	return cert.signJavaCert(env, privateKey)
-	//}
 
 	return nil
 }

@@ -87,7 +87,7 @@ func GetKeyUsage() []string {
 		fmt.Printf("'%s' ", White(j))
 	}
 	fmt.Println("\nCADEFAULTS is a catch-all for default values of a root CA")
-	fmt.Println("ERTDEFAULTS is a catch-all for default values of a standard certificate")
+	fmt.Println("CERTDEFAULTS is a catch-all for default values of a standard certificate")
 	for {
 		input := ""
 		fmt.Print("Please enter a value from the above list, just press ENTER to end : ")

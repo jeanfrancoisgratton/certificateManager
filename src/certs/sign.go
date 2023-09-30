@@ -130,14 +130,7 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 		return err
 	}
 
-	// Now, we check if we need to create a JKS.... yuck
-	if CertJava {
-		if err = c.createJavaCert(env, caCert, caKey); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return c.createJavaCert(env, caCert, caKey)
 }
 
 // createCA and signCert are very similar: one is for non-CA certs, the other (below) for CA certs
@@ -176,7 +169,7 @@ func (c CertificateStruct) createCA(env environment.EnvironmentStruct, privateKe
 }
 
 // createJavaCert:
-// Many software still use the Java Keystore (JKS) format, which has been deemed obsolete for some time.
+// Much software still use the Java Keystore (JKS) format, which has been deemed obsolete for some time.
 // The process is thus, so far:
 // 1. Load the CA cert file, key, server cert file, key
 // 2. Convert the server .crt to PKCS#12 (.p12) format
