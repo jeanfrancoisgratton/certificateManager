@@ -13,9 +13,12 @@ import (
 	"os/signal"
 	"strconv"
 	"syscall"
+	"unsafe"
 )
 
-var CertificatesRootDir = ""
+const (
+	terminalEscape = "\x1b"
+)
 
 // CustomError implements the error interface
 type CustomError struct {
@@ -26,21 +29,8 @@ func (e CustomError) Error() string {
 	return e.Message
 }
 
-func Changelog() {
-	//fmt.Printf("\x1b[2J")
-	fmt.Printf("\x1bc")
-
-	fmt.Print(`
-VERSION		DATE			COMMENT
--------		----			-------
-0.500		2023.06.03		server certs management
-0.400		2023.04.22		config-old management
-0.300		2023.04.20		ca-old edit, ca-old del
-0.200		2023.04.20		ca-old create and ca-old verify
-0.100		2023.04.16		near-config-old-aware
-\n`)
-}
-
+// COLOR FUNCTIONS
+// ================
 func Red(sentence string) string {
 	return fmt.Sprintf("%s", gchalk.WithBrightRed().Bold(sentence))
 }
@@ -62,17 +52,10 @@ func Normal(sentence string) string {
 	return fmt.Sprintf("%s", gchalk.WithWhite().Bold(sentence))
 }
 
-// This function takes a string and returns its reverse
-// Thus, "12345" becomes "54321"
-func ReverseString(inputStr string) string {
-	runes := []rune(inputStr)
-	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-		runes[i], runes[j] = runes[j], runes[i]
-	}
-	return string(runes)
-}
+// NUMBER FORMATTING FUNCTIONS
+// ===========================
 
-// This function was originally written in 1993, in C, by my friend Jean-François Gauthier
+// This function was originally written in 1993, in C, by my friend Jean-François Gauthier (jief@brebis.dyndns.org)
 // I've ported it in C# in 2011. It is then a third iteration of this function
 // This function transforms a multi-digit number in International Notation; thus 1234567 becomes 1,234,567
 func SI(nombre uint64) string {
@@ -98,6 +81,19 @@ func SI(nombre uint64) string {
 	strN = ReverseString(strN)
 
 	return strN
+}
+
+// OTHER FUNCTIONS
+// ===============
+
+// This function takes a string and returns its reverse
+// Thus, "12345" becomes "54321"
+func ReverseString(inputStr string) string {
+	runes := []rune(inputStr)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+	return string(runes)
 }
 
 // reference: https://gist.github.com/jlinoff/e8e26b4ffa38d379c7f1891fd174a6d0, the getPassword2.go
@@ -131,4 +127,25 @@ func GetPassword(prompt string) string {
 
 	// Return the password as a string.
 	return string(p)
+}
+
+// TERMINAL FUNCTIONS
+func GetTerminalSize() (int, int) {
+	var size struct {
+		rows    uint16
+		cols    uint16
+		xpixels uint16
+		ypixels uint16
+	}
+	_, _, err := syscall.Syscall(syscall.SYS_IOCTL, uintptr(syscall.Stdin), syscall.TIOCGWINSZ, uintptr(unsafe.Pointer(&size)))
+	if err != 0 {
+		return 0, 0
+	}
+	return int(size.cols), int(size.rows)
+}
+
+func CenterPrint(text string) {
+	termWidth, _ := GetTerminalSize()
+	padding := (termWidth - len(text)) / 2
+	fmt.Printf("%s[%dC%s", terminalEscape, padding, text)
 }
