@@ -1,6 +1,6 @@
 %define debug_package   %{nil}
 %define _build_id_links none
-%define _name "certificateManager"
+%define _name certificateManager
 %define _prefix /opt
 %define _version 1.000
 %define _rel 0
