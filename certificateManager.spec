@@ -1,13 +1,13 @@
 %define debug_package   %{nil}
 %define _build_id_links none
-%define _name "certificateManager"
+%define _name certificateManager
 %define _prefix /opt
 %define _version 1.000
 %define _rel 0
 %define _arch x86_64
 %define _binaryname cm
 
-Name:       "certificateManager"
+Name:       certificateManager
 Version:    %{_version}
 Release:    %{_rel}
 Summary:    Certificates and CA management tool
@@ -54,3 +54,6 @@ install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryn
 
 
 %changelog
+* Sun Oct 01 2023 RPM Builder <builder@famillegratton.net> 1.000-0
+- First prod-ready version
+
