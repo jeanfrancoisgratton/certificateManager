@@ -54,3 +54,6 @@ install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryn
 
 
 %changelog
+* Sun Oct 01 2023 RPM Builder <builder@famillegratton.net> 1.000-0
+- First prod-ready version
+
