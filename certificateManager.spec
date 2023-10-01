@@ -7,7 +7,7 @@
 %define _arch x86_64
 %define _binaryname cm
 
-Name:       "certificateManager"
+Name:       certificateManager
 Version:    %{_version}
 Release:    %{_rel}
 Summary:    Certificates and CA management tool
