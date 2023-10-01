@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PKGDIR="certificateManager-0.100-0_amd64"
+PKGDIR="certificateManager-1.000-0_amd64"
 
 mkdir -p ${PKGDIR}/opt/bin ${PKGDIR}/DEBIAN
 mkdir -p ${PKGDIR}/opt/bin ${PKGDIR}/DEBIAN
