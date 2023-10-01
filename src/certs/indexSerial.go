@@ -158,6 +158,8 @@ func setSerialNumber(serialNo uint64) error {
 	if err != nil {
 		return err
 	}
+	defer ffile.Close()
+
 	_, err = ffile.WriteString(fmt.Sprintf("%04X\n", serialNo))
 	if err != nil {
 		return err

@@ -118,8 +118,16 @@ func putRevokeFlag(e environment.EnvironmentStruct, certname string, country str
 		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "certs", certfilename+".crt"))
 		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "csr", certfilename+".csr"))
 		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "private", certfilename+".key"))
-		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", certfilename+".p12"))
-		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", certfilename+".jks"))
+		if _, err = os.Stat(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", certfilename+".p12")); err != nil && os.IsNotExist(err) {
+			// nop
+		} else {
+			os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", certfilename+".p12"))
+		}
+		if _, err = os.Stat(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", certfilename+".jks")); err != nil && os.IsNotExist(err) {
+			// nop
+		} else {
+			os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", certfilename+".jks"))
+		}
 	}
 
 	// Rename new file to index.txt

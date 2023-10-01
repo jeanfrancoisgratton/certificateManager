@@ -6,12 +6,10 @@
 package certs
 
 import (
-	"certificateManager/environment"
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -19,16 +17,17 @@ var CaVerifyVerbose = false
 var CaVerifyComments = false
 
 func Verify(certFilePaths []string) error {
-	var e environment.EnvironmentStruct
+	//var e environment.EnvironmentStruct
 	//var cert CertificateStruct
-	var err error
+	//var err error
 
-	if e, err = environment.LoadEnvironmentFile(); err != nil {
-		return err
-	}
+	//if e, err = environment.LoadEnvironmentFile(); err != nil {
+	//	return err
+	//}
 
 	for _, path := range certFilePaths {
-		if err := verifyCert(filepath.Join(e.CertificateRootDir, path)); err != nil {
+		//if err := verifyCert(filepath.Join(e.CertificateRootDir, path)); err != nil {
+		if err := verifyCert(path); err != nil {
 			return err
 		}
 	}
@@ -37,7 +36,7 @@ func Verify(certFilePaths []string) error {
 
 func verifyCert(certFilePath string) error {
 
-	if strings.HasSuffix(certFilePath, ".crt") {
+	if !strings.HasSuffix(certFilePath, ".crt") {
 		certFilePath += ".crt"
 	}
 	// Read the certificate file

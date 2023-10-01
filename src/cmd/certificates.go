@@ -42,6 +42,7 @@ var certVerifyCmd = &cobra.Command{
 	//Aliases: []string{"ls"},
 	Example: "cm cert verify FILENAME",
 	Short:   "Verifies a certificate, as per the provided filename",
+	Long:    "Please note: the certificate filename does not need to be within the current PKI structure.",
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := certs.Verify(args); err != nil {
 			fmt.Println(err)

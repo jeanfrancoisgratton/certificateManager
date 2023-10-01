@@ -130,7 +130,10 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 		return err
 	}
 
-	return c.createJavaCert(env, caCert, caKey)
+	if CertJava {
+		return c.createJavaCert(env, caCert, caKey)
+	}
+	return nil
 }
 
 // createCA and signCert are very similar: one is for non-CA certs, the other (below) for CA certs

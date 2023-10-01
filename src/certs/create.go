@@ -118,7 +118,7 @@ func Create(certconfigfile string) error {
 		return err
 	}
 
-	fmt.Sprintf("Certificate %s has been created.\n", helpers.Green(certconfigfile))
+	fmt.Printf("Certificate %s has been created.\n", helpers.Green(certconfigfile))
 	return nil
 }
 
