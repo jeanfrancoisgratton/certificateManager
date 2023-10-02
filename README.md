@@ -18,8 +18,8 @@ This tool uses GO's x509 package to:<br>
 
 <H3>What that tool does not do</H3>
 - Sign certificates against a remote CA:<br>
-  - No CRL (Certificate Revokation List) is implemented
-  - No CDP (Certificate Distribution Point) is implemented
+  - No CRL (Certificate Revokation List) is implemented<br>
+  - No CDP (Certificate Distribution Point) is implemented<br>
 - Any operation against a remote CA, actually.<br><br>
 
 Bear in mind : this software is intended to run on an internal network.<br>
@@ -97,7 +97,7 @@ A typical certificate config file looks like this:
   ]
 }
 ```
-<br><br>
+<br>
 <H2>PKI / environment directory structure</H2>
 
 As mentioned above, an *environment* is a sandbox. Different environments represent different PKIs.
@@ -135,7 +135,7 @@ Number of certificates: 4
 ┃ testCA.json  ┃ myorg.net root CA ┃ 726       ┃ 2023/10/02 17:15:28 ┃
 ┗━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━┛
 ```
-<br>**A NOTE ABOUT `cm cert ls`:**<br><br>
+<br>**A NOTE ABOUT `cm cert ls`:**<br>
 This command lists certificate **config** files, not certificate **files**. This means a config file might be present, but no valid certificate being present.<br>
 If you wish to see that a certificate exists (and is valid) : `cm cert verify $PATH_TO_CERTIFICATE_FILE`
 
@@ -185,17 +185,17 @@ I provide both the source code and Alpine (APK), Debian-based (DEB) or RedHat-ba
 Go in the Releases link from this site, and pick your package, once downloaded, in say, `/tmp/` :
 
 <H4>Alpine (APK)</H4>
-```
+```bash
 $ apk add /tmp/$PACKAGENAME
 ```
 
 <H4>Debian-based (DEB)</H4>
-```
+```bash
 $ apt install /tmp/$PACKAGENAME
 ```
 
 <H4>RedHat-based (RPM)</H4>
-```
+```bash
 $ dnf localinstall /tmp/$PACKAGENAME
 ```
 
