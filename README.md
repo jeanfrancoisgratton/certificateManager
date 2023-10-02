@@ -14,22 +14,22 @@ This tool uses GO's x509 package to:<br>
 - Create, if needed, a root CA cert<br>
 - Create and sign "normal" SSL server certs<br>
 - Verify those certs<br>
-- Revoke (in a future version) certs, with CRL<br>
+- Revoke certs<br>
 
 <H3>What that tool does not do</H3>
 - Sign certificates against a remote CA<br>
 - Any operation against a remote CA, actually<br>
 
-The work involved in dealing with all of the use-cases with remote CAs is not worth the effort, especially considering that I started that project for a specific home use-case
+The work involved in dealing with all the use-cases with remote CAs is not worth the effort, especially considering that I started that project for a specific home use-case
 
 <H2>How does it work</H2>
 At initial run, a sample file will be created in $HOME/.config/certificateManager/.<br>
-This file should be copied as `defaultEnv.json` ASAP, with sane values.<br>
-Read `environmentSample-README.txt` in the same directory for examples.
+This file should be copied as `defaultEnv.json` ASAP, with sane values, or `cm env create defaultEnv`.<br>
+Read `sampleEnv-README.txt` in the same directory for examples.
 
 By default, the software runs with the `-e defaultEnv.json` flag as a default environment file (which is why you need to adapt the above file with sane values). This will create the correct directory structure this software needs to operate
 
-You first need to either adapt `sampleEnv.json` as `defaultEnv.json`, or use `cm env create -e $ENVIRONMENTNAME` to create a new environment file
+You first need to either adapt `sampleEnv.json` as `defaultEnv.json`, or use `cm env create $ENVIRONMENTNAME` to create a new environment file
 
 Then, you need to create your certificates, with `cm cert create $CERTIFICATENAME`. You will be prompted for the values needed to create the given certificate.
 All relevant files will be stored in the directories as specified in the environment file (specified with the `-e` flag) you've chosen.
