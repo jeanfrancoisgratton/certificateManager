@@ -84,7 +84,7 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 
 	// 4. Populate x509 template
 	template := x509.Certificate{
-		SerialNumber:          big.NewInt(1),
+		SerialNumber:          big.NewInt(int64(c.SerialNumber)),
 		Subject:               pkix.Name{CommonName: c.CommonName, Locality: []string{c.Locality}, Country: []string{c.Country}, Organization: []string{c.Organization}, OrganizationalUnit: []string{c.OrganizationalUnit}, Province: []string{c.Province}},
 		NotBefore:             time.Now(),
 		NotAfter:              time.Now().AddDate(c.Duration, 0, 0),
@@ -107,7 +107,7 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	}
 
 	// 6. Encode, save to disk
-	certFile, err := os.Create(filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "cert", c.CertificateName+".crt"))
+	certFile, err := os.Create(filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "certs", c.CertificateName+".crt"))
 	if err != nil {
 		return err
 	}
@@ -134,8 +134,8 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 		return c.createJavaCert(env, caCert, caKey)
 	}
 
-	fmt.Printf("Certificate %s with a duration of %v years successfully in %s\n",
-		helpers.Green(c.CertificateName), c.Duration, filepath.Join(env.CertificateRootDir, env.RootCAdir))
+	fmt.Printf("Certificate %s with a duration of %v years successfully created in %s\n",
+		helpers.White(c.CertificateName), helpers.White(fmt.Sprintf("%v", c.Duration)), helpers.White(filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "certs")))
 	return nil
 }
 
@@ -172,8 +172,8 @@ func (c CertificateStruct) createCA(env environment.EnvironmentStruct, privateKe
 		return err
 	}
 
-	fmt.Printf("Root CA certificate %s with a duration of %v years successfully in %s\n",
-		helpers.Green(c.CertificateName), c.Duration, filepath.Join(env.CertificateRootDir, env.RootCAdir))
+	fmt.Printf("Root CA certificate %s with a duration of %v years successfully created in %s\n",
+		helpers.White(c.CertificateName), helpers.White(fmt.Sprintf("%v", c.Duration)), helpers.White(filepath.Join(env.CertificateRootDir, env.RootCAdir)))
 	return nil
 }
 
