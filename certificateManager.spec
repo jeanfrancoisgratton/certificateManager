@@ -54,6 +54,9 @@ install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryn
 
 
 %changelog
+* Tue Oct 03 2023 RPM Builder <builder@famillegratton.net> 1.010-1
+- Fixed typo in directory name (jean-francois@famillegratton.net)
+
 * Tue Oct 03 2023 RPM Builder <builder@famillegratton.net> 1.010-0
 - Fixed issue where serial number was not incremented in the certificate (jean-
   francois@famillegratton.net)
