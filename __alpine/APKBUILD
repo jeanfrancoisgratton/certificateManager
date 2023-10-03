@@ -2,7 +2,7 @@
 # Packager: Builder <builder@famillegratton.net>
 pkgname="certificateManager"
 pkgver=1.010
-pkgrel=0
+pkgrel=1
 pkgdir=/data/packages
 builddir="$startdir/src/BUILD"
 pkgdesc="Certificates and CA management tool"

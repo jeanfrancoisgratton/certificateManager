@@ -18,6 +18,7 @@ func Changelog() {
 	fmt.Print(`
 VERSION		DATE			COMMENT
 -------		----			-------
+1.010-1		2023.10.03		Fixed typo in directory name
 1.010		2023.10.03		Fixed issue when serial number was not incremented within certificate
 1.001		2023.10.03		Minor changes: verbosity, doc update
 1.000		2023.09.30		Completed prod-ready version
