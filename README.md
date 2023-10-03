@@ -69,12 +69,12 @@ A typical certificate config file looks like this:
   "CommonName": "myorg.net root CA",
   "IsCA": true,
   "EmailAddresses": [
-    "certs@myorg.net",
-    "certs@org,net"
+    "cert@myorg.net",
+    "cert@org,net"
   ],
   "Duration": 10,
   "KeyUsage": [
-    "certs sign",
+    "cert sign",
     "crl sign",
     "digital signature"
   ],
@@ -121,10 +121,11 @@ Number of environment files: 1
 ┗━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ```
 
-So you see, my environment, my sandbox, my PKI, sits under `/test/`
+So you see, my environment / sandbox / PKI, sits under `/test/`
 
 Now, I've cheated a bit here, I've already created some certs, to show you the directory structure:<br>
-```[17:16:19|jfgratton@bergen:/test]: cm -e test cert ls
+```
+[17:16:19|jfgratton@bergen:/test]: cm -e test cert ls
 Number of certificates: 4
 ┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Cert name    ┃ Common Name       ┃ File size ┃ Modification time   ┃
@@ -135,12 +136,12 @@ Number of certificates: 4
 ┃ testCA.json  ┃ myorg.net root CA ┃ 726       ┃ 2023/10/02 17:15:28 ┃
 ┗━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━┛
 ```
-
-If we go above the above values (`cm env explain test`), we get the following directory structure:<br>
-
 <br>**A NOTE ABOUT `cm cert ls`:**<br>
 This command lists certificate **config** files, not certificate **files**. This means a config file might be present, but no valid certificate being present.<br>
 If you wish to see that a certificate exists (and is valid) : `cm cert verify $PATH_TO_CERTIFICATE_FILE`
+<br><br>
+`cm env explain test`, above, reflects the following directory structure:<br>
+
 
 With `test` as being the root PKI directory, we get this:<br>
 ```bash
@@ -161,7 +162,7 @@ test
 │   ├── nexus.json
 │   └── testCA.json
 └── srv
-    ├── certs
+    ├── cert
     │   ├── gitea.crt
     │   ├── haproxy.crt
     │   └── nexus.crt
@@ -183,6 +184,12 @@ srv is where you store all certificates files, private keys, java keys (jks, p12
 - `index.txt` is the main database that stores every certificate in the PKI, including the rootCA<br>
 - `serials` is the latest generated certificate serial<br>
 - `newcerts/` is the directory holding a copy of the generated certificates; the filename is an hexidecimal-translated number (from the cert serial number)<br>
+- `cfg/` is the certificate configuration files
+- `srv/cert/` contains the certificates themselves
+- `srv/csr/` contains the certificate signing request; I keep these in case you want to make your PKI structure public
+- `srv/private/` contains the certificate private key (needed by CSR)
+- `srv/java/` are the certificates (.crt), converted in PKCS#12 and JKS formats, for Java usage
+<br><br>
 
 <H2>How do we use the software</H2>
 <H3>Create an environment file</H3>
