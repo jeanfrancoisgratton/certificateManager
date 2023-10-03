@@ -3,7 +3,7 @@
 GOROOT=/opt/go
 OUTPUT=/opt/bin
 
-arch=$(uname -m)
+#arch=$(uname -m)
 
 
 if [ "$#" -gt 0 ]; then
@@ -11,8 +11,3 @@ if [ "$#" -gt 0 ]; then
 fi
 
 sudo ${GOROOT}/bin/go build -o ${OUTPUT}/cm .
-
-# Somehow fails on ARM64
-if [ "$arch" = "x86_64" ]; then
-    sudo strip ${OUTPUT}/cm
-fi
