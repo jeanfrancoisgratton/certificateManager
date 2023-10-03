@@ -135,11 +135,54 @@ Number of certificates: 4
 ┃ testCA.json  ┃ myorg.net root CA ┃ 726       ┃ 2023/10/02 17:15:28 ┃
 ┗━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━┛
 ```
+
+If we go above the above values (`cm env explain test`), we get the following directory structure:<br>
+
 <br>**A NOTE ABOUT `cm cert ls`:**<br>
 This command lists certificate **config** files, not certificate **files**. This means a config file might be present, but no valid certificate being present.<br>
 If you wish to see that a certificate exists (and is valid) : `cm cert verify $PATH_TO_CERTIFICATE_FILE`
 
+With `test` as being the root PKI directory, we get this:<br>
+```bash
+test
+├── CA
+│   ├── index.txt
+│   ├── index.txt.attr
+│   ├── newcerts
+│   │   ├── 0002.pem
+│   │   ├── 0003.pem
+│   │   └── 0004.pem
+│   ├── serial
+│   ├── testCA.crt
+│   └── testCA.key
+├── cfg
+│   ├── gitea.json
+│   ├── haproxy.json
+│   ├── nexus.json
+│   └── testCA.json
+└── srv
+    ├── certs
+    │   ├── gitea.crt
+    │   ├── haproxy.crt
+    │   └── nexus.crt
+    ├── csr
+    │   ├── gitea.csr
+    │   ├── haproxy.csr
+    │   └── nexus.csr
+    ├── java
+    └── private
+        ├── gitea.key
+        ├── haproxy.key
+        └── nexus.key
 
+```
+*In this structure*:<br>
+CA is the root PKI directory:<br>
+cfg is the config dir, where all certificates config files are stored<br>
+srv is where you store all certificates files, private keys, java keys (jks, p12)<br>
+- `index.txt` is the main database that stores every certificate in the PKI, including the rootCA<br>
+- `serials` is the latest generated certificate serial<br>
+- `newcerts/` is the directory holding a copy of the generated certificates; the filename is an hexidecimal-translated number (from the cert serial number)<br>
 
 <H2>How do we use the software</H2>
 <H3>Create an environment file</H3>
@@ -169,8 +212,11 @@ Either you already have your own json CA file (`cfg/rootCA.json`, in this exampl
 <H3>Create "standard" SSL certs</H3>
 The process is exactly as the one above, except that this time you specify that you are not creating a CA certificate<br>
 
-This means that you follow the steps, above, and if you create a new file, you will need to answer FALSE to the prompt where it asks you if this is a CA cert,\
+This means that you follow the steps, above, and if you create a new file, you will need to answer FALSE to the prompt where it asks you if this is a CA cert.<br>
 
+<H3>Revoke certs</H3>
+Simple: `cm cert revoke $CERTCONFIGFILE`<br>
+You just name the cert config file (as per `cm cert ls`), and that's it.<br>
 
 <H2>Building, installing CertificateManager</H2>
 I provide both the source code and Alpine (APK), Debian-based (DEB) or RedHat-based (RPM) binary packages.
