@@ -18,6 +18,7 @@ func Changelog() {
 	fmt.Print(`
 VERSION		DATE			COMMENT
 -------		----			-------
+1.001		2023.10.03		Minor changes: verbosity, doc update
 1.000		2023.09.30		Completed prod-ready version
 0.500		2023.06.03		server cert management
 0.400		2023.04.22		config-old management

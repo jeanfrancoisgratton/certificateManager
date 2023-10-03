@@ -11,14 +11,13 @@ import (
 	"os"
 )
 
-var version = "1.000-0 (2023.09.30)"
+//var version = "1.001-0 (2023.10.03)"
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:     "cm",
-	Short:   "Add a short description here",
-	Long:    "Add a long description here",
-	Version: version,
+	Short:   "Certificate / PKI management tool",
+	Version: helpers.White("1.001-0 (2023.10.03)"),
 }
 
 var clCmd = &cobra.Command{

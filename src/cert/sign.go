@@ -133,6 +133,9 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	if CertJava {
 		return c.createJavaCert(env, caCert, caKey)
 	}
+
+	fmt.Printf("Certificate %s with a duration of %v years successfully in %s\n",
+		helpers.Green(c.CertificateName), c.Duration, filepath.Join(env.CertificateRootDir, env.RootCAdir))
 	return nil
 }
 
@@ -168,6 +171,9 @@ func (c CertificateStruct) createCA(env environment.EnvironmentStruct, privateKe
 	if err = pem.Encode(cafile, &pem.Block{Type: "CERTIFICATE", Bytes: caBytes}); err != nil {
 		return err
 	}
+
+	fmt.Printf("Root CA certificate %s with a duration of %v years successfully in %s\n",
+		helpers.Green(c.CertificateName), c.Duration, filepath.Join(env.CertificateRootDir, env.RootCAdir))
 	return nil
 }
 

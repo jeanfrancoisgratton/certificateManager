@@ -48,7 +48,7 @@ func Revoke(certname string) error {
 		return err
 	}
 
-	fmt.Printf("Certificate %s has sucessfully been %s\n", c.CertificateName, helpers.Green("revoked"))
+	fmt.Printf("Certificate %s has successfully been %s\n", c.CertificateName, helpers.Green("revoked"))
 	return nil
 }
 
