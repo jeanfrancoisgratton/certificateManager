@@ -1,6 +1,6 @@
 // certificateManager
 // Written by J.F. Gratton <jean-francois@famillegratton.net>
-// Original filename: src/certs/certPrivateKeys.go
+// Original filename: src/cert/certPrivateKeys.go
 // Original timestamp: 2023/08/25 18:58
 
 // Manages private Keys and CSRs

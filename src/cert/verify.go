@@ -1,6 +1,6 @@
 // certificateManager
 // Written by J.F. Gratton <jean-francois@famillegratton.net>
-// Original filename: src/certs/verify.go
+// Original filename: src/cert/verify.go
 // Original timestamp: 2023/08/23 15:22
 
 package certs

@@ -1,6 +1,6 @@
 // certificateManager
 // Écrit par J.F. Gratton <jean-francois@famillegratton.net>
-// Orininal name: src/certs/helpers.go
+// Orininal name: src/cert/helpers.go
 // Original time: 2023/06/16 16:37
 
 package certs
@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-// var CertConfig = CertificateStruct{Duration: 1, KeyUsage: []string{"certs sign", "crl sign", "digital signature"}}
+// var CertConfig = CertificateStruct{Duration: 1, KeyUsage: []string{"cert sign", "crl sign", "digital signature"}}
 var CertConfigFile = "defaultCertConfig.json"
 var CertName = ""
 var CertJava = false
@@ -47,9 +47,9 @@ func CreateSampleCert() error {
 		Organization:       "myorg.net",
 		OrganizationalUnit: "myorg",
 		CommonName:         "myorg.net root CA",
-		EmailAddresses:     []string{"certs@myorg.net", "certs@org,net"},
+		EmailAddresses:     []string{"cert@myorg.net", "cert@org,net"},
 		Duration:           10,
-		KeyUsage:           []string{"certs sign", "crl sign", "digital signature"},
+		KeyUsage:           []string{"cert sign", "crl sign", "digital signature"},
 		DNSNames:           []string{"myorg.net", "myorg.com", "lan.myorg.net"},
 		IPAddresses:        []net.IP{net.ParseIP("10.0.0.1"), net.ParseIP("127.0.0.1")},
 		CertificateName:    "sampleCert",
@@ -78,13 +78,13 @@ func CreateExplanationfile() error {
 	"Organization" : "myorg.net", -> Organization of origin
 	"OrganizationalUnit" : "myorg", -> Sub-organization of origin
 	"CommonName" : "myorg.net root CA", -> The name of the certificate
-	"EmailAddresses" : ["certs@myorg.net", "certs@org.net"], -> Email addresses responsible for this cert
+	"EmailAddresses" : ["cert@myorg.net", "cert@org.net"], -> Email addresses responsible for this cert
 	"Duration" : 10, -> CA duration, in years
 	"KeyUsage" : ["Digital Signature", "Certificate Sign", "CRL Sign"], -> Certificate usage. This here are common values for CAs
-	"DNSNames" : ["myorg.net","myorg.com","lan.myorg.net"], -> DNS names assigned to this certs
-	"IPAddresses" : ["10.1.1.11", "127.0.0.1"], -> IP addresses assigned to this certs (never a good idea to assign IPs to a CA)
-	"CertificateName" : "sample_cert", -> certs filename, no extension to the filename
-	"IsCA": true, -> Are we creating a CA or a "normal" server certs ?
+	"DNSNames" : ["myorg.net","myorg.com","lan.myorg.net"], -> DNS names assigned to this cert
+	"IPAddresses" : ["10.1.1.11", "127.0.0.1"], -> IP addresses assigned to this cert (never a good idea to assign IPs to a CA)
+	"CertificateName" : "sample_cert", -> cert filename, no extension to the filename
+	"IsCA": true, -> Are we creating a CA or a "normal" server cert ?
 	"SerialNumber": this is an unsigned int64, handled by the software; put here any positive value
 	"Comments": ["To see which values to put in the KeyUsage field, see https://pkg.go.dev/crypto/x509#KeyUsage", "Strip off 'KeyUsage' from the const name and there you go.", "", "Please note that this field offers no functionality and is strictly here for documentation purposes"] -> Those won't appear in the certificate file
 }`
@@ -103,7 +103,7 @@ func CreateExplanationfile() error {
 	return nil
 }
 
-// createCertificateRootDirectories() : creates the directory structure needed to store all certs, keys, CA, CSR, etc
+// createCertificateRootDirectories() : creates the directory structure needed to store all cert, keys, CA, CSR, etc
 func createCertificateRootDirectories() error {
 	e, err := environment.LoadEnvironmentFile()
 	if err != nil {

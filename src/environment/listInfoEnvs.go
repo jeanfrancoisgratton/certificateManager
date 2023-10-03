@@ -17,33 +17,40 @@ import (
 
 func ListEnvironments(envdir string) error {
 	var err error
-	var fileInfos []os.FileInfo
+	var dirFH *os.File
+	var finfo, fileInfos []os.FileInfo
 
 	// list environment files
 	if envdir == "" {
 		envdir = filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager")
 	}
-	err = filepath.Walk(envdir, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
+	if dirFH, err = os.Open(envdir); err != nil {
+		return helpers.CustomError{Message: "Unable to read config directory: " + err.Error()}
+	}
+
+	if fileInfos, err = dirFH.Readdir(0); err != nil {
+		return helpers.CustomError{Message: "Unable to read files in config directory: " + err.Error()}
+	}
+
+	for _, info := range fileInfos {
 		if !info.IsDir() && strings.HasSuffix(info.Name(), ".json") && !strings.HasPrefix(info.Name(), "sample") {
-			fileInfos = append(fileInfos, info)
+			finfo = append(finfo, info)
 		}
-		return nil
-	})
+	}
+	//	return nil
+	//})
 
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("Number of environment files: %s\n", helpers.Green(fmt.Sprintf("%d", len(fileInfos))))
+	fmt.Printf("Number of environment files: %s\n", helpers.Green(fmt.Sprintf("%d", len(finfo))))
 
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Environment file", "File size", "Modification time"})
 
-	for _, fi := range fileInfos {
+	for _, fi := range finfo {
 		t.AppendRow([]interface{}{helpers.Green(fi.Name()), helpers.Green(helpers.SI(uint64(fi.Size()))),
 			helpers.Green(fmt.Sprintf("%v", fi.ModTime().Format("2006/01/02 15:04:05")))})
 	}

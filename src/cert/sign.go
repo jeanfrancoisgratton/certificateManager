@@ -1,6 +1,6 @@
 // certificateManager
 // Written by J.F. Gratton <jean-francois@famillegratton.net>
-// Original filename: src/certs/sign.go
+// Original filename: src/cert/sign.go
 // Original timestamp: 2023/09/11 10:28
 
 package certs
@@ -84,7 +84,7 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 
 	// 4. Populate x509 template
 	template := x509.Certificate{
-		SerialNumber:          big.NewInt(1),
+		SerialNumber:          big.NewInt(int64(c.SerialNumber)),
 		Subject:               pkix.Name{CommonName: c.CommonName, Locality: []string{c.Locality}, Country: []string{c.Country}, Organization: []string{c.Organization}, OrganizationalUnit: []string{c.OrganizationalUnit}, Province: []string{c.Province}},
 		NotBefore:             time.Now(),
 		NotAfter:              time.Now().AddDate(c.Duration, 0, 0),
@@ -133,10 +133,13 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	if CertJava {
 		return c.createJavaCert(env, caCert, caKey)
 	}
+
+	fmt.Printf("Certificate %s with a duration of %v years successfully created in %s\n",
+		helpers.White(c.CertificateName), helpers.White(fmt.Sprintf("%v", c.Duration)), helpers.White(filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "certs")))
 	return nil
 }
 
-// createCA and signCert are very similar: one is for non-CA certs, the other (below) for CA certs
+// createCA and signCert are very similar: one is for non-CA cert, the other (below) for CA cert
 // I *could* fold both into a single function, with tons of "if c.IsCA{}" clauses, but it's not worth
 // the readability headache that it'd bring
 func (c CertificateStruct) createCA(env environment.EnvironmentStruct, privateKey *rsa.PrivateKey) error {
@@ -168,6 +171,9 @@ func (c CertificateStruct) createCA(env environment.EnvironmentStruct, privateKe
 	if err = pem.Encode(cafile, &pem.Block{Type: "CERTIFICATE", Bytes: caBytes}); err != nil {
 		return err
 	}
+
+	fmt.Printf("Root CA certificate %s with a duration of %v years successfully created in %s\n",
+		helpers.White(c.CertificateName), helpers.White(fmt.Sprintf("%v", c.Duration)), helpers.White(filepath.Join(env.CertificateRootDir, env.RootCAdir)))
 	return nil
 }
 
@@ -197,7 +203,7 @@ func (c CertificateStruct) createJavaCert(e environment.EnvironmentStruct, caCer
 	}
 
 	// Load, decode and parse the current server cert
-	if certPEM, err = os.ReadFile(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "certs", c.CertificateName+".crt")); err != nil {
+	if certPEM, err = os.ReadFile(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "cert", c.CertificateName+".crt")); err != nil {
 		return helpers.CustomError{Message: "Error reading CA certificate: " + err.Error()}
 	}
 	certBlock, _ = pem.Decode(certPEM)

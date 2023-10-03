@@ -1,6 +1,6 @@
 // certificateManager
 // Written by J.F. Gratton <jean-francois@famillegratton.net>
-// Original filename: src/certs/keyUsageHelpers.go
+// Original filename: src/cert/keyUsageHelpers.go
 // Original timestamp: 2023/08/26 09:24
 
 package certs
@@ -27,7 +27,7 @@ func getKeyUsageFromStrings(usageStrings []string) x509.KeyUsage {
 			keyUsage |= x509.KeyUsageDataEncipherment
 		case "key agreement":
 			keyUsage |= x509.KeyUsageKeyAgreement
-		case "certs sign", "certificate sign":
+		case "cert sign", "certificate sign":
 			keyUsage |= x509.KeyUsageCertSign
 		case "crl sign", "crl":
 			keyUsage |= x509.KeyUsageCRLSign
@@ -62,7 +62,7 @@ func getStringsFromKeyUsage(keyUsage x509.KeyUsage) []string {
 		usages = append(usages, "key agreement")
 	}
 	if keyUsage&x509.KeyUsageCertSign != 0 {
-		usages = append(usages, "certs sign")
+		usages = append(usages, "cert sign")
 	}
 	if keyUsage&x509.KeyUsageCRLSign != 0 {
 		usages = append(usages, "crl sign")
@@ -80,7 +80,7 @@ func getStringsFromKeyUsage(keyUsage x509.KeyUsage) []string {
 func reindexKeyUsage(cfg CertificateStruct) x509.KeyUsage {
 	org := cfg.KeyUsage
 	// We append the CA-related usages
-	org = append(org, "certs sign", "crl sign", "digital signature")
+	org = append(org, "cert sign", "crl sign", "digital signature")
 
 	// We map the new slices
 	//[]string to map : https://kylewbanks.com/blog/creating-unique-slices-in-go
