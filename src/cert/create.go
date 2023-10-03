@@ -1,6 +1,6 @@
 // certificateManager
 // Written by J.F. Gratton <jean-francois@famillegratton.net>
-// Original filename: src/certs/create.go
+// Original filename: src/cert/create.go
 // Original timestamp: 2023/08/25 16:30
 
 package certs
@@ -63,7 +63,7 @@ func Create(certconfigfile string) error {
 		}
 	}
 	// Corner case : as EmailAddress is part of a certificate signature (ie: this is part on how
-	// We differentiate the registered certs), we need to have a value in this field.
+	// We differentiate the registered cert), we need to have a value in this field.
 	if len(cert.EmailAddresses) == 0 {
 		cert.EmailAddresses = []string{"none"}
 	}

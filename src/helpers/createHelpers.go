@@ -75,7 +75,7 @@ func GetStringSliceFromPrompt(prompt string) []string {
 func GetKeyUsage() []string {
 	var keys []string
 	inputScanner := bufio.NewScanner(os.Stdin)
-	ku := []string{"decipher only", "encipher only", "crl sign", "certs sign", "key agreement",
+	ku := []string{"decipher only", "encipher only", "crl sign", "cert sign", "key agreement",
 		"data encipherment", "key encipherment", "content commitment", "digital signature", "CADEFAULTS", "CERTDEFAULTS"}
 	inputs := []string{}
 
@@ -98,7 +98,7 @@ func GetKeyUsage() []string {
 		}
 		if input == "CADEFAULTS" || input == "CERTDEFAULTS" {
 			if input == "CADEFAULTS" {
-				inputs = append(inputs, "digital signature", "certs sign", "crl sign")
+				inputs = append(inputs, "digital signature", "cert sign", "crl sign")
 			} else {
 				inputs = append(inputs, "digital signature", "key encipherment",
 					"data encipherment", "key agreement")

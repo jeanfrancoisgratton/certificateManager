@@ -1,6 +1,6 @@
 // certificateManager
 // Written by J.F. Gratton <jean-francois@famillegratton.net>
-// Original filename: src/certs/sign.go
+// Original filename: src/cert/sign.go
 // Original timestamp: 2023/09/11 10:28
 
 package certs
@@ -107,7 +107,7 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	}
 
 	// 6. Encode, save to disk
-	certFile, err := os.Create(filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "certs", c.CertificateName+".crt"))
+	certFile, err := os.Create(filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "cert", c.CertificateName+".crt"))
 	if err != nil {
 		return err
 	}
@@ -133,10 +133,13 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	if CertJava {
 		return c.createJavaCert(env, caCert, caKey)
 	}
+
+	fmt.Printf("Certificate %s with a duration of %v years successfully in %s\n",
+		helpers.Green(c.CertificateName), c.Duration, filepath.Join(env.CertificateRootDir, env.RootCAdir))
 	return nil
 }
 
-// createCA and signCert are very similar: one is for non-CA certs, the other (below) for CA certs
+// createCA and signCert are very similar: one is for non-CA cert, the other (below) for CA cert
 // I *could* fold both into a single function, with tons of "if c.IsCA{}" clauses, but it's not worth
 // the readability headache that it'd bring
 func (c CertificateStruct) createCA(env environment.EnvironmentStruct, privateKey *rsa.PrivateKey) error {
@@ -168,6 +171,9 @@ func (c CertificateStruct) createCA(env environment.EnvironmentStruct, privateKe
 	if err = pem.Encode(cafile, &pem.Block{Type: "CERTIFICATE", Bytes: caBytes}); err != nil {
 		return err
 	}
+
+	fmt.Printf("Root CA certificate %s with a duration of %v years successfully in %s\n",
+		helpers.Green(c.CertificateName), c.Duration, filepath.Join(env.CertificateRootDir, env.RootCAdir))
 	return nil
 }
 
@@ -197,7 +203,7 @@ func (c CertificateStruct) createJavaCert(e environment.EnvironmentStruct, caCer
 	}
 
 	// Load, decode and parse the current server cert
-	if certPEM, err = os.ReadFile(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "certs", c.CertificateName+".crt")); err != nil {
+	if certPEM, err = os.ReadFile(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "cert", c.CertificateName+".crt")); err != nil {
 		return helpers.CustomError{Message: "Error reading CA certificate: " + err.Error()}
 	}
 	certBlock, _ = pem.Decode(certPEM)
