@@ -54,6 +54,19 @@ install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryn
 
 
 %changelog
+* Tue Oct 03 2023 RPM Builder <builder@famillegratton.net> 1.001-0
+- Completed README.md (jean-francois@famillegratton.net)
+- Fixed bug where config dir was being recursively scanned (jean-
+  francois@famillegratton.net)
+- Version bump : minor fixes (jean-francois@famillegratton.net)
+- Package name change (jean-francois@famillegratton.net)
+- Sync zenika-> (jean-francois@famillegratton.net)
+- Doc update (...part3) (jean-francois@famillegratton.net)
+- Doc update (...final?) (jean-francois@famillegratton.net)
+- Doc update part 1 (jean-francois@famillegratton.net)
+- Fixed apk packaging (jean-francois@famillegratton.net)
+- Fixed version in deb packaging (jean-francois@famillegratton.net)
+
 * Sun Oct 01 2023 RPM Builder <builder@famillegratton.net> 1.000-0
 - First prod-ready version
 
