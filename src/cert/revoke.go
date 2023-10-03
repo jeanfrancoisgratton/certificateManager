@@ -1,6 +1,6 @@
 // certificateManager
 // Written by J.F. Gratton <jean-francois@famillegratton.net>
-// Original filename: src/certs/revoke.go
+// Original filename: src/cert/revoke.go
 // Original timestamp: 2023/09/25 18:54
 
 package certs
@@ -48,6 +48,7 @@ func Revoke(certname string) error {
 		return err
 	}
 
+	fmt.Printf("Certificate %s has sucessfully been %s\n", c.CertificateName, helpers.Green("revoked"))
 	return nil
 }
 
@@ -115,7 +116,7 @@ func putRevokeFlag(e environment.EnvironmentStruct, certname string, country str
 	if CertRemoveFiles {
 		os.Remove(filepath.Join(e.CertificateRootDir, e.RootCAdir, "newcerts", strings.ToUpper(serialField)+".pem"))
 		os.Remove(filepath.Join(e.CertificateRootDir, e.CertificatesConfigDir, certfilename+".json"))
-		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "certs", certfilename+".crt"))
+		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "cert", certfilename+".crt"))
 		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "csr", certfilename+".csr"))
 		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "private", certfilename+".key"))
 		if _, err = os.Stat(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", certfilename+".p12")); err != nil && os.IsNotExist(err) {

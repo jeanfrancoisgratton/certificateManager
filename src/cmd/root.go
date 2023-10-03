@@ -4,7 +4,7 @@
 package cmd
 
 import (
-	"certificateManager/certs"
+	"certificateManager/cert"
 	"certificateManager/environment"
 	"certificateManager/helpers"
 	"github.com/spf13/cobra"

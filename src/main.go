@@ -1,7 +1,7 @@
 package main
 
 import (
-	"certificateManager/certs"
+	"certificateManager/cert"
 	"certificateManager/cmd"
 	"certificateManager/environment"
 	"fmt"

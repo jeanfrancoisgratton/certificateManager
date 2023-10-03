@@ -6,7 +6,7 @@
 package cmd
 
 import (
-	"certificateManager/certs"
+	"certificateManager/cert"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"

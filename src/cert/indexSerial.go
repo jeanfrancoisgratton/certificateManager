@@ -1,6 +1,6 @@
 // certificateManager
 // Written by J.F. Gratton <jean-francois@famillegratton.net>
-// Original filename: src/certs/indexSerial.go
+// Original filename: src/cert/indexSerial.go
 // Original timestamp: 2023/08/26 12:26
 
 // Manages the index.txt* and serial files
