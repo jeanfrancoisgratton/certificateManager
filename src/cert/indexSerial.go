@@ -5,7 +5,7 @@
 
 // Manages the index.txt* and serial files
 
-package certs
+package cert
 
 import (
 	"bufio"

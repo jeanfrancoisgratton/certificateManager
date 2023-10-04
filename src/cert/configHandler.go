@@ -3,7 +3,7 @@
 // Original filename: src/cert/configHandler.go
 // Original timestamp: 2023/08/26 09:21
 
-package certs
+package cert
 
 import (
 	"certificateManager/environment"

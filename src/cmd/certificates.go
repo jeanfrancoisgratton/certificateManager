@@ -29,7 +29,7 @@ var certlistCmd = &cobra.Command{
 	Example: "cm cert list",
 	Short:   "Lists all certificates in defined rootDir",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := certs.ListCertificates(); err != nil {
+		if err := cert.ListCertificates(); err != nil {
 			fmt.Println(err)
 			os.Exit(2)
 		}
@@ -44,7 +44,7 @@ var certVerifyCmd = &cobra.Command{
 	Short:   "Verifies a certificate, as per the provided filename",
 	Long:    "Please note: the certificate filename does not need to be within the current PKI structure.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := certs.Verify(args); err != nil {
+		if err := cert.Verify(args); err != nil {
 			fmt.Println(err)
 			os.Exit(2)
 		}
@@ -62,7 +62,7 @@ var certCreateCmd = &cobra.Command{
 		if len(args) != 0 {
 			certname = args[0]
 		}
-		if err := certs.Create(certname); err != nil {
+		if err := cert.Create(certname); err != nil {
 			fmt.Println(err)
 			os.Exit(2)
 		}
@@ -79,7 +79,7 @@ var certRevokeCmd = &cobra.Command{
 		if len(args) != 0 {
 			certname = args[0]
 		}
-		if err := certs.Revoke(certname); err != nil {
+		if err := cert.Revoke(certname); err != nil {
 			fmt.Println(err)
 			os.Exit(2)
 		}

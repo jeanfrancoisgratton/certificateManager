@@ -3,7 +3,7 @@
 // Original filename: src/cert/sign.go
 // Original timestamp: 2023/09/11 10:28
 
-package certs
+package cert
 
 import (
 	"certificateManager/environment"

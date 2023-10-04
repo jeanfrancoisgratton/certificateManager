@@ -3,7 +3,7 @@
 // Original filename: src/cert/verify.go
 // Original timestamp: 2023/08/23 15:22
 
-package certs
+package cert
 
 import (
 	"certificateManager/environment"

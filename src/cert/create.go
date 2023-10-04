@@ -3,7 +3,7 @@
 // Original filename: src/cert/create.go
 // Original timestamp: 2023/08/25 16:30
 
-package certs
+package cert
 
 import (
 	"certificateManager/environment"

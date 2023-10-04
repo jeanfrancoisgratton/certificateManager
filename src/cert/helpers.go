@@ -3,7 +3,7 @@
 // Orininal name: src/cert/helpers.go
 // Original time: 2023/06/16 16:37
 
-package certs
+package cert
 
 import (
 	"certificateManager/environment"
@@ -13,9 +13,7 @@ import (
 	"strings"
 )
 
-// var CertConfig = CertificateStruct{Duration: 1, KeyUsage: []string{"cert sign", "crl sign", "digital signature"}}
 var CertConfigFile = "defaultCertConfig.json"
-var CertName = ""
 var CertJava = false
 var CertRemoveFiles = false
 
