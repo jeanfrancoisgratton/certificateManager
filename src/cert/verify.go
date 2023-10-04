@@ -6,10 +6,12 @@
 package certs
 
 import (
+	"certificateManager/environment"
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -26,7 +28,6 @@ func Verify(certFilePaths []string) error {
 	//}
 
 	for _, path := range certFilePaths {
-		//if err := verifyCert(filepath.Join(e.CertificateRootDir, path)); err != nil {
 		if err := verifyCert(path); err != nil {
 			return err
 		}
@@ -120,7 +121,14 @@ func verifyCert(certFilePath string) error {
 	if CaVerifyComments {
 		var c CertificateStruct
 		var err error
-		if c, err = LoadCertificateConfFile(""); err != nil {
+		var e environment.EnvironmentStruct
+
+		if e, err = environment.LoadEnvironmentFile(); err != nil {
+			return err
+		}
+		cfgfileName := filepath.Base(certFilePath)
+		baseName := cfgfileName[:len(cfgfileName)-len(filepath.Ext(cfgfileName))] + ".json"
+		if c, err = LoadCertificateConfFile(filepath.Join(e.CertificateRootDir, e.CertificatesConfigDir, baseName)); err != nil {
 			return err
 		}
 		if len(c.Comments) > 0 {

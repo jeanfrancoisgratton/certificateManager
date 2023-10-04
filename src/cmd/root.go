@@ -57,6 +57,6 @@ func init() {
 	certCreateCmd.PersistentFlags().BoolVarP(&certs.CertJava, "java", "j", false, "Also create a Java Keystore (JKS).")
 	certRevokeCmd.PersistentFlags().BoolVarP(&certs.CertRemoveFiles, "remove", "r", false, "Remove all artefacts from PKI.")
 	certVerifyCmd.Flags().BoolVarP(&certs.CaVerifyVerbose, "verbose", "v", false, "Display the full output.")
-	certVerifyCmd.Flags().BoolVarP(&certs.CaVerifyComments, "comments", "", false, "Display the comments (if any) at the end of the configuration file.")
+	certVerifyCmd.Flags().BoolVarP(&certs.CaVerifyComments, "comments", "c", false, "Display the comments (if any) at the end of the configuration file.")
 	certCreateCmd.Flags().IntVarP(&certs.CertPKsize, "keysize", "b", 4096, "Certificate private key size in bits.")
 }
