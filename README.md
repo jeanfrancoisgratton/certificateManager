@@ -220,10 +220,18 @@ Either you already have your own json CA file (`cfg/rootCA.json`, in this exampl
 The process is exactly as the one above, except that this time you specify that you are not creating a CA certificate<br>
 
 This means that you follow the steps, above, and if you create a new file, you will need to answer FALSE to the prompt where it asks you if this is a CA cert.<br>
+<H3>Java certificates</H3>
+A Java certificate can be created with the `-j` flag with `cm cert create`.<br>
+This flag will convert the newly-created `.crt` certificate in a PKCS#12 format (`.p12` file), and then, convert that PKCS#12
+in a Java Keystore (`.jks`) file.<br><br>
+**HUGE CAVEAT:** In order to convert the `.p12` to `.jks`, we need an external tool, `keytool`, which is provided by any Java SDK or JRE.
+For many reasons, *I do not factor that dependency in my binary package build toolchain*, the main reason being that Java package names are inconsistent on any given distro.
+<br><br>
+In a future release, I will provide a flag to ignore the conversion from PKCS#12 to Java Keystore.<br>
 
 <H3>Revoke certs</H3>
 Simple: `cm cert revoke $CERTCONFIGFILE`<br>
-You just name the cert config file (as per `cm cert ls`), and that's it.<br>
+You just name the cert config file (as per `cm cert ls`), and that's it.<br><br>
 
 <H2>Building, installing CertificateManager</H2>
 I provide both the source code and Alpine (APK), Debian-based (DEB) or RedHat-based (RPM) binary packages.
