@@ -5,7 +5,7 @@
 
 // Manages private Keys and CSRs
 
-package certs
+package cert
 
 import (
 	"certificateManager/environment"

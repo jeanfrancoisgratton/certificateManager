@@ -3,7 +3,7 @@
 // Original filename: src/cert/create.go
 // Original timestamp: 2023/08/25 16:30
 
-package certs
+package cert
 
 import (
 	"certificateManager/environment"
@@ -41,7 +41,8 @@ func Create(certconfigfile string) error {
 	var privateKey *rsa.PrivateKey
 	var err error
 	var env environment.EnvironmentStruct
-	var cert CertificateStruct
+	var certconfig CertificateStruct
+	isDupe := false
 	if env, err = environment.LoadEnvironmentFile(); err != nil {
 		return err
 	}
@@ -51,57 +52,70 @@ func Create(certconfigfile string) error {
 		return err
 	}
 
-	// 2. Populate the certificate structure with user-provided values or a file
+	// 2a. Populate the certificate structure with user-provided values or a file
 	if certconfigfile == "" {
 		fmt.Printf("An example of a certificate can be found at %s\n", helpers.Green(filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "sampleCert.json")))
-		if err = populateCertificateStructure(&cert); err != nil {
+		if err = populateCertificateStructure(&certconfig); err != nil {
 			return err
 		}
 	} else {
-		if cert, err = LoadCertificateConfFile(certconfigfile); err != nil {
+		if certconfig, err = LoadCertificateConfFile(certconfigfile); err != nil {
 			return err
 		}
 	}
+
+	// 2b. Check if the proposed certificate already exists
+	// There is no reason in a well-behaved PKI to allow duplicates. I offer the possibility just because there might
+	// be use-cases that I am not aware of
+	if env.RemoveDuplicates {
+		if isDupe, err = certconfig.check4DuplicateCert(filepath.Join(env.CertificateRootDir, env.RootCAdir, "index.txt")); err != nil {
+			return helpers.CustomError{Message: "Unable to load/parse the index.txt database: " + err.Error()}
+		}
+		if isDupe {
+			return helpers.CustomError{Message: "Unable to proceed: that certificate is already present in the index.txt database"}
+		}
+	}
+
 	// Corner case : as EmailAddress is part of a certificate signature (ie: this is part on how
-	// We differentiate the registered cert), we need to have a value in this field.
-	if len(cert.EmailAddresses) == 0 {
-		cert.EmailAddresses = []string{"none"}
+	// We differentiate the registered certconfig), we need to have a value in this field.
+	if len(certconfig.EmailAddresses) == 0 {
+		certconfig.EmailAddresses = []string{"none"}
 	}
 
 	// 3. Get the current serial number
-	if cert.SerialNumber, err = getSerialNumber(); err != nil {
+	if certconfig.SerialNumber, err = getSerialNumber(); err != nil {
 		return err
 	} else {
-		cert.SerialNumber++
+		certconfig.SerialNumber++
 	}
 
 	// 4. Generate a private key
 	// Destination is either ServerCertsDir/private or RootCAdir
-	if privateKey, err = cert.createPrivateKey(); err != nil {
+	if privateKey, err = certconfig.createPrivateKey(); err != nil {
 		return err
 	}
 
-	// 5. Generate the CSR (if not a CA cert)
-	if !cert.IsCA {
-		if err = cert.generateCSR(env, privateKey); err != nil {
+	// 5. Generate the CSR (if not a CA certconfig)
+	if !certconfig.IsCA {
+		if err = certconfig.generateCSR(env, privateKey); err != nil {
 			return err
 		}
 	}
 
-	// 6. Generate the certificate, also sign it if non-CA cert
-	if cert.IsCA {
-		if err := cert.createCA(env, privateKey); err != nil {
+	// 6. Generate the certificate, also sign it if non-CA certconfig
+	if certconfig.IsCA {
+		if err := certconfig.createCA(env, privateKey); err != nil {
 			return err
 		}
 	} else {
-		if err := cert.signCert(env); err != nil {
+		if err := certconfig.signCert(env); err != nil {
 			return err
 		}
 	}
 
 	// 7. Update serial, index.txt.attr and index.txt
 	// serial
-	if err = setSerialNumber(cert.SerialNumber); err != nil {
+	if err = setSerialNumber(certconfig.SerialNumber); err != nil {
 		return err
 	}
 	// index.txt.attr
@@ -109,12 +123,12 @@ func Create(certconfigfile string) error {
 		return err
 	}
 	// index.txt
-	if err = writeIndexFile(cert); err != nil {
+	if err = writeIndexFile(certconfig); err != nil {
 		return err
 	}
 
 	// 8. Save JSON config file
-	if err = cert.SaveCertificateConfFile(""); err != nil {
+	if err = certconfig.SaveCertificateConfFile(""); err != nil {
 		return err
 	}
 

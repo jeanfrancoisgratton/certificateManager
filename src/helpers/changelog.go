@@ -18,6 +18,8 @@ func Changelog() {
 	fmt.Print(`
 VERSION		DATE			COMMENT
 -------		----			-------
+1.100-0		2023.10.04		cm cert verify now works w/ the verbose flag; duplicate certificate creation is now prevented 
+1.010-1		2023.10.03		Fixed typo in directory name
 1.010		2023.10.03		Fixed issue when serial number was not incremented within certificate
 1.001		2023.10.03		Minor changes: verbosity, doc update
 1.000		2023.09.30		Completed prod-ready version

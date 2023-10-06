@@ -2,7 +2,7 @@
 %define _build_id_links none
 %define _name certificateManager
 %define _prefix /opt
-%define _version 1.010
+%define _version 1.100
 %define _rel 0
 %define _arch x86_64
 %define _binaryname cm
@@ -54,6 +54,16 @@ install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryn
 
 
 %changelog
+* Thu Oct 05 2023 RPM Builder <builder@famillegratton.net> 1.100-0
+- Added Java cert in Doc, fixed duplicate certificate creation issue (jean-
+  francois@famillegratton.net)
+- Fixed cm cert verify (jean-francois@famillegratton.net)
+- Fixed issue where comments where not displayed in cm cert verify (jean-
+  francois@famillegratton.net)
+
+* Tue Oct 03 2023 RPM Builder <builder@famillegratton.net> 1.010-1
+- Fixed typo in directory name (jean-francois@famillegratton.net)
+
 * Tue Oct 03 2023 RPM Builder <builder@famillegratton.net> 1.010-0
 - Fixed issue where serial number was not incremented in the certificate (jean-
   francois@famillegratton.net)

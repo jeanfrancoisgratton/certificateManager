@@ -1,7 +1,7 @@
 # Maintainer: J.F.Gratton <jean-francois@famillegratton.net>
 # Packager: Builder <builder@famillegratton.net>
 pkgname="certificateManager"
-pkgver=1.010
+pkgver=1.100
 pkgrel=0
 pkgdir=/data/packages
 builddir="$startdir/src/BUILD"

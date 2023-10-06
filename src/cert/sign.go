@@ -3,7 +3,7 @@
 // Original filename: src/cert/sign.go
 // Original timestamp: 2023/09/11 10:28
 
-package certs
+package cert
 
 import (
 	"certificateManager/environment"
@@ -195,7 +195,6 @@ func (c CertificateStruct) createJavaCert(e environment.EnvironmentStruct, caCer
 	var serverCert *x509.Certificate
 	var serverKey *rsa.PrivateKey
 	certPasswd := ""
-	//var jksFile *os.File
 
 	// Fetch the server's private key
 	if serverKey, err = c.getPrivateKey(e); err != nil {
@@ -203,7 +202,7 @@ func (c CertificateStruct) createJavaCert(e environment.EnvironmentStruct, caCer
 	}
 
 	// Load, decode and parse the current server cert
-	if certPEM, err = os.ReadFile(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "cert", c.CertificateName+".crt")); err != nil {
+	if certPEM, err = os.ReadFile(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "certs", c.CertificateName+".crt")); err != nil {
 		return helpers.CustomError{Message: "Error reading CA certificate: " + err.Error()}
 	}
 	certBlock, _ = pem.Decode(certPEM)

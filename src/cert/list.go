@@ -3,7 +3,7 @@
 // Original filename: src/cert/list.go
 // Original timestamp: 2023/08/20 18:43
 
-package certs
+package cert
 
 import (
 	"certificateManager/environment"

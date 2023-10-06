@@ -3,7 +3,7 @@
 // Original filename: src/cert/revoke.go
 // Original timestamp: 2023/09/25 18:54
 
-package certs
+package cert
 
 import (
 	"bufio"

@@ -3,7 +3,7 @@
 // Original filename: src/cert/keyUsageHelpers.go
 // Original timestamp: 2023/08/26 09:24
 
-package certs
+package cert
 
 import (
 	"crypto/x509"

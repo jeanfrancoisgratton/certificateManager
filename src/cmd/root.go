@@ -15,7 +15,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:     "cm",
 	Short:   "Certificate / PKI management tool",
-	Version: helpers.White("1.010-0 (2023.10.03)"),
+	Version: helpers.White("1.100-0 (2023.10.04)"),
 }
 
 var clCmd = &cobra.Command{
@@ -53,10 +53,9 @@ func init() {
 	envCmd.AddCommand(envInfoCmd)
 
 	rootCmd.PersistentFlags().StringVarP(&environment.EnvConfigFile, "env", "e", "defaultEnv.json", "Default environment configuration file; this is a per-user setting.")
-	certCreateCmd.PersistentFlags().StringVarP(&certs.CertName, "file", "f", "", "JSON file holding the certificate config.")
-	certCreateCmd.PersistentFlags().BoolVarP(&certs.CertJava, "java", "j", false, "Also create a Java Keystore (JKS).")
-	certRevokeCmd.PersistentFlags().BoolVarP(&certs.CertRemoveFiles, "remove", "r", false, "Remove all artefacts from PKI.")
-	certVerifyCmd.Flags().BoolVarP(&certs.CaVerifyVerbose, "verbose", "v", false, "Display the full output.")
-	certVerifyCmd.Flags().BoolVarP(&certs.CaVerifyComments, "comments", "", false, "Display the comments (if any) at the end of the configuration file.")
-	certCreateCmd.Flags().IntVarP(&certs.CertPKsize, "keysize", "b", 4096, "Certificate private key size in bits.")
+	certCreateCmd.PersistentFlags().BoolVarP(&cert.CertJava, "java", "j", false, "Also create a Java Keystore (JKS).")
+	certRevokeCmd.PersistentFlags().BoolVarP(&cert.CertRemoveFiles, "remove", "r", false, "Remove all artefacts from PKI.")
+	certVerifyCmd.Flags().BoolVarP(&cert.CaVerifyVerbose, "verbose", "v", false, "Display the full output.")
+	certVerifyCmd.Flags().BoolVarP(&cert.CaVerifyComments, "comments", "c", false, "Display the comments (if any) at the end of the configuration file.")
+	certCreateCmd.Flags().IntVarP(&cert.CertPKsize, "keysize", "b", 4096, "Certificate private key size in bits.")
 }

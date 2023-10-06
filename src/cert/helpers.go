@@ -3,19 +3,19 @@
 // Orininal name: src/cert/helpers.go
 // Original time: 2023/06/16 16:37
 
-package certs
+package cert
 
 import (
+	"bufio"
 	"certificateManager/environment"
+	"fmt"
 	"net"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
-// var CertConfig = CertificateStruct{Duration: 1, KeyUsage: []string{"cert sign", "crl sign", "digital signature"}}
 var CertConfigFile = "defaultCertConfig.json"
-var CertName = ""
 var CertJava = false
 var CertRemoveFiles = false
 
@@ -119,4 +119,31 @@ func createCertificateRootDirectories() error {
 		}
 	}
 	return nil
+}
+
+// check4DuplicateCert :
+// We browse the index.txt database to see if the signature of thecertificate we are creating already exists
+func (c CertificateStruct) check4DuplicateCert(ndxFilePath string) (bool, error) {
+	lookoutstring := fmt.Sprintf("/C=%s/ST=%s/L=%s/O=%s/OU=%d/CN=%s", c.Country, c.Province, c.Locality,
+		c.Organization, c.OrganizationalUnit, c.CommonName)
+
+	isDupe := false
+
+	// open index.txt db
+	indexfileHandle, err := os.Open(ndxFilePath)
+	if err != nil {
+		return false, err
+	}
+	defer indexfileHandle.Close()
+
+	// Scan the file to find a duplicate cert signature
+	scanner := bufio.NewScanner(indexfileHandle)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.Contains(line, lookoutstring) {
+			isDupe = true
+			break
+		}
+	}
+	return isDupe, nil
 }
