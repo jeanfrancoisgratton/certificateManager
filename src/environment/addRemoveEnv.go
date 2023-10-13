@@ -45,20 +45,29 @@ func prompt4EnvironmentValues() (EnvironmentStruct, error) {
 	var env EnvironmentStruct
 	fmt.Println("The root dir value should be an absolute path, and all other values relative to it")
 	env.CertificateRootDir = helpers.GetStringValFromPrompt("Enter the certificate root dir (where the PKI directories will sit): ")
+
 	if !strings.HasPrefix(env.CertificateRootDir, "/") && !strings.HasPrefix(env.CertificateRootDir, "$HOME") && !strings.HasPrefix(env.CertificateRootDir, "~") {
 		return EnvironmentStruct{}, helpers.CustomError{Message: fmt.Sprintf("%s %s\n", env.CertificatesConfigDir, helpers.Red("is not an absolute path"))}
 	}
 	env.RootCAdir = helpers.GetStringValFromPrompt("Enter the rootCA directory name: ")
 	if strings.HasPrefix(env.RootCAdir, "/") {
-		return EnvironmentStruct{}, helpers.CustomError{Message: fmt.Sprintf("%s %s\n", env.RootCAdir, helpers.Red("must be an absolute path"))}
+		return EnvironmentStruct{}, helpers.CustomError{Message: fmt.Sprintf("%s %s\n", env.RootCAdir, helpers.Red("must be a relative path"))}
+	} else {
+		env.RootCAdir = filepath.Join(env.CertificateRootDir, env.RootCAdir)
 	}
+
 	env.ServerCertsDir = helpers.GetStringValFromPrompt("Enter the servers certificate directory name: ")
 	if strings.HasPrefix(env.RootCAdir, "/") {
-		return EnvironmentStruct{}, helpers.CustomError{Message: fmt.Sprintf("%s %s\n", env.ServerCertsDir, helpers.Red("must be an absolute path"))}
+		return EnvironmentStruct{}, helpers.CustomError{Message: fmt.Sprintf("%s %s\n", env.ServerCertsDir, helpers.Red("must be a relative path"))}
+	} else {
+		env.ServerCertsDir = filepath.Join(env.CertificateRootDir, env.ServerCertsDir)
 	}
+
 	env.CertificatesConfigDir = helpers.GetStringValFromPrompt("Enter the servers certificates config directory name: ")
 	if strings.HasPrefix(env.RootCAdir, "/") {
-		return EnvironmentStruct{}, helpers.CustomError{Message: fmt.Sprintf("%s %s\n", env.CertificatesConfigDir, helpers.Red("must be an absolute path"))}
+		return EnvironmentStruct{}, helpers.CustomError{Message: fmt.Sprintf("%s %s\n", env.CertificatesConfigDir, helpers.Red("must be a relative path"))}
+	} else {
+		env.CertificatesConfigDir = filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir)
 	}
 	env.RemoveDuplicates = true
 	return env, nil

@@ -81,8 +81,8 @@ func ExplainEnvFile(envfiles []string) error {
 			EnvConfigFile = oldEnvFile
 			return err
 		} else {
-			t.AppendRow([]interface{}{helpers.Green(envfile + ".json"), helpers.Green(e.CertificateRootDir), helpers.Green(e.RootCAdir),
-				helpers.Green(e.ServerCertsDir), helpers.Green(e.CertificatesConfigDir)})
+			t.AppendRow([]interface{}{helpers.Green(envfile + ".json"), helpers.Green(e.CertificateRootDir), helpers.Green(filepath.Base(e.RootCAdir)),
+				helpers.Green(filepath.Base(e.ServerCertsDir)), helpers.Green(filepath.Base(e.CertificatesConfigDir))})
 		}
 
 	}
