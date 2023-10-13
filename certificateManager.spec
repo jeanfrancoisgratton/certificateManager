@@ -2,7 +2,7 @@
 %define _build_id_links none
 %define _name certificateManager
 %define _prefix /opt
-%define _version 1.100
+%define _version 1.200
 %define _rel 0
 %define _arch x86_64
 %define _binaryname cm
@@ -19,8 +19,6 @@ URL:        https://github.com/jeanfrancoisgratton/certificateManager
 Source0:    %{name}-%{_version}.tar.gz
 BuildArchitectures: x86_64
 BuildRequires: gcc
-#Requires: sudo
-#Obsoletes: vmman1 > 1.140
 
 %description
 Certificates and CA management tool
