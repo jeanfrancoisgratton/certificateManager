@@ -50,10 +50,10 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	baseFN := strings.TrimSuffix(filepath.Base(caCertFiles[0]), filepath.Ext(filepath.Base(caCertFiles[0])))
 
 	// 1. Load the CA cert and key files
-	if caCertPEM, err = os.ReadFile(filepath.Join(env.CertificateRootDir, env.RootCAdir, baseFN+".crt")); err != nil {
+	if caCertPEM, err = os.ReadFile(filepath.Join(env.RootCAdir, baseFN+".crt")); err != nil {
 		return helpers.CustomError{Message: "Error reading CA certificate: " + err.Error()}
 	}
-	if caKeyPEM, err = os.ReadFile(filepath.Join(env.CertificateRootDir, env.RootCAdir, baseFN+".key")); err != nil {
+	if caKeyPEM, err = os.ReadFile(filepath.Join(env.RootCAdir, baseFN+".key")); err != nil {
 		return helpers.CustomError{Message: "Error reading CA private key: " + err.Error()}
 	}
 
@@ -71,7 +71,7 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	}
 
 	// 3. Load, decode and parse the CSR file
-	if csrBytes, err = os.ReadFile(filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "csr", c.CertificateName+".csr")); err != nil {
+	if csrBytes, err = os.ReadFile(filepath.Join(env.ServerCertsDir, "csr", c.CertificateName+".csr")); err != nil {
 		return err
 	}
 	if csrBlock, _ := pem.Decode(csrBytes); csrBlock == nil {
@@ -107,7 +107,7 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	}
 
 	// 6. Encode, save to disk
-	certFile, err := os.Create(filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "certs", c.CertificateName+".crt"))
+	certFile, err := os.Create(filepath.Join(env.ServerCertsDir, "certs", c.CertificateName+".crt"))
 	if err != nil {
 		return err
 	}
@@ -118,10 +118,10 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	}
 
 	// We also need to save the new certificate in the rootCA "newcerts" directory
-	if err = os.Mkdir(filepath.Join(env.CertificateRootDir, env.RootCAdir, "newcerts"), os.ModePerm); err != nil && !os.IsExist(err) {
+	if err = os.Mkdir(filepath.Join(env.RootCAdir, "newcerts"), os.ModePerm); err != nil && !os.IsExist(err) {
 		return err
 	}
-	newcertFile, err := os.Create(filepath.Join(env.CertificateRootDir, env.RootCAdir, "newcerts", fmt.Sprintf("%04X.pem", c.SerialNumber)))
+	newcertFile, err := os.Create(filepath.Join(env.RootCAdir, "newcerts", fmt.Sprintf("%04X.pem", c.SerialNumber)))
 	if err != nil {
 		return helpers.CustomError{Message: "Unable to create the certificate within root CA's PKI: " + err.Error()}
 	}
@@ -202,7 +202,7 @@ func (c CertificateStruct) createJavaCert(e environment.EnvironmentStruct, caCer
 	}
 
 	// Load, decode and parse the current server cert
-	if certPEM, err = os.ReadFile(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "certs", c.CertificateName+".crt")); err != nil {
+	if certPEM, err = os.ReadFile(filepath.Join(e.ServerCertsDir, "certs", c.CertificateName+".crt")); err != nil {
 		return helpers.CustomError{Message: "Error reading CA certificate: " + err.Error()}
 	}
 	certBlock, _ = pem.Decode(certPEM)
@@ -219,7 +219,7 @@ func (c CertificateStruct) createJavaCert(e environment.EnvironmentStruct, caCer
 		return helpers.CustomError{Message: "Error encoding the certificate in PKCS#12: " + err.Error()}
 	}
 
-	if err = os.WriteFile(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", c.CertificateName+".p12"), pkcs12Data, 0644); err != nil {
+	if err = os.WriteFile(filepath.Join(e.ServerCertsDir, "java", c.CertificateName+".p12"), pkcs12Data, 0644); err != nil {
 		return err
 	}
 
@@ -242,8 +242,8 @@ func (c CertificateStruct) createJavaCert(e environment.EnvironmentStruct, caCer
 	// No other way for now <sigh>
 	cmd := exec.Command("keytool", "-importkeystore", "-srcstorepass", certPasswd,
 		"-deststorepass", certPasswd,
-		"-destkeystore", filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", c.CertificateName+".jks"),
-		"-srckeystore", filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", c.CertificateName+".p12"),
+		"-destkeystore", filepath.Join(e.ServerCertsDir, "java", c.CertificateName+".jks"),
+		"-srckeystore", filepath.Join(e.ServerCertsDir, "java", c.CertificateName+".p12"),
 		"-srcstoretype", "PKCS12")
 
 	cmd.Stdout = os.Stdout

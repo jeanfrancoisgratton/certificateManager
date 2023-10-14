@@ -109,9 +109,8 @@ func createCertificateRootDirectories() error {
 	if err != nil {
 		return err
 	}
-	dirRange := []string{filepath.Join(e.CertificateRootDir, e.CertificatesConfigDir),
-		filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "private"), filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "csr"),
-		filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "certs"), filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java")}
+	dirRange := []string{e.CertificatesConfigDir, filepath.Join(e.ServerCertsDir, "private"), filepath.Join(e.ServerCertsDir, "csr"),
+		filepath.Join(e.ServerCertsDir, "certs"), filepath.Join(e.ServerCertsDir, "java")}
 
 	for _, directory := range dirRange {
 		if err = os.MkdirAll(directory, os.ModePerm); err != nil {
