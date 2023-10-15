@@ -67,9 +67,8 @@ func ListEnvironments(envdir string) error {
 
 func ExplainEnvFile(envfiles []string) error {
 	oldEnvFile := EnvConfigFile
-	//var envs []EnvironmentStruct
-	//var err error
 
+	fmt.Println("Paths are relative to Certificate root dir's path")
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Environment file", "Certificate root dir", "CA dir", "Server certificates dir", "Certificates config dir"})

@@ -30,7 +30,7 @@ func writeAttributeFile() error {
 		return err
 	}
 
-	ffile, err := os.Create(filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt.attr"))
+	ffile, err := os.Create(filepath.Join(e.RootCAdir, "index.txt.attr"))
 	if err != nil {
 		return err
 	}

@@ -91,7 +91,7 @@ func verifyCert(certFilePath string) error {
 	}
 
 	// x509v3 EXTENSIONS:
-	fmt.Println("\n   x509v3 extensions\n   -----------------")
+	fmt.Print("\n   x509v3 extensions\n   -----------------")
 
 	if parsedCert.KeyUsage != 0 {
 		fmt.Printf("\n   x509v3 Key usage:\n")

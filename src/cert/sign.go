@@ -40,7 +40,7 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	var err error
 
 	// Ensure there is a single file in the CA directory and fetch its name
-	caCertFiles, err := filepath.Glob(filepath.Join(env.CertificateRootDir, env.RootCAdir, "*.crt"))
+	caCertFiles, err := filepath.Glob(filepath.Join(env.RootCAdir, "*.crt"))
 	if err != nil {
 		return helpers.CustomError{Message: "Error listing CA certificate files: " + err.Error()}
 	}
@@ -135,7 +135,7 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) error {
 	}
 
 	fmt.Printf("Certificate %s with a duration of %v years successfully created in %s\n",
-		helpers.White(c.CertificateName), helpers.White(fmt.Sprintf("%v", c.Duration)), helpers.White(filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "certs")))
+		helpers.White(c.CertificateName), helpers.White(fmt.Sprintf("%v", c.Duration)), helpers.White(filepath.Join(env.ServerCertsDir, "certs")))
 	return nil
 }
 
@@ -162,7 +162,7 @@ func (c CertificateStruct) createCA(env environment.EnvironmentStruct, privateKe
 		return err
 	}
 
-	cafile, err := os.Create(filepath.Join(env.CertificateRootDir, env.RootCAdir, c.CertificateName+".crt"))
+	cafile, err := os.Create(filepath.Join(env.RootCAdir, c.CertificateName+".crt"))
 	if err != nil {
 		return err
 	}
@@ -173,7 +173,7 @@ func (c CertificateStruct) createCA(env environment.EnvironmentStruct, privateKe
 	}
 
 	fmt.Printf("Root CA certificate %s with a duration of %v years successfully created in %s\n",
-		helpers.White(c.CertificateName), helpers.White(fmt.Sprintf("%v", c.Duration)), helpers.White(filepath.Join(env.CertificateRootDir, env.RootCAdir)))
+		helpers.White(c.CertificateName), helpers.White(fmt.Sprintf("%v", c.Duration)), helpers.White(env.RootCAdir))
 	return nil
 }
 
