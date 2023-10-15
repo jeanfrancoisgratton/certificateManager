@@ -72,9 +72,9 @@ func CreateSampleEnv() error {
 
 	exptext := `{
  "CertificateRootDir" : "$HOME/.config/certificatemanager/certificates  <-- absolute path, always",
- "RootCAdir" : "rootCA  <-- relative path to CertificateRootDir",
- "ServerCertsDir" : "servers  <-- relative path to CertificateRootDir",
- "CertificatesConfigDir" : "conf"  <-- relative path to CertificateRootDir,
+ "RootCAdir" : "rootCA",
+ "ServerCertsDir" : "servers",
+ "CertificatesConfigDir" : "conf",
  "RemoveDuplicates": true  <-- should always be set to true, there is no use-case yet to set it to false
 }`
 	expFile, err := os.Create(filepath.Join(os.Getenv("HOME"), ".config", "certificatemanager", "sampleEnv-README.txt"))

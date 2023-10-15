@@ -68,7 +68,7 @@ func Create(certconfigfile string) error {
 	// There is no reason in a well-behaved PKI to allow duplicates. I offer the possibility just because there might
 	// be use-cases that I am not aware of
 	if env.RemoveDuplicates {
-		if isDupe, err = certconfig.check4DuplicateCert(filepath.Join(env.CertificateRootDir, env.RootCAdir, "index.txt")); err != nil {
+		if isDupe, err = certconfig.check4DuplicateCert(filepath.Join(env.RootCAdir, "index.txt")); err != nil {
 			return helpers.CustomError{Message: "Unable to load/parse the index.txt database: " + err.Error()}
 		}
 		if isDupe {

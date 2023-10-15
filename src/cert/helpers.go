@@ -109,9 +109,8 @@ func createCertificateRootDirectories() error {
 	if err != nil {
 		return err
 	}
-	dirRange := []string{filepath.Join(e.CertificateRootDir, e.CertificatesConfigDir),
-		filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "private"), filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "csr"),
-		filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "certs"), filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java")}
+	dirRange := []string{e.RootCAdir, e.CertificatesConfigDir, filepath.Join(e.ServerCertsDir, "private"), filepath.Join(e.ServerCertsDir, "csr"),
+		filepath.Join(e.ServerCertsDir, "certs"), filepath.Join(e.ServerCertsDir, "java")}
 
 	for _, directory := range dirRange {
 		if err = os.MkdirAll(directory, os.ModePerm); err != nil {
@@ -124,7 +123,7 @@ func createCertificateRootDirectories() error {
 // check4DuplicateCert :
 // We browse the index.txt database to see if the signature of thecertificate we are creating already exists
 func (c CertificateStruct) check4DuplicateCert(ndxFilePath string) (bool, error) {
-	lookoutstring := fmt.Sprintf("/C=%s/ST=%s/L=%s/O=%s/OU=%d/CN=%s", c.Country, c.Province, c.Locality,
+	lookoutstring := fmt.Sprintf("/C=%s/ST=%s/L=%s/O=%s/OU=%s/CN=%s", c.Country, c.Province, c.Locality,
 		c.Organization, c.OrganizationalUnit, c.CommonName)
 
 	isDupe := false
@@ -132,6 +131,9 @@ func (c CertificateStruct) check4DuplicateCert(ndxFilePath string) (bool, error)
 	// open index.txt db
 	indexfileHandle, err := os.Open(ndxFilePath)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
 		return false, err
 	}
 	defer indexfileHandle.Close()

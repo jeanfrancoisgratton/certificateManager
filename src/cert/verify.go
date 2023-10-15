@@ -19,14 +19,6 @@ var CaVerifyVerbose = false
 var CaVerifyComments = false
 
 func Verify(certFilePaths []string) error {
-	//var e environment.EnvironmentStruct
-	//var cert CertificateStruct
-	//var err error
-
-	//if e, err = environment.LoadEnvironmentFile(); err != nil {
-	//	return err
-	//}
-
 	for _, path := range certFilePaths {
 		if err := verifyCert(path); err != nil {
 			return err
@@ -99,7 +91,7 @@ func verifyCert(certFilePath string) error {
 	}
 
 	// x509v3 EXTENSIONS:
-	fmt.Println("\n   x509v3 extensions\n   -----------------")
+	fmt.Print("\n   x509v3 extensions\n   -----------------")
 
 	if parsedCert.KeyUsage != 0 {
 		fmt.Printf("\n   x509v3 Key usage:\n")
@@ -128,7 +120,7 @@ func verifyCert(certFilePath string) error {
 		}
 		cfgfileName := filepath.Base(certFilePath)
 		baseName := cfgfileName[:len(cfgfileName)-len(filepath.Ext(cfgfileName))] + ".json"
-		if c, err = LoadCertificateConfFile(filepath.Join(e.CertificateRootDir, e.CertificatesConfigDir, baseName)); err != nil {
+		if c, err = LoadCertificateConfFile(filepath.Join(e.CertificatesConfigDir, baseName)); err != nil {
 			return err
 		}
 		if len(c.Comments) > 0 {
