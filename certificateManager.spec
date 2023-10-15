@@ -52,6 +52,12 @@ install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryn
 
 
 %changelog
+* Sun Oct 15 2023 RPM Builder <builder@famillegratton.net> 1.200-0
+- Completed directory name simplification (jean-francois@famillegratton.net)
+- Completed filepath.Join() revamp (jean-francois@famillegratton.net)
+- Finished with the environment package (jean-francois@famillegratton.net)
+- GO and software version bumps (jean-francois@famillegratton.net)
+
 * Thu Oct 05 2023 RPM Builder <builder@famillegratton.net> 1.100-0
 - Added Java cert in Doc, fixed duplicate certificate creation issue (jean-
   francois@famillegratton.net)
