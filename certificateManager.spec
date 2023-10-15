@@ -52,6 +52,10 @@ install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryn
 
 
 %changelog
+* Sun Oct 15 2023 RPM Builder <builder@famillegratton.net> 1.205-0
+- Fixed wrong path for private keys (jean-francois@famillegratton.net)
+- version bump for debian package (builder@famillegratton.net)
+
 * Sun Oct 15 2023 RPM Builder <builder@famillegratton.net> 1.200-0
 - Completed directory name simplification (jean-francois@famillegratton.net)
 - Completed filepath.Join() revamp (jean-francois@famillegratton.net)
