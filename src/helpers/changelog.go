@@ -18,6 +18,7 @@ func Changelog() {
 	fmt.Print(`
 VERSION		DATE			COMMENT
 -------		----			-------
+1.205		2023.10.15		fixed wrong path for server's private keys
 1.200		2023.10.13		go version bump, folded all environment directories into a single var for readability issues with filepath.Join()
 1.100-0		2023.10.04		cm cert verify now works w/ the verbose flag; duplicate certificate creation is now prevented 
 1.010-1		2023.10.03		Fixed typo in directory name

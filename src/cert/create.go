@@ -132,7 +132,9 @@ func Create(certconfigfile string) error {
 		return err
 	}
 
-	fmt.Printf("Certificate %s has been created.\n", helpers.Green(certconfigfile))
+	if !certconfig.IsCA {
+		fmt.Printf("Certificate %s has been created.\n", helpers.Green(certconfig.CertificateName))
+	}
 	return nil
 }
 
