@@ -3,7 +3,7 @@
 // Original filename: src/cert/revoke.go
 // Original timestamp: 2023/09/25 18:54
 
-package certs
+package cert
 
 import (
 	"bufio"
@@ -39,7 +39,7 @@ func Revoke(certname string) error {
 	}
 
 	// We need to load the cert's config in order to find the info needed to remove it from the index DB
-	if c, err = LoadCertificateConfFile(filepath.Join(e.CertificateRootDir, e.CertificatesConfigDir, certname)); err != nil {
+	if c, err = LoadCertificateConfFile(filepath.Join(e.CertificatesConfigDir, certname)); err != nil {
 		return err
 	}
 
@@ -114,25 +114,25 @@ func putRevokeFlag(e environment.EnvironmentStruct, certname string, country str
 	}
 
 	if CertRemoveFiles {
-		os.Remove(filepath.Join(e.CertificateRootDir, e.RootCAdir, "newcerts", strings.ToUpper(serialField)+".pem"))
-		os.Remove(filepath.Join(e.CertificateRootDir, e.CertificatesConfigDir, certfilename+".json"))
-		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "cert", certfilename+".crt"))
-		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "csr", certfilename+".csr"))
-		os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "private", certfilename+".key"))
-		if _, err = os.Stat(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", certfilename+".p12")); err != nil && os.IsNotExist(err) {
+		os.Remove(filepath.Join(e.RootCAdir, "newcerts", strings.ToUpper(serialField)+".pem"))
+		os.Remove(filepath.Join(e.CertificatesConfigDir, certfilename+".json"))
+		os.Remove(filepath.Join(e.ServerCertsDir, "cert", certfilename+".crt"))
+		os.Remove(filepath.Join(e.ServerCertsDir, "csr", certfilename+".csr"))
+		os.Remove(filepath.Join(e.ServerCertsDir, "private", certfilename+".key"))
+		if _, err = os.Stat(filepath.Join(e.ServerCertsDir, "java", certfilename+".p12")); err != nil && os.IsNotExist(err) {
 			// nop
 		} else {
-			os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", certfilename+".p12"))
+			os.Remove(filepath.Join(e.ServerCertsDir, "java", certfilename+".p12"))
 		}
-		if _, err = os.Stat(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", certfilename+".jks")); err != nil && os.IsNotExist(err) {
+		if _, err = os.Stat(filepath.Join(e.ServerCertsDir, "java", certfilename+".jks")); err != nil && os.IsNotExist(err) {
 			// nop
 		} else {
-			os.Remove(filepath.Join(e.CertificateRootDir, e.ServerCertsDir, "java", certfilename+".jks"))
+			os.Remove(filepath.Join(e.ServerCertsDir, "java", certfilename+".jks"))
 		}
 	}
 
 	// Rename new file to index.txt
-	os.Rename(filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt.new"), filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt"))
+	os.Rename(filepath.Join(e.RootCAdir, "index.txt.new"), filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt"))
 
 	return nil
 }

@@ -3,7 +3,7 @@
 // Original filename: src/cert/configHandler.go
 // Original timestamp: 2023/08/26 09:21
 
-package certs
+package cert
 
 import (
 	"certificateManager/environment"
@@ -27,15 +27,12 @@ func LoadCertificateConfFile(certfile string) (CertificateStruct, error) {
 		return CertificateStruct{}, err
 	}
 
-	// why is that....
-	//if !strings.HasSuffix(CertConfigFile, ".json") {
-	//	CertConfigFile += ".json"
-	//}
 	if certfile != "" {
 		if !strings.HasSuffix(certfile, ".json") {
 			certfile += ".json"
 		}
-		rcFile = filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir, filepath.Base(certfile))
+		//rcFile = filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir, filepath.Base(certfile))
+		rcFile = filepath.Join(env.CertificatesConfigDir, filepath.Base(certfile))
 	}
 
 	if jFile, err = os.ReadFile(rcFile); err != nil {
@@ -54,30 +51,23 @@ func LoadCertificateConfFile(certfile string) (CertificateStruct, error) {
 func (c CertificateStruct) SaveCertificateConfFile(outfile string) error {
 	var env environment.EnvironmentStruct
 	var err error
-	//basedir := filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir)
-	//basedir := ""
 
 	if outfile == "" {
 		// fetch environment
 		if env, err = environment.LoadEnvironmentFile(); err != nil {
 			return err
 		}
-		outfile = filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir, c.CertificateName+".json")
+		outfile = filepath.Join(env.CertificatesConfigDir, c.CertificateName+".json")
 	}
 
 	if !strings.HasSuffix(outfile, ".json") {
 		outfile += ".json"
 	}
-	// why the next ?
-	//if outfile == "" {
-	//	outfile = CertConfigFile
-	//}
 
 	jStream, err := json.MarshalIndent(c, "", "  ")
 	if err != nil {
 		return err
 	}
-	//rcFile := filepath.Join(basedir, outfile)
 
 	// Check if the file exists
 	if _, err := os.Stat(outfile); !os.IsNotExist(err) {

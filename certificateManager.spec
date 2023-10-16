@@ -2,8 +2,8 @@
 %define _build_id_links none
 %define _name certificateManager
 %define _prefix /opt
-%define _version 1.010
-%define _rel 1
+%define _version 1.205
+%define _rel 0
 %define _arch x86_64
 %define _binaryname cm
 
@@ -19,8 +19,6 @@ URL:        https://github.com/jeanfrancoisgratton/certificateManager
 Source0:    %{name}-%{_version}.tar.gz
 BuildArchitectures: x86_64
 BuildRequires: gcc
-#Requires: sudo
-#Obsoletes: vmman1 > 1.140
 
 %description
 Certificates and CA management tool
@@ -54,6 +52,23 @@ install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryn
 
 
 %changelog
+* Sun Oct 15 2023 RPM Builder <builder@famillegratton.net> 1.205-0
+- Fixed wrong path for private keys (jean-francois@famillegratton.net)
+- version bump for debian package (builder@famillegratton.net)
+
+* Sun Oct 15 2023 RPM Builder <builder@famillegratton.net> 1.200-0
+- Completed directory name simplification (jean-francois@famillegratton.net)
+- Completed filepath.Join() revamp (jean-francois@famillegratton.net)
+- Finished with the environment package (jean-francois@famillegratton.net)
+- GO and software version bumps (jean-francois@famillegratton.net)
+
+* Thu Oct 05 2023 RPM Builder <builder@famillegratton.net> 1.100-0
+- Added Java cert in Doc, fixed duplicate certificate creation issue (jean-
+  francois@famillegratton.net)
+- Fixed cm cert verify (jean-francois@famillegratton.net)
+- Fixed issue where comments where not displayed in cm cert verify (jean-
+  francois@famillegratton.net)
+
 * Tue Oct 03 2023 RPM Builder <builder@famillegratton.net> 1.010-1
 - Fixed typo in directory name (jean-francois@famillegratton.net)
 

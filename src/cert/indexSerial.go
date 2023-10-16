@@ -5,7 +5,7 @@
 
 // Manages the index.txt* and serial files
 
-package certs
+package cert
 
 import (
 	"bufio"
@@ -30,7 +30,7 @@ func writeAttributeFile() error {
 		return err
 	}
 
-	ffile, err := os.Create(filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt.attr"))
+	ffile, err := os.Create(filepath.Join(e.RootCAdir, "index.txt.attr"))
 	if err != nil {
 		return err
 	}
@@ -48,8 +48,8 @@ func writeIndexFile(c CertificateStruct) error {
 		return err
 	}
 
-	if _, err = os.Stat(filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt")); os.IsNotExist(err) {
-		if filedesc, err = os.Create(filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt")); err != nil {
+	if _, err = os.Stat(filepath.Join(e.RootCAdir, "index.txt")); os.IsNotExist(err) {
+		if filedesc, err = os.Create(filepath.Join(e.RootCAdir, "index.txt")); err != nil {
 			return err
 		}
 		defer filedesc.Close()
@@ -59,7 +59,7 @@ func writeIndexFile(c CertificateStruct) error {
 			return err
 		}
 	} else {
-		if err := replaceStringInIndex(c, filepath.Join(e.CertificateRootDir, e.RootCAdir)); err != nil {
+		if err := replaceStringInIndex(c, e.RootCAdir); err != nil {
 			return err
 		}
 	}
@@ -116,7 +116,7 @@ func getSerialNumber() (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	serialPath := filepath.Join(e.CertificateRootDir, e.RootCAdir, "serial")
+	serialPath := filepath.Join(e.RootCAdir, "serial")
 
 	// if the serial file does not exist, this means we are using a brand new setup,
 	// thus the serial # is 1
@@ -154,7 +154,7 @@ func setSerialNumber(serialNo uint64) error {
 		return err
 	}
 
-	ffile, err := os.Create(filepath.Join(e.CertificateRootDir, e.RootCAdir, "serial"))
+	ffile, err := os.Create(filepath.Join(e.RootCAdir, "serial"))
 	if err != nil {
 		return err
 	}

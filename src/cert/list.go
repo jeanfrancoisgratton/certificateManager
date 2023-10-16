@@ -3,7 +3,7 @@
 // Original filename: src/cert/list.go
 // Original timestamp: 2023/08/20 18:43
 
-package certs
+package cert
 
 import (
 	"certificateManager/environment"
@@ -30,7 +30,7 @@ func ListCertificates() error {
 	oldCfg := CertConfigFile
 
 	// list certificate files
-	err = filepath.Walk(filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir), func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(env.CertificatesConfigDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -53,7 +53,7 @@ func ListCertificates() error {
 	for _, fi := range fileInfos {
 		var certDomain string
 		CertConfigFile = fi.Name()
-		if certDomain, err = fetchCN(filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir, fi.Name())); err != nil {
+		if certDomain, err = fetchCN(filepath.Join(env.CertificatesConfigDir, fi.Name())); err != nil {
 			CertConfigFile = oldCfg
 			return err
 		}

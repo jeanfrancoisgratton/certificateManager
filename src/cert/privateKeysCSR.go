@@ -5,7 +5,7 @@
 
 // Manages private Keys and CSRs
 
-package certs
+package cert
 
 import (
 	"certificateManager/environment"
@@ -44,15 +44,15 @@ func (c CertificateStruct) createPrivateKey() (*rsa.PrivateKey, error) {
 
 	// rootCA keys are not stored at the same place as other SSL keys
 	if c.IsCA {
-		if err = os.MkdirAll(filepath.Join(env.CertificateRootDir, env.RootCAdir), os.ModePerm); err != nil {
+		if err = os.MkdirAll(env.RootCAdir, os.ModePerm); err != nil {
 			return nil, err
 		}
-		pkfile = filepath.Join(env.CertificateRootDir, env.RootCAdir, c.CertificateName+".key")
+		pkfile = filepath.Join(env.RootCAdir, c.CertificateName+".key")
 	} else {
-		if err = os.MkdirAll(filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "private"), os.ModePerm); err != nil {
+		if err = os.MkdirAll(filepath.Join(env.ServerCertsDir, "private"), os.ModePerm); err != nil {
 			return nil, err
 		}
-		pkfile = filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "private", c.CertificateName+".key")
+		pkfile = filepath.Join(env.ServerCertsDir, "private", c.CertificateName+".key")
 	}
 
 	if pkFile, err = os.Create(pkfile); err != nil {
@@ -75,9 +75,9 @@ func (c CertificateStruct) getPrivateKey(env environment.EnvironmentStruct) (*rs
 
 	// root CAs store their key somewhere else
 	if c.IsCA {
-		keyDir = filepath.Join(keyDir, env.RootCAdir)
+		keyDir = env.RootCAdir
 	} else {
-		keyDir = filepath.Join(keyDir, env.ServerCertsDir, "private")
+		keyDir = filepath.Join(env.ServerCertsDir, "private")
 	}
 	// Load keyfile
 	if pKeyFile, err = os.ReadFile(filepath.Join(keyDir, c.CertificateName+".key")); err != nil {
@@ -115,7 +115,7 @@ func (c CertificateStruct) generateCSR(env environment.EnvironmentStruct, privat
 		return err
 	}
 
-	if csrFile, err = os.Create(filepath.Join(env.CertificateRootDir, env.ServerCertsDir, "csr", c.CertificateName+".csr")); err != nil {
+	if csrFile, err = os.Create(filepath.Join(env.ServerCertsDir, "csr", c.CertificateName+".csr")); err != nil {
 		return err
 	}
 	defer csrFile.Close()
