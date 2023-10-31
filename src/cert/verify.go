@@ -7,6 +7,7 @@ package cert
 
 import (
 	"certificateManager/environment"
+	"certificateManager/helpers"
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
@@ -35,8 +36,11 @@ func verifyCert(certFilePath string) error {
 	// Read the certificate file
 	certPEMBlock, err := os.ReadFile(certFilePath)
 	if err != nil {
-		// we let caVerifyCmd() deal with the error
-		return err
+		if os.IsNotExist(err) {
+			return helpers.CustomError{Message: "You most likely did not provide a full path to the CRT file"}
+		} else {
+			return err
+		}
 	}
 
 	// Decode the PEM block into a certificate
