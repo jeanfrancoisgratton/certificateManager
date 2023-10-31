@@ -52,6 +52,10 @@ install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryn
 
 
 %changelog
+* Tue Oct 31 2023 RPM Builder <builder@famillegratton.net> 1.20.06-0
+- more explicit error message in cert verify (jean-francois@famillegratton.net)
+- GO pkgs upgrades (jean-francois@famillegratton.net)
+
 * Mon Oct 16 2023 RPM Builder <builder@famillegratton.net> 1.20.05-0
 - New version numbering scheme (jean-francois@famillegratton.net)
 - Cosmetic change (jean-francois@famillegratton.net)
