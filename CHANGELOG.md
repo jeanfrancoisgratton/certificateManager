@@ -1,5 +1,6 @@
 | Release | Date       | Comments                                                           |
 |---------|------------|--------------------------------------------------------------------|
+| 1.22.00 | 2023.11.02 | fixed broken cert rm (duplicated path in pathname                  |
 | 1.21.00 | 2023.11.02 | defaultEnv.json does not need to be specified anymore in cm env    |
 | 1.20.06 | 2023.10.31 | Error message in cert verify less confusing                        |
 | 1.20.05 | 2023.10.16 | New version numbering scheme                                       |
