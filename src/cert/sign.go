@@ -7,6 +7,7 @@ package cert
 
 import (
 	"certificateManager/environment"
+//	"software.sslmate.com/src/go-pkcs12"
 	"certificateManager/helpers"
 	"crypto/rand"
 	"crypto/rsa"
@@ -18,7 +19,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"software.sslmate.com/src/go-pkcs12"
 	"strings"
 	"time"
 )
@@ -181,6 +181,7 @@ func (c CertificateStruct) createCA(env environment.EnvironmentStruct, privateKe
 // Much software still use the Java Keystore (JKS) format, which has been deemed obsolete for some time.
 // The process is thus, so far:
 // 1. Load the CA cert file, key, server cert file, key
+// NEW step: remove old (outdated) .p12 and .jks files, if present
 // 2. Convert the server .crt to PKCS#12 (.p12) format
 // 3. Convert the .p12 file to .JKS
 // I'll keep the .p12 file in storage, just in case that whatever software needing a JKS comes to its senses
@@ -213,6 +214,18 @@ func (c CertificateStruct) createJavaCert(e environment.EnvironmentStruct, caCer
 	// PKCS#12 requires the file to be password-protected
 	certPasswd = helpers.GetPassword("Please provide a password for this Java certificate: ")
 
+	// Remove outdated .p12 and .jks files, if present
+	//basename := filepath.Join(e.ServerCertsDir, "java", c.CertificateName)
+	//for _, fn := range []string{basename + ".p12", basename + ".jks"} {
+	//	errfn := os.Remove(fn)
+	//	if errfn != nil {
+	//		if os.IsNotExist(errfn) {
+	//			continue
+	//		} else {
+	//			return helpers.CustomError{Message: fmt.Sprintf("Unable to remove %s : ", fn) + err.Error()}
+	//		}
+	//	}
+	//}
 	// Convert cert to PKCS#12
 	pkcs12Data, err := pkcs12.Encode(rand.Reader, serverKey, serverCert, []*x509.Certificate{caCert}, certPasswd)
 	if err != nil {

@@ -142,7 +142,7 @@ func (c CertificateStruct) check4DuplicateCert(ndxFilePath string) (bool, error)
 	scanner := bufio.NewScanner(indexfileHandle)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if strings.Contains(line, lookoutstring) {
+		if strings.Contains(line, lookoutstring) && strings.HasPrefix(line, "V") {
 			isDupe = true
 			break
 		}

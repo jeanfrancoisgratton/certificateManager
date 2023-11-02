@@ -7,7 +7,7 @@ require (
 	github.com/jwalton/gchalk v1.3.0
 	github.com/spf13/cobra v1.7.0
 	golang.org/x/crypto v0.14.0
-	software.sslmate.com/src/go-pkcs12 v0.2.1
+	software.sslmate.com/src/go-pkcs12 v0.3.0
 )
 
 require (
