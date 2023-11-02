@@ -7,7 +7,6 @@ package cert
 
 import (
 	"certificateManager/environment"
-//	"software.sslmate.com/src/go-pkcs12"
 	"certificateManager/helpers"
 	"crypto/rand"
 	"crypto/rsa"
@@ -19,6 +18,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"software.sslmate.com/src/go-pkcs12"
 	"strings"
 	"time"
 )
