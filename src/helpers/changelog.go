@@ -18,6 +18,7 @@ func Changelog() {
 	fmt.Print(`
 VERSION		DATE			COMMENT
 -------		----			-------
+1.21.00		2023.11.02		defaultEnv.json does not need to be specified anymore if it's the environment we use
 1.20.06		2023.10.31		more explicit error message in cert verify
 1.20.05		2023.10.16		moved to a saner version numbering scheme
 1.205		2023.10.15		fixed wrong path for server's private keys

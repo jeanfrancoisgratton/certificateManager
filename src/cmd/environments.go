@@ -6,7 +6,7 @@
 package cmd
 
 import (
-	"certificateManager/environment"
+	environment "certificateManager/environment"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
@@ -40,14 +40,16 @@ var envListCmd = &cobra.Command{
 var envRmCmd = &cobra.Command{
 	Use:     "rm",
 	Aliases: []string{"remove"},
-	Example: "cm env remove FILE[.json]",
+	Example: "cm env remove { FILE[.json] | defaultEnv.json }",
 	Short:   "Removes the environment FILE",
 	Run: func(cmd *cobra.Command, args []string) {
+		fname := ""
 		if len(args) == 0 {
-			fmt.Println("You need to provide a filename.")
-			os.Exit(1)
+			fname = "defaultEnv.json"
+		} else {
+			fname = args[0]
 		}
-		if err := environment.RemoveEnvFile(args[0]); err != nil {
+		if err := environment.RemoveEnvFile(fname); err != nil {
 			fmt.Println(err)
 			os.Exit(2)
 		}
@@ -82,11 +84,11 @@ var envInfoCmd = &cobra.Command{
 	Short:   "Prints the environment FILE[12n] information",
 	Long:    `You can list as many environment files as you wish, here`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) == 0 {
-			fmt.Println("You need to provide at least one filename.")
-			os.Exit(1)
+		envfiles := []string{"defaultEnv.json"}
+		if len(args) != 0 {
+			envfiles = args
 		}
-		if err := environment.ExplainEnvFile(args); err != nil {
+		if err := environment.ExplainEnvFile(envfiles); err != nil {
 			fmt.Println(err)
 			os.Exit(2)
 		}

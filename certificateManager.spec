@@ -2,7 +2,7 @@
 %define _build_id_links none
 %define _name certificateManager
 %define _prefix /opt
-%define _version 1.20.06
+%define _version 1.21.00
 %define _rel 0
 %define _arch x86_64
 %define _binaryname cm
