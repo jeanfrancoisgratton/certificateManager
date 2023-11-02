@@ -15,7 +15,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:     "cm",
 	Short:   "Certificate / PKI management tool",
-	Version: helpers.White("1.20.06-0 (2023.10.31)"),
+	Version: helpers.White("1.21.00-0 (2023.11.02)"),
 }
 
 var clCmd = &cobra.Command{
