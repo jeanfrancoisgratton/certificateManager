@@ -52,6 +52,10 @@ install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryn
 
 
 %changelog
+* Thu Nov 02 2023 RPM Builder <builder@famillegratton.net> 1.21.00-0
+- Version bump in cmd/root.go (jean-francois@famillegratton.net)
+- env subcommand tweaks (jean-francois@famillegratton.net)
+
 * Tue Oct 31 2023 RPM Builder <builder@famillegratton.net> 1.20.06-0
 - more explicit error message in cert verify (jean-francois@famillegratton.net)
 - GO pkgs upgrades (jean-francois@famillegratton.net)
