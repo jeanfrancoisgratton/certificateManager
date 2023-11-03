@@ -215,17 +215,18 @@ func (c CertificateStruct) createJavaCert(e environment.EnvironmentStruct, caCer
 	certPasswd = helpers.GetPassword("Please provide a password for this Java certificate: ")
 
 	// Remove outdated .p12 and .jks files, if present
-	//basename := filepath.Join(e.ServerCertsDir, "java", c.CertificateName)
-	//for _, fn := range []string{basename + ".p12", basename + ".jks"} {
-	//	errfn := os.Remove(fn)
-	//	if errfn != nil {
-	//		if os.IsNotExist(errfn) {
-	//			continue
-	//		} else {
-	//			return helpers.CustomError{Message: fmt.Sprintf("Unable to remove %s : ", fn) + err.Error()}
-	//		}
-	//	}
-	//}
+	basename := filepath.Join(e.ServerCertsDir, "java", c.CertificateName)
+	for _, fn := range []string{basename + ".p12", basename + ".jks"} {
+		errfn := os.Remove(fn)
+		if errfn != nil {
+			if os.IsNotExist(errfn) {
+				continue
+			} else {
+				return helpers.CustomError{Message: fmt.Sprintf("Unable to remove %s : ", fn) + err.Error()}
+			}
+		}
+	}
+
 	// Convert cert to PKCS#12
 	pkcs12Data, err := pkcs12.Encode(rand.Reader, serverKey, serverCert, []*x509.Certificate{caCert}, certPasswd)
 	if err != nil {

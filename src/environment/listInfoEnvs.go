@@ -74,13 +74,16 @@ func ExplainEnvFile(envfiles []string) error {
 	t.AppendHeader(table.Row{"Environment file", "Certificate root dir", "CA dir", "Server certificates dir", "Certificates config dir"})
 
 	for _, envfile := range envfiles {
+		if !strings.HasSuffix(envfile, ".json") {
+			envfile += ".json"
+		}
 		EnvConfigFile = envfile
 
 		if e, err := LoadEnvironmentFile(); err != nil {
 			EnvConfigFile = oldEnvFile
 			return err
 		} else {
-			t.AppendRow([]interface{}{helpers.Green(envfile + ".json"), helpers.Green(e.CertificateRootDir), helpers.Green(filepath.Base(e.RootCAdir)),
+			t.AppendRow([]interface{}{helpers.Green(envfile), helpers.Green(e.CertificateRootDir), helpers.Green(filepath.Base(e.RootCAdir)),
 				helpers.Green(filepath.Base(e.ServerCertsDir)), helpers.Green(filepath.Base(e.CertificatesConfigDir))})
 		}
 
