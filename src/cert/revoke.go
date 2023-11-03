@@ -74,12 +74,12 @@ func putRevokeFlag(e environment.EnvironmentStruct, certname string, country str
 	targetString := fmt.Sprintf("/C=%s/ST=%s/L=%s/O=%s/OU=%s/CN=%s", country, province, locality, org, ou, cn)
 
 	// Open in and out files
-	inFile, err := os.Open(filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt"))
+	inFile, err := os.Open(filepath.Join(e.RootCAdir, "index.txt"))
 	if err != nil {
 		return helpers.CustomError{Message: "Unable to open index.txt: " + err.Error()}
 	}
 	defer inFile.Close()
-	outFile, err := os.Create(filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt.new"))
+	outFile, err := os.Create(filepath.Join(e.RootCAdir, "index.txt.new"))
 	if err != nil {
 		return helpers.CustomError{Message: "Unable to create temp index file: " + err.Error()}
 	}
@@ -132,7 +132,7 @@ func putRevokeFlag(e environment.EnvironmentStruct, certname string, country str
 	}
 
 	// Rename new file to index.txt
-	os.Rename(filepath.Join(e.RootCAdir, "index.txt.new"), filepath.Join(e.CertificateRootDir, e.RootCAdir, "index.txt"))
+	os.Rename(filepath.Join(e.RootCAdir, "index.txt.new"), filepath.Join(e.RootCAdir, "index.txt"))
 
 	return nil
 }

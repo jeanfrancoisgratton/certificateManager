@@ -18,6 +18,10 @@ func Changelog() {
 	fmt.Print(`
 VERSION		DATE			COMMENT
 -------		----			-------
+1.22.00		2023.11.02		cm cert rm was broken (duplicated path)
+1.21.00		2023.11.02		defaultEnv.json does not need to be specified anymore if it's the environment we use
+1.20.06		2023.10.31		more explicit error message in cert verify
+1.20.05		2023.10.16		moved to a saner version numbering scheme
 1.205		2023.10.15		fixed wrong path for server's private keys
 1.200		2023.10.13		go version bump, folded all environment directories into a single var for readability issues with filepath.Join()
 1.100-0		2023.10.04		cm cert verify now works w/ the verbose flag; duplicate certificate creation is now prevented 

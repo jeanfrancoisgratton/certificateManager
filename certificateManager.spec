@@ -2,7 +2,7 @@
 %define _build_id_links none
 %define _name certificateManager
 %define _prefix /opt
-%define _version 1.205
+%define _version 1.22.00
 %define _rel 0
 %define _arch x86_64
 %define _binaryname cm
@@ -52,6 +52,26 @@ install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryn
 
 
 %changelog
+* Thu Nov 02 2023 RPM Builder <builder@famillegratton.net> 1.22.00-0
+- Fixed issue where already existing Java certs for a non-existant cert
+  remained (jean-francois@famillegratton.net)
+- sync zenika-> (jean-francois@famillegratton.net)
+- Interim sync (jean-francois@famillegratton.net)
+- Fixed duplicate path issue in cm cert rm (jean-francois@famillegratton.net)
+- forgotten doc updates (builder@famillegratton.net)
+
+* Thu Nov 02 2023 RPM Builder <builder@famillegratton.net> 1.21.00-0
+- Version bump in cmd/root.go (jean-francois@famillegratton.net)
+- env subcommand tweaks (jean-francois@famillegratton.net)
+
+* Tue Oct 31 2023 RPM Builder <builder@famillegratton.net> 1.20.06-0
+- more explicit error message in cert verify (jean-francois@famillegratton.net)
+- GO pkgs upgrades (jean-francois@famillegratton.net)
+
+* Mon Oct 16 2023 RPM Builder <builder@famillegratton.net> 1.20.05-0
+- New version numbering scheme (jean-francois@famillegratton.net)
+- Cosmetic change (jean-francois@famillegratton.net)
+
 * Sun Oct 15 2023 RPM Builder <builder@famillegratton.net> 1.205-0
 - Fixed wrong path for private keys (jean-francois@famillegratton.net)
 - version bump for debian package (builder@famillegratton.net)
