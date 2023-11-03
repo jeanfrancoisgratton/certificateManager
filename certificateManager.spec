@@ -52,6 +52,14 @@ install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryn
 
 
 %changelog
+* Thu Nov 02 2023 RPM Builder <builder@famillegratton.net> 1.22.00-0
+- Fixed issue where already existing Java certs for a non-existant cert
+  remained (jean-francois@famillegratton.net)
+- sync zenika-> (jean-francois@famillegratton.net)
+- Interim sync (jean-francois@famillegratton.net)
+- Fixed duplicate path issue in cm cert rm (jean-francois@famillegratton.net)
+- forgotten doc updates (builder@famillegratton.net)
+
 * Thu Nov 02 2023 RPM Builder <builder@famillegratton.net> 1.21.00-0
 - Version bump in cmd/root.go (jean-francois@famillegratton.net)
 - env subcommand tweaks (jean-francois@famillegratton.net)
