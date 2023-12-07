@@ -52,6 +52,9 @@ install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryn
 
 
 %changelog
+* Thu Dec 07 2023 RPM Builder <builder@famillegratton.net> 1.23.00-0
+- GO version bump (jean-francois@famillegratton.net)
+
 * Thu Nov 02 2023 RPM Builder <builder@famillegratton.net> 1.22.00-0
 - Fixed issue where already existing Java certs for a non-existant cert
   remained (jean-francois@famillegratton.net)
