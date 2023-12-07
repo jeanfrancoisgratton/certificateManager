@@ -18,6 +18,7 @@ func Changelog() {
 	fmt.Print(`
 VERSION		DATE			COMMENT
 -------		----			-------
+1.23.00		2023.12.07		GO version bump to 1.21.5, packages upgrades
 1.22.00		2023.11.02		cm cert rm was broken (duplicated path)
 1.21.00		2023.11.02		defaultEnv.json does not need to be specified anymore if it's the environment we use
 1.20.06		2023.10.31		more explicit error message in cert verify
