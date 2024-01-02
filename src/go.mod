@@ -6,7 +6,7 @@ require (
 	github.com/jedib0t/go-pretty/v6 v6.4.9
 	github.com/jwalton/gchalk v1.3.0
 	github.com/spf13/cobra v1.8.0
-	golang.org/x/crypto v0.16.0
+	golang.org/x/crypto v0.17.0
 	software.sslmate.com/src/go-pkcs12 v0.3.0
 )
 
