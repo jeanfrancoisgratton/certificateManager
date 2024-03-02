@@ -53,6 +53,18 @@ install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryn
 
 %changelog
 * Fri Mar 01 2024 RPM Builder <builder@famillegratton.net>
+- missing checksums file (jean-francois@famillegratton.net)
+- Automatic commit of package [certificateManager] release [1.24.00-0].
+  (builder@famillegratton.net)
+- go mod tidy (jean-francois@famillegratton.net)
+- GO version bump (jean-francois@famillegratton.net)
+- updated gitignore (jean-francois@famillegratton.net)
+- upgraded some modules in go.mod (jean-francois@famillegratton.net)
+- Updated GO version, packages versions (jean-francois@famillegratton.net)
+- More cleanup (jean-francois@famillegratton.net)
+- Repo cleanup (jean-francois@famillegratton.net)
+
+* Fri Mar 01 2024 RPM Builder <builder@famillegratton.net>
 - go mod tidy (jean-francois@famillegratton.net)
 - GO version bump (jean-francois@famillegratton.net)
 - updated gitignore (jean-francois@famillegratton.net)
