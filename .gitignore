@@ -23,3 +23,5 @@ samples/
 *.bkp
 *.dtmp
 *.swp
+
+.idea/
