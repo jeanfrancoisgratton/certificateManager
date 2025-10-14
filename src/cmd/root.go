@@ -18,7 +18,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:     "cm",
 	Short:   "Certificate / PKI management tool",
-	Version: hf.White(fmt.Sprintf("1.61.00-0-%s 2025.08.25", runtime.GOARCH)),
+	Version: hf.White(fmt.Sprintf("1.61.01-%s 2025.10.15", runtime.GOARCH)),
 }
 
 var clCmd = &cobra.Command{
@@ -74,6 +74,7 @@ func changelog() {
 	fmt.Print(`
 VERSION		DATE			COMMENT
 -------		----			-------
+1.61.01		2025.10.15		GO version bump, doc update
 1.61.00		2025.08.25		GO version bump, build deps update
 1.60.00		2025.06.06		Updated to GO 1.24.4 to incorporate the crypto/x509 bugfixes
 1.59.00		2025.01.13		CN will be using the certificate name if omitted

@@ -3,6 +3,10 @@
 A GO tool to generate and sign all of your SSL certificates
 
 <H2>Overview</H2>
+**PLEASE NOTE**
+
+A new version of this tool is in the planning stages. It will likely bring breaking changes and offer QoL improvements
+
 
 This tool uses GO's x509 package to:<br>
 - Generate<br>
@@ -104,7 +108,7 @@ As mentioned above, an *environment* is a sandbox. Different environments repres
 We'll use the variables from `sampleEnv.json` here to describe the structure. <br>
 
 Here, I have an environment called `test (test.json)` :
-```
+```bash
 [16:56:29|jfgratton@bergen:certificatemanager]: cm env ls
 Number of environment files: 1
 ┏━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓
@@ -124,7 +128,7 @@ Number of environment files: 1
 So you see, my environment / sandbox / PKI, sits under `/test/`
 
 Now, I've cheated a bit here, I've already created some certs, to show you the directory structure:<br>
-```
+```bash
 [17:16:19|jfgratton@bergen:/test]: cm -e test cert ls
 Number of certificates: 4
 ┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓
@@ -249,20 +253,15 @@ I provide both the source code and Alpine (APK), Debian-based (DEB) or RedHat-ba
 Go in the Releases link from this site, and pick your package, once downloaded, in say, `/tmp/` :
 
 <H4>Alpine (APK)</H4>
-```bash
-$ apk add [--allow-untrusted] /tmp/$PACKAGENAME
-```
+`$ apk add [--allow-untrusted] /tmp/$PACKAGENAME`
+
 <br>(the `--allow-untrusted` is for anyone who does not possess my signing keys. Most likely anyone not using my own binary repos)
 
 <H4>Debian-based (DEB)</H4>
-```bash
-$ apt install /tmp/$PACKAGENAME
-```
+`$ apt install /tmp/$PACKAGENAME`
 
 <H4>RedHat-based (RPM)</H4>
-```bash
-$ dnf localinstall /tmp/$PACKAGENAME
-```
+`$ dnf localinstall /tmp/$PACKAGENAME`
 
 <H2>A note about some extra directories and files</H2>
 The following directories:<br>

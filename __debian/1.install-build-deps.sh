@@ -9,4 +9,4 @@ echo "# sudo apt install -y g++ fakeroot devscripts build-essential";echo
 echo "Installing dependencies";echo
 sudo apt-get update && sudo apt update -y
 echo;echo;echo "Done. Now installing the Go binaries"
-sudo /opt/bin/install_golang.sh 1.25.0 amd64
+sudo /opt/bin/install_golang.sh 1.25.2 amd64

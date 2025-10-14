@@ -1,5 +1,5 @@
 Package: certificatemanager
-Version: 1.61.00-0
+Version: 1.61.01-0
 Architecture: amd64
 Maintainer: J.F.Gratton <jean-francois@famillegratton.net>
 Description: Certificates and CA management tool
