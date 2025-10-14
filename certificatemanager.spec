@@ -52,6 +52,7 @@ install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryn
 
 
 %changelog
+
 * Mon Aug 25 2025 Binary package builder <builder@famillegratton.net> 1.61.00-0
 - GO version bump and misc (jean-francois@famillegratton.net)
 - updated the outdated CHANGELOG.md, nothing more (jean-
