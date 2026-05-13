@@ -7,13 +7,14 @@ package cert
 
 import (
 	"bufio"
-	"certificateManager/environment"
 	"fmt"
-	cerr "github.com/jeanfrancoisgratton/customError"
-	hf "github.com/jeanfrancoisgratton/helperFunctions"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"certificateManager/environment"
+	cerr "github.com/jeanfrancoisgratton/customError/v3"
+	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 )
 
 // RevokeCertificate:
@@ -48,7 +49,7 @@ func RevokeCertificate(certname string) *cerr.CustomError {
 		c.OrganizationalUnit, c.CommonName); err != nil {
 		return err
 	}
-	fmt.Printf("Certificate %s has successfully been %s\n", c.CertificateName, hf.Green("revoked"))
+	fmt.Printf("Certificate %s has successfully been %s\n", c.CertificateName, hftx.Green("revoked"))
 	return nil
 }
 
@@ -76,12 +77,12 @@ func putRevokeFlag(e environment.EnvironmentStruct, certname string, country str
 	// Open in and out files
 	inFile, err := os.Open(filepath.Join(e.RootCAdir, "index.txt"))
 	if err != nil {
-		return &cerr.CustomError{Title: "Unable to open index.txt", Message: err.Error(), Fatality: cerr.Fatal}
+		return &cerr.CustomError{Title: "Unable to open index.txt", Message: err.Error()}
 	}
 	defer inFile.Close()
 	outFile, err := os.Create(filepath.Join(e.RootCAdir, "index.txt.new"))
 	if err != nil {
-		return &cerr.CustomError{Title: "Unable to create the temp index file", Message: err.Error(), Fatality: cerr.Fatal}
+		return &cerr.CustomError{Title: "Unable to create the temp index file", Message: err.Error()}
 	}
 	defer outFile.Close()
 
@@ -110,7 +111,7 @@ func putRevokeFlag(e environment.EnvironmentStruct, certname string, country str
 	}
 
 	if err := scanner.Err(); err != nil {
-		return &cerr.CustomError{Title: "Unable to read the index file", Message: err.Error(), Fatality: cerr.Fatal}
+		return &cerr.CustomError{Title: "Unable to read the index file", Message: err.Error()}
 	}
 
 	if CertRemoveFiles {

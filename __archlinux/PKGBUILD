@@ -1,0 +1,49 @@
+# Maintainer: J.F.Gratton <jean-francois@famillegratton.net>
+# Packager: Package builder <builder@famillegratton.net>
+
+pkgname=certificatemanager
+pkgver=1.70.00`
+pkgrel=1
+pkgdesc="SSL Certificate and local PKI management tool"
+arch=('x86_64')
+url="https://git.famillegratton.net:3000/devops/certificatemanager.git"
+license=('GPL-2.0-only')
+
+makedepends=('go')
+depends=()
+
+optdepends=()
+
+options=('!debug')
+
+_binaryname='cm'
+_builddir="${pkgname}-${pkgver}"
+
+prepare() {
+  rm -rf "${srcdir:?}/${_builddir}"
+  mkdir -p "${srcdir}/${_builddir}"
+
+  cp -a "${startdir}/../src/." "${srcdir}/${_builddir}/"
+}
+
+build() {
+  cd "${srcdir}/${_builddir}"
+
+  export CGO_ENABLED=0
+  export GOPATH="${srcdir}/gopath"
+  export GOMODCACHE="${GOPATH}/pkg/mod"
+
+  go build -trimpath -mod=readonly -modcacherw -ldflags="-s -w -buildid=" -o "${_binaryname}" .
+}
+
+check() {
+  cd "${srcdir}/${_builddir}"
+  go test -modcacherw ./...
+}
+
+
+package() {
+  cd "${srcdir}/${_builddir}"
+
+  install -Dm0755 "${_binaryname}" "${pkgdir}/opt/bin/${_binaryname}"
+}

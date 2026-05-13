@@ -6,9 +6,10 @@
 package cmd
 
 import (
-	environment "certificateManager/environment"
 	"fmt"
-	cerr "github.com/jeanfrancoisgratton/customError"
+
+	environment "certificateManager/environment"
+	cerr "github.com/jeanfrancoisgratton/customError/v3"
 	"github.com/spf13/cobra"
 )
 

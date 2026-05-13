@@ -6,15 +6,17 @@
 package cert
 
 import (
-	"certificateManager/environment"
 	"fmt"
-	cerr "github.com/jeanfrancoisgratton/customError"
-	hf "github.com/jeanfrancoisgratton/helperFunctions"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/jedib0t/go-pretty/v6/text"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"certificateManager/environment"
+	cerr "github.com/jeanfrancoisgratton/customError/v3"
+	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
+	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 func ListCertificates() *cerr.CustomError {
@@ -46,7 +48,7 @@ func ListCertificates() *cerr.CustomError {
 		return &cerr.CustomError{Message: err.Error()}
 	}
 
-	fmt.Printf("Number of certificates: %s\n", hf.Green(fmt.Sprintf("%d", len(fileInfos))))
+	fmt.Printf("Number of certificates: %s\n", hftx.Green(fmt.Sprintf("%d", len(fileInfos))))
 
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
@@ -60,7 +62,7 @@ func ListCertificates() *cerr.CustomError {
 			CertConfigFile = oldCfg
 			return cErr
 		}
-		t.AppendRow([]interface{}{hf.Green(fi.Name()), certDomain, hf.Green(hf.SI(uint64(fi.Size()))), hf.Green(fmt.Sprintf("%v", fi.ModTime().Format("2006/01/02 15:04:05")))})
+		t.AppendRow([]interface{}{hftx.Green(fi.Name()), certDomain, hftx.Green(hf.SI(uint64(fi.Size()))), hftx.Green(fmt.Sprintf("%v", fi.ModTime().Format("2006/01/02 15:04:05")))})
 	}
 	t.SortBy([]table.SortBy{
 		{Name: "Cert name", Mode: table.Asc},

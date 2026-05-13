@@ -2,7 +2,7 @@
 %define _build_id_links none
 %define _name certificatemanager
 %define _prefix /opt
-%define _version 1.61.01
+%define _version 1.70.00
 %define _rel 0
 %define _arch x86_64
 %define _binaryname cm
@@ -27,9 +27,8 @@ Certificates and CA management tool
 %autosetup
 
 %build
-cd %{_sourcedir}/%{_name}-%{_version}/src
-PATH=$PATH:/opt/go/bin go build -o %{_sourcedir}/%{_binaryname} .
-strip %{_sourcedir}/%{_binaryname}
+cd src
+CGO_ENABLED=0 /opt/go/bin/go build -trimpath -ldflags="-s -w -buildid=" -o %{_builddir}/%{name}-%{version}/%{_binaryname} .
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -38,7 +37,8 @@ rm -rf $RPM_BUILD_ROOT
 exit 0
 
 %install
-install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryname}
+rm -rf %{buildroot}
+install -Dpm 0755 %{_builddir}/%{name}-%{version}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryname}
 
 %post
 

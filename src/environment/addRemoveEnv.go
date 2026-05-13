@@ -7,11 +7,12 @@ package environment
 
 import (
 	"fmt"
-	cerr "github.com/jeanfrancoisgratton/customError"
-	hf "github.com/jeanfrancoisgratton/helperFunctions"
 	"os"
 	"path/filepath"
 	"strings"
+
+	cerr "github.com/jeanfrancoisgratton/customError/v3"
+	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5"
 )
 
 func RemoveEnvFile(envfile string) *cerr.CustomError {
@@ -42,31 +43,31 @@ func prompt4EnvironmentValues() (EnvironmentStruct, *cerr.CustomError) {
 	var env EnvironmentStruct
 	fmt.Println("The root dir value should be an absolute path, and all other values relative to it")
 
-	env.CertificateRootDir = hf.GetStringValFromPrompt("Enter the certificate root dir (where the PKI directories will sit): ")
+	env.CertificateRootDir = hftx.GetStringValFromPrompt("Enter the certificate root dir (where the PKI directories will sit): ")
 	if !strings.HasPrefix(env.CertificateRootDir, "/") && !strings.HasPrefix(env.CertificateRootDir, "$HOME") && !strings.HasPrefix(env.CertificateRootDir, "~") {
-		ce := &cerr.CustomError{Title: "Directory error", Message: fmt.Sprintf("%s is not an absolute path\n", env.CertificatesConfigDir), Fatality: cerr.Fatal}
+		ce := &cerr.CustomError{Title: "Directory error", Message: env.CertificatesConfigDir + " is not an absolute path"}
 		return EnvironmentStruct{}, ce
 	}
 
-	env.RootCAdir = hf.GetStringValFromPrompt("Enter the rootCA directory name: ")
+	env.RootCAdir = hftx.GetStringValFromPrompt("Enter the rootCA directory name: ")
 	if strings.HasPrefix(env.RootCAdir, "/") {
-		ce := &cerr.CustomError{Title: "Directory error", Message: fmt.Sprintf("%s must be an absolute path\n", env.RootCAdir), Fatality: cerr.Fatal}
+		ce := &cerr.CustomError{Title: "Directory error", Message: env.RootCAdir + " must be an absolute path"}
 		return EnvironmentStruct{}, ce
 	} else {
 		env.RootCAdir = filepath.Join(env.CertificateRootDir, env.RootCAdir)
 	}
 
-	env.ServerCertsDir = hf.GetStringValFromPrompt("Enter the servers certificate directory name: ")
+	env.ServerCertsDir = hftx.GetStringValFromPrompt("Enter the servers certificate directory name: ")
 	if strings.HasPrefix(env.ServerCertsDir, "/") {
-		ce := &cerr.CustomError{Title: "Directory error", Message: fmt.Sprintf("%s must be a relative path\n", env.ServerCertsDir), Fatality: cerr.Fatal}
+		ce := &cerr.CustomError{Title: "Directory error", Message: env.ServerCertsDir + " must be a relative path"}
 		return EnvironmentStruct{}, ce
 	} else {
 		env.ServerCertsDir = filepath.Join(env.CertificateRootDir, env.ServerCertsDir)
 	}
 
-	env.CertificatesConfigDir = hf.GetStringValFromPrompt("Enter the servers certificates config directory name: ")
+	env.CertificatesConfigDir = hftx.GetStringValFromPrompt("Enter the servers certificates config directory name: ")
 	if strings.HasPrefix(env.CertificatesConfigDir, "/") {
-		ce := &cerr.CustomError{Title: "Directory error", Message: fmt.Sprintf("%s must be a relative path\n", env.CertificatesConfigDir), Fatality: cerr.Fatal}
+		ce := &cerr.CustomError{Title: "Directory error", Message: env.CertificatesConfigDir + " must be a relative path"}
 		return EnvironmentStruct{}, ce
 	} else {
 		env.CertificatesConfigDir = filepath.Join(env.CertificateRootDir, env.CertificatesConfigDir)

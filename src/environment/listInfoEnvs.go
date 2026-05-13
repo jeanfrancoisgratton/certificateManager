@@ -11,8 +11,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	cerr "github.com/jeanfrancoisgratton/customError"
-	hf "github.com/jeanfrancoisgratton/helperFunctions"
+	cerr "github.com/jeanfrancoisgratton/customError/v3"
+	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
+	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 )
@@ -27,12 +28,12 @@ func ListEnvironments(envdir string) *cerr.CustomError {
 		envdir = filepath.Join(os.Getenv("HOME"), ".config", "JFG", "certificatemanager")
 	}
 	if dirFH, err = os.Open(envdir); err != nil {
-		ce := &cerr.CustomError{Title: "Unable to read config directory", Fatality: cerr.Fatal}
+		ce := &cerr.CustomError{Title: "Unable to read config directory"}
 		return ce
 	}
 
 	if fileInfos, err = dirFH.Readdir(0); err != nil {
-		ce := &cerr.CustomError{Title: "Unable to read files in config directory", Fatality: cerr.Fatal}
+		ce := &cerr.CustomError{Title: "Unable to read files in config directory"}
 		return ce
 	}
 
@@ -43,19 +44,19 @@ func ListEnvironments(envdir string) *cerr.CustomError {
 	}
 
 	if err != nil {
-		ce := &cerr.CustomError{Title: "Undefined error", Message: err.Error(), Fatality: cerr.Fatal}
+		ce := &cerr.CustomError{Title: "Undefined error", Message: err.Error()}
 		return ce
 	}
 
-	fmt.Printf("Number of environment files: %s\n", hf.Green(fmt.Sprintf("%d", len(finfo))))
+	fmt.Printf("Number of environment files: %s\n", hftx.Green(fmt.Sprintf("%d", len(finfo))))
 
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Environment file", "File size", "Modification time"})
 
 	for _, fi := range finfo {
-		t.AppendRow([]interface{}{hf.Green(fi.Name()), hf.Green(hf.SI(uint64(fi.Size()))),
-			hf.Green(fmt.Sprintf("%v", fi.ModTime().Format("2006/01/02 15:04:05")))})
+		t.AppendRow([]interface{}{hftx.Green(fi.Name()), hftx.Green(hf.SI(uint64(fi.Size()))),
+			hftx.Green(fmt.Sprintf("%v", fi.ModTime().Format("2006/01/02 15:04:05")))})
 	}
 	t.SortBy([]table.SortBy{
 		{Name: "Environment file", Mode: table.Asc},
@@ -86,8 +87,8 @@ func ExplainEnvFile(envfiles []string) *cerr.CustomError {
 			EnvConfigFile = oldEnvFile
 			return err
 		} else {
-			t.AppendRow([]interface{}{hf.Green(envfile), hf.Green(e.CertificateRootDir), hf.Green(filepath.Base(e.RootCAdir)),
-				hf.Green(filepath.Base(e.ServerCertsDir)), hf.Green(filepath.Base(e.CertificatesConfigDir))})
+			t.AppendRow([]interface{}{hftx.Green(envfile), hftx.Green(e.CertificateRootDir), hftx.Green(filepath.Base(e.RootCAdir)),
+				hftx.Green(filepath.Base(e.ServerCertsDir)), hftx.Green(filepath.Base(e.CertificatesConfigDir))})
 		}
 
 	}

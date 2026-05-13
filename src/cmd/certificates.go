@@ -6,11 +6,12 @@
 package cmd
 
 import (
-	"certificateManager/cert"
 	"fmt"
-	cerr "github.com/jeanfrancoisgratton/customError"
-	"github.com/spf13/cobra"
 	"os"
+
+	"certificateManager/cert"
+	cerr "github.com/jeanfrancoisgratton/customError/v3"
+	"github.com/spf13/cobra"
 )
 
 var certCmd = &cobra.Command{

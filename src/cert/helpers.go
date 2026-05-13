@@ -7,14 +7,15 @@ package cert
 
 import (
 	"bufio"
-	"certificateManager/environment"
 	"fmt"
-	cerr "github.com/jeanfrancoisgratton/customError"
-	"github.com/jeanfrancoisgratton/helperFunctions"
 	"net"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"certificateManager/environment"
+	cerr "github.com/jeanfrancoisgratton/customError/v3"
+	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 )
 
 var CertConfigFile = "defaultCertConfig.json"
@@ -101,7 +102,7 @@ func getKeyUsage() []string {
 		if i%5 == 0 && i != 0 {
 			fmt.Println()
 		}
-		fmt.Printf("'%s' ", helperFunctions.White(j))
+		fmt.Printf("'%s' ", hftx.White(j))
 	}
 	fmt.Println("\nCADEFAULTS is a catch-all for default values of a root CA (lowercase accepted)")
 	fmt.Println("CERTDEFAULTS is a catch-all for default values of a standard certificate (lowercase accepted)")

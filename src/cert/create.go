@@ -6,17 +6,17 @@
 package cert
 
 import (
-	"certificateManager/environment"
 	"crypto/rsa"
 	"fmt"
-	cerr "github.com/jeanfrancoisgratton/customError"
-	hf "github.com/jeanfrancoisgratton/helperFunctions"
 	"net"
 	"os"
 	"path/filepath"
-)
 
-var CertPKsize int
+	"certificateManager/environment"
+	cerr "github.com/jeanfrancoisgratton/customError/v3"
+	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
+	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
+)
 
 // Create() : Create a certificate file. "Plain" SSL cert, or CA cert
 // Parameters:
@@ -55,7 +55,7 @@ func Create(certconfigfile string) *cerr.CustomError {
 
 	// 2a. Populate the certificate structure with user-provided values or a file
 	if certconfigfile == "" {
-		fmt.Printf("An example of a certificate can be found at %s\n", hf.Green(filepath.Join(os.Getenv("HOME"), ".config", "JFG", "certificatemanager", "sampleCert.json")))
+		fmt.Printf("An example of a certificate can be found at %s\n", hftx.Green(filepath.Join(os.Getenv("HOME"), ".config", "JFG", "certificatemanager", "sampleCert.json")))
 		if err = populateCertificateStructure(&certconfig); err != nil {
 			return err
 		}
@@ -86,9 +86,8 @@ func Create(certconfigfile string) *cerr.CustomError {
 	// 3. Get the current serial number
 	if certconfig.SerialNumber, err = getSerialNumber(); err != nil {
 		return err
-	} else {
-		certconfig.SerialNumber++
 	}
+	certconfig.SerialNumber++
 
 	// 4. Generate a private key
 	// Destination is either ServerCertsDir/private or RootCAdir
@@ -134,7 +133,7 @@ func Create(certconfigfile string) *cerr.CustomError {
 	}
 
 	if !certconfig.IsCA {
-		fmt.Printf("Certificate %s has been created.\n", hf.Green(certconfig.CertificateName))
+		fmt.Printf("Certificate %s has been created.\n", hftx.Green(certconfig.CertificateName))
 	}
 	return nil
 }
@@ -144,26 +143,26 @@ func Create(certconfigfile string) *cerr.CustomError {
 func populateCertificateStructure(cs *CertificateStruct) *cerr.CustomError {
 	var err *cerr.CustomError
 	//var ips []string
-	fmt.Println("Entries with multiple values (ip addresses, emails, key usage are separated with ENTER, with another ENTER pressed at the end.\n")
-	cs.CertificateName = hf.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s: ", hf.Green("name")))
-	cs.CommonName = hf.GetStringValFromPrompt(fmt.Sprintf("Please enter the %s (CN) -> defaults to cert name if omitted: ", hf.Green("common name")))
+	fmt.Println("Entries with multiple values (ip addresses, emails, key usage are separated with ENTER, with another ENTER pressed at the end.")
+	cs.CertificateName = hf.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s: ", hftx.Green("name")))
+	cs.CommonName = hf.GetStringValFromPrompt(fmt.Sprintf("Please enter the %s (CN) -> defaults to cert name if omitted: ", hftx.Green("common name")))
 	if cs.CommonName == "" {
 		cs.CommonName = cs.CertificateName
 	}
-	cs.IsCA = hf.GetBoolValFromPrompt(fmt.Sprintf("[any values not starting with T,t or 1 will be treated as FALSE] Is this certificate a %s ? ", hf.Green("CA certificate")))
-	cs.Country = hf.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (C): ", hf.Green("country")))
-	cs.Province = hf.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (ST): ", hf.Green("province/state")))
-	cs.Locality = hf.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (L): ", hf.Green("locality")))
-	cs.Organization = hf.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (O): ", hf.Green("organization")))
-	cs.OrganizationalUnit = hf.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (OU): ", hf.Green("organizational unit")))
-	cs.EmailAddresses = hf.GetStringSliceFromPrompt(fmt.Sprintf("Please enter the certificate's %s: ", hf.Green("email address")))
+	cs.IsCA = hf.GetBoolValFromPrompt(fmt.Sprintf("[any values not starting with T,t or 1 will be treated as FALSE] Is this certificate a %s ? ", hftx.Green("CA certificate")))
+	cs.Country = hf.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (C): ", hftx.Green("country")))
+	cs.Province = hf.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (ST): ", hftx.Green("province/state")))
+	cs.Locality = hf.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (L): ", hftx.Green("locality")))
+	cs.Organization = hf.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (O): ", hftx.Green("organization")))
+	cs.OrganizationalUnit = hf.GetStringValFromPrompt(fmt.Sprintf("Please enter the certificate's %s (OU): ", hftx.Green("organizational unit")))
+	cs.EmailAddresses = hf.GetStringSliceFromPrompt(fmt.Sprintf("Please enter the certificate's %s: ", hftx.Green("email address")))
 	// Here we have to deal with a new security "feature" by Apple that does not allow for CA to last longer than +- 825 days ("official" documentation varies, here)
 	// Therefore we won't allow CAs to expire past 800 days
 	if cs.IsCA {
 		fmt.Printf("%s: Apple introduced a 'feature' where CA expiring after 825 days are no longer deemed valid. We will limit their duration to %s years\n",
-			hf.Yellow("WARNING:"), hf.Red("2"))
+			hftx.Yellow("WARNING:"), hftx.Red("2"))
 	}
-	if cs.Duration = hf.GetIntValFromPrompt(fmt.Sprintf("\nPlease enter the certificate's lifespan (%s) in YEARS, ENTER is 1: ", hf.Green("duration"))); cs.Duration <= 1 {
+	if cs.Duration = hf.GetIntValFromPrompt(fmt.Sprintf("\nPlease enter the certificate's lifespan (%s) in YEARS, ENTER is 1: ", hftx.Green("duration"))); cs.Duration <= 1 {
 		cs.Duration = 1
 	}
 	if cs.IsCA && cs.Duration > 2 {
@@ -171,10 +170,10 @@ func populateCertificateStructure(cs *CertificateStruct) *cerr.CustomError {
 	}
 
 	// Key usage is glitchy, suboptimal....
-	fmt.Printf("Please enter the %s intended for this certificate:\n", hf.Green("key usage"))
+	fmt.Printf("Please enter the %s intended for this certificate:\n", hftx.Green("key usage"))
 	cs.KeyUsage = getKeyUsage()
-	cs.DNSNames = hf.GetStringSliceFromPrompt(fmt.Sprintf("Please enter all %s this cert is tied to: ", hf.Green("DNS names")))
-	ips := hf.GetStringSliceFromPrompt(fmt.Sprintf("\nPlease enter the certificate's %s: ", hf.Green("IP address(es)")))
+	cs.DNSNames = hf.GetStringSliceFromPrompt(fmt.Sprintf("Please enter all %s this cert is tied to: ", hftx.Green("DNS names")))
+	ips := hf.GetStringSliceFromPrompt(fmt.Sprintf("\nPlease enter the certificate's %s: ", hftx.Green("IP address(es)")))
 	if len(ips) > 0 {
 		for _, val := range ips {
 			cs.IPAddresses = append(cs.IPAddresses, net.ParseIP(val))
@@ -184,9 +183,8 @@ func populateCertificateStructure(cs *CertificateStruct) *cerr.CustomError {
 	}
 	if cs.SerialNumber, err = getSerialNumber(); err != nil {
 		return err
-	} else {
-		cs.SerialNumber++
 	}
-	cs.Comments = hf.GetStringSliceFromPrompt(fmt.Sprintf("\nPlease enter optional %s: ", hf.Green("comments")))
+	cs.SerialNumber++
+	cs.Comments = hf.GetStringSliceFromPrompt(fmt.Sprintf("\nPlease enter optional %s: ", hftx.Green("comments")))
 	return nil
 }

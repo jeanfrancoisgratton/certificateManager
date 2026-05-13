@@ -1,10 +1,10 @@
 module certificateManager
 
-go 1.25.2
+go 1.26.3
 
 require (
-	github.com/jeanfrancoisgratton/customError v1.7.2
-	github.com/jeanfrancoisgratton/helperFunctions v1.12.2
+	github.com/jeanfrancoisgratton/customError/v3 v3.0.0
+	github.com/jeanfrancoisgratton/helperFunctions/v5 v5.0.2
 	github.com/jedib0t/go-pretty/v6 v6.6.8
 	github.com/spf13/cobra v1.10.1
 	software.sslmate.com/src/go-pkcs12 v0.4.0
@@ -18,8 +18,8 @@ require (
 	github.com/mattn/go-runewidth v0.0.19 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
-	golang.org/x/crypto v0.43.0 // indirect
-	golang.org/x/sys v0.37.0 // indirect
-	golang.org/x/term v0.36.0 // indirect
-	golang.org/x/text v0.30.0 // indirect
+	golang.org/x/crypto v0.49.0 // indirect
+	golang.org/x/sys v0.42.0 // indirect
+	golang.org/x/term v0.41.0 // indirect
+	golang.org/x/text v0.35.0 // indirect
 )
