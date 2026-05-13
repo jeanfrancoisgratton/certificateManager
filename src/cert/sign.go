@@ -48,7 +48,7 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) *cerr.Cus
 		return &cerr.CustomError{Title: "Error listing CA certificate files: ", Message: err.Error()}
 	}
 	if len(caCertFiles) != 1 {
-		return &cerr.CustomError{Message: "Expected one CA certificate file, found " + hftx.Red(string(len(caCertFiles)))}
+		return &cerr.CustomError{Message: "Expected one CA certificate file, found " + hftx.Red(fmt.Sprintf("%d", len(caCertFiles)))}
 	}
 	baseFN := strings.TrimSuffix(filepath.Base(caCertFiles[0]), filepath.Ext(filepath.Base(caCertFiles[0])))
 
