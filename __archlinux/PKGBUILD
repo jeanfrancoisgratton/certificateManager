@@ -2,7 +2,7 @@
 # Packager: Package builder <builder@famillegratton.net>
 
 pkgname=certificatemanager
-pkgver=1.70.00`
+pkgver=1.70.00
 pkgrel=1
 pkgdesc="SSL Certificate and local PKI management tool"
 arch=('x86_64')
