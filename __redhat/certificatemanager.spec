@@ -52,6 +52,9 @@ install -Dpm 0755 %{_builddir}/%{name}-%{version}/%{_binaryname} %{buildroot}%{_
 
 
 %changelog
+* Wed May 13 2026 Binary package builder <builder@famillegratton.net> 1.70.00-0
+- added archlinux support to binary packaging, go version bump, builddeps updates, simplified error handling
+
 
 
 * Mon Aug 25 2025 Binary package builder <builder@famillegratton.net> 1.61.00-0
