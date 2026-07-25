@@ -67,6 +67,11 @@ fi
 
 
 %changelog
+* Sat Jul 25 2026 Binary package builder <builder@famillegratton.net> 1.8.0-2
+- RPMBUILDER: added missing variables in specfile
+- APKBUILDER: post packaging scripts misnamed
+- corrected wrong specfile name issue
+
 * Sat Jul 25 2026 Binary package builder <builder@famillegratton.net> 1.8.0-1
 - Refactored BUILDERs packaging, updated builddeps, upgraded helperFunctions and customError
 - sanitized code, cleared go vet ./...
