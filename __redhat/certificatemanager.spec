@@ -3,8 +3,10 @@
 %define _name certificatemanager
 %define _prefix /opt
 %define _version 1.8.0
-%define _rel 1
+%define _rel 2
 %define _arch x86_64
+%define _bash_completionsdir /usr/share/bash-completion/completions
+%define _zsh_completionsdir  /usr/share/zsh/site-functions
 %define _binaryname cm
 
 Name:       certificatemanager
