@@ -1,7 +1,9 @@
 Package: certificatemanager
-Version: 1.70.00-0
+Version: 1.8.0-1
 Architecture: amd64
-Maintainer: J.F.Gratton <jean-francois@famillegratton.net>
-Description: Certificates and CA management tool
-Section: SSL tools
-Depends: gcc
+Maintainer: J.F.Gratton <nexus@famillegratton.net>
+Description: Certificate and PKI management tool
+ Create your own CA cert, then create/sign your leaf certs off that CA
+Section: SSL utilities
+Build-Depends: golang-any
+Depends: bash-completion

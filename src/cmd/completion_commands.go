@@ -1,4 +1,4 @@
-// certificatemanager
+// nxtools
 // Written by J.F. Gratton <jean-francois@famillegratton.net>
 // Original timestamp: 2025/09/15 08:35
 // Original filename: src/cmd/completionCommands.go
@@ -18,16 +18,16 @@ var completionCmd = &cobra.Command{
 	Long: `Generate completion scripts for your shell.
 
 Bash:
-  $ source <(cm completion bash)
+  $ source <(nxtools completion bash)
   # To persist:
-  $ cm completion bash | sudo tee /etc/bash_completion.d/dtools > /dev/null
+  $ nxtools completion bash | sudo tee /etc/bash_completion.d/nxtools > /dev/null
 
 Zsh:
-  $ cm completion zsh > ~/.zsh[.completion.d]/_cm
+  $ nxtools completion zsh > ~/.zsh[.completion.d]/_nxtools
   $ echo 'fpath=($HOME/.zsh $fpath)' >> ~/.zshrc
   $ echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
   # Or, for current session:
-  $ source <(cm completion zsh)
+  $ source <(nxtools completion zsh)
 `,
 }
 

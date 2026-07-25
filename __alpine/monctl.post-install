@@ -1,0 +1,14 @@
+#!/usr/bin/env ash
+
+set -e
+
+# Bash completion — always install
+
+mkdir -p /etc/bash_completion.d/
+/opt/bin/cm completion bash > /etc/bash_completion.d/cm
+
+# Zsh completion — only if zsh is present
+if command -v zsh > /dev/null 2>&1; then
+    mkdir -p /usr/share/zsh/site-functions
+    /opt/bin/cm completion zsh > /usr/share/zsh/site-functions/_cm
+fi

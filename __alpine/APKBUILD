@@ -1,8 +1,8 @@
 # Maintainer: J.F.Gratton <jean-francois@famillegratton.net>
 # Packager: Package builder <builder@famillegratton.net>
 pkgname=certificatemanager
-pkgver=1.70.00
-pkgrel=0
+pkgver=1.8.0
+pkgrel=1
 pkgdir=/data/packages
 builddir="$startdir/src/BUILD"
 pkgdesc="PKI infrastructure management tool"
@@ -10,7 +10,7 @@ url="https://git.famillegratton.net:3000/devops/certificatemanager.git"
 arch=x86_64
 license=GPL2
 depends=""
-install=""
+install="$pkgname.post-install $pkgname.post-deinstall"
 #makedepends="go"
 options="!check"
 #source="$pkgname-$pkgver-$pkgrel.tar.bz2::http://localhost/$pkgname-$pkgver-$pkgrel.tar.bz2"

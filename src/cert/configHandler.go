@@ -6,12 +6,12 @@
 package cert
 
 import (
+	"certificateManager/environment"
 	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"certificateManager/environment"
 	cerr "github.com/jeanfrancoisgratton/customError/v3"
 )
 
@@ -45,8 +45,9 @@ func LoadCertificateConfFile(certfile string) (CertificateStruct, *cerr.CustomEr
 	if readErr = json.Unmarshal(jFile, &payload); readErr != nil {
 		return CertificateStruct{}, &cerr.CustomError{Title: "Unable to unmarshal JSON",
 			Message: readErr.Error(), Fatality: cerr.Fatal}
+	} else {
+		return payload, nil
 	}
-	return payload, nil
 }
 
 // SaveCertificateConfFile :

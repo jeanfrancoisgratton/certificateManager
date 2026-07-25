@@ -9,6 +9,7 @@ package cert
 
 import (
 	"bufio"
+	"certificateManager/environment"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -16,7 +17,6 @@ import (
 	"strings"
 	"time"
 
-	"certificateManager/environment"
 	cerr "github.com/jeanfrancoisgratton/customError/v3"
 )
 
@@ -34,11 +34,11 @@ func writeAttributeFile() *cerr.CustomError {
 
 	ffile, err := os.Create(filepath.Join(e.RootCAdir, "index.txt.attr"))
 	if err != nil {
-		return &cerr.CustomError{Message: err.Error()}
+		return &cerr.CustomError{Message: err.Error(), Fatality: cerr.Fatal}
 	}
 	_, err = ffile.WriteString("unique_subject = yes")
 	if err != nil {
-		return &cerr.CustomError{Message: err.Error()}
+		return &cerr.CustomError{Message: err.Error(), Fatality: cerr.Fatal}
 	}
 	return nil
 }
@@ -53,13 +53,13 @@ func writeIndexFile(c CertificateStruct) *cerr.CustomError {
 
 	if _, err = os.Stat(filepath.Join(e.RootCAdir, "index.txt")); os.IsNotExist(err) {
 		if filedesc, err = os.Create(filepath.Join(e.RootCAdir, "index.txt")); err != nil {
-			return &cerr.CustomError{Message: err.Error()}
+			return &cerr.CustomError{Message: err.Error(), Fatality: cerr.Fatal}
 		}
 		defer filedesc.Close()
 		newline := fmt.Sprintf("V\t%sZ\t%s\tunknown\t/C=%s/ST=%s/L=%s/O=%s/OU=%s/CN=%s/emailAddress=%s", time.Now().UTC().Format("060102150405"),
 			fmt.Sprintf("%04x", c.SerialNumber), c.Country, c.Province, c.Locality, c.Organization, c.OrganizationalUnit, c.CommonName, c.EmailAddresses[0])
 		if _, err = filedesc.WriteString(newline); err != nil {
-			return &cerr.CustomError{Message: err.Error()}
+			return &cerr.CustomError{Message: err.Error(), Fatality: cerr.Fatal}
 		}
 	} else {
 		if err := replaceStringInIndex(c, e.RootCAdir); err != nil {
@@ -75,12 +75,12 @@ func replaceStringInIndex(c CertificateStruct, sourcedir string) *cerr.CustomErr
 
 	sf, ferr := os.Open(filepath.Join(sourcedir, "index.txt"))
 	if ferr != nil {
-		return &cerr.CustomError{Message: ferr.Error()}
+		return &cerr.CustomError{Message: ferr.Error(), Fatality: cerr.Fatal}
 	}
 	defer sf.Close()
 	of, ferr := os.Create(filepath.Join(sourcedir, "index.txt.tmp"))
 	if ferr != nil {
-		return &cerr.CustomError{Message: ferr.Error()}
+		return &cerr.CustomError{Message: ferr.Error(), Fatality: cerr.Fatal}
 	}
 	defer of.Close()
 
@@ -92,17 +92,17 @@ func replaceStringInIndex(c CertificateStruct, sourcedir string) *cerr.CustomErr
 		}
 		_, ferr := fmt.Fprintln(of, line)
 		if ferr != nil {
-			return &cerr.CustomError{Message: ferr.Error()}
+			return &cerr.CustomError{Message: ferr.Error(), Fatality: cerr.Fatal}
 		}
 	}
 	newline := fmt.Sprintf("V\t%sZ\t%s\tunknown\t%s", time.Now().UTC().Format("060102150405"),
 		fmt.Sprintf("%04X", c.SerialNumber), string2replace)
 	_, ferr = fmt.Fprintln(of, newline)
 	if ferr != nil {
-		return &cerr.CustomError{Message: ferr.Error()}
+		return &cerr.CustomError{Message: ferr.Error(), Fatality: cerr.Fatal}
 	}
 	if ferr := os.Rename(filepath.Join(sourcedir, "index.txt.tmp"), filepath.Join(sourcedir, "index.txt")); ferr != nil {
-		return &cerr.CustomError{Message: ferr.Error()}
+		return &cerr.CustomError{Message: ferr.Error(), Fatality: cerr.Fatal}
 	}
 	return nil
 }
@@ -132,7 +132,7 @@ func getSerialNumber() (uint64, *cerr.CustomError) {
 	// Read serial from file
 	content, serr := os.ReadFile(serialPath)
 	if serr != nil {
-		return 0, &cerr.CustomError{Message: serr.Error()}
+		return 0, &cerr.CustomError{Message: serr.Error(), Fatality: cerr.Fatal}
 	}
 
 	// Convert content to a string and remove any leading/trailing whitespace
@@ -161,13 +161,13 @@ func setSerialNumber(serialNo uint64) *cerr.CustomError {
 
 	ffile, ce := os.Create(filepath.Join(e.RootCAdir, "serial"))
 	if ce != nil {
-		return &cerr.CustomError{Title: "Error creating the serial file", Message: err.Error()}
+		return &cerr.CustomError{Title: "Error creating the serial file", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 	defer ffile.Close()
 
 	_, ce = ffile.WriteString(fmt.Sprintf("%04X\n", serialNo))
 	if ce != nil {
-		return &cerr.CustomError{Title: "Error writing the serial file", Message: err.Error()}
+		return &cerr.CustomError{Title: "Error writing the serial file", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 	return nil
 }

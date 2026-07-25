@@ -6,13 +6,13 @@
 package cert
 
 import (
+	"certificateManager/environment"
 	"crypto/rsa"
 	"fmt"
 	"net"
 	"os"
 	"path/filepath"
 
-	"certificateManager/environment"
 	cerr "github.com/jeanfrancoisgratton/customError/v3"
 	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
@@ -185,6 +185,7 @@ func populateCertificateStructure(cs *CertificateStruct) *cerr.CustomError {
 		return err
 	}
 	cs.SerialNumber++
+
 	cs.Comments = hf.GetStringSliceFromPrompt(fmt.Sprintf("\nPlease enter optional %s: ", hftx.Green("comments")))
 	return nil
 }

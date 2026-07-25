@@ -30,7 +30,7 @@ func LoadEnvironmentFile() (EnvironmentStruct, *cerr.CustomError) {
 	}
 	err = json.Unmarshal(jFile, &payload)
 	if err != nil {
-		return EnvironmentStruct{}, &cerr.CustomError{Title: err.Error()}
+		return EnvironmentStruct{}, &cerr.CustomError{Title: err.Error(), Fatality: cerr.Fatal}
 	} else {
 		return payload, nil
 	}
@@ -48,7 +48,7 @@ func (e EnvironmentStruct) SaveEnvironmentFile(outputfile string) *cerr.CustomEr
 	}
 	rcFile := filepath.Join(os.Getenv("HOME"), ".config", "JFG", "certificatemanager", outputfile)
 	if err = os.WriteFile(rcFile, jStream, 0600); err != nil {
-		return &cerr.CustomError{Title: err.Error()}
+		return &cerr.CustomError{Title: err.Error(), Fatality: cerr.Fatal}
 	}
 
 	return nil

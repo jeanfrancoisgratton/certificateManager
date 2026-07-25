@@ -6,12 +6,12 @@
 package cert
 
 import (
+	"certificateManager/environment"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"certificateManager/environment"
 	cerr "github.com/jeanfrancoisgratton/customError/v3"
 	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"

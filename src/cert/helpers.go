@@ -7,39 +7,15 @@ package cert
 
 import (
 	"bufio"
+	"certificateManager/environment"
 	"fmt"
-	"net"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"certificateManager/environment"
 	cerr "github.com/jeanfrancoisgratton/customError/v3"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 )
-
-var CertConfigFile = "defaultCertConfig.json"
-var CertJava = false
-var CertRemoveFiles = false
-
-// This is the full data structure for an SSL certificate and CA
-type CertificateStruct struct {
-	Country            string   `json:"Country"`
-	Province           string   `json:"Province"`
-	Locality           string   `json:"Locality"`
-	Organization       string   `json:"Organization"`
-	OrganizationalUnit string   `json:"OrganizationalUnit,omitempty"`
-	CommonName         string   `json:"CommonName"`
-	IsCA               bool     `json:"IsCA"`
-	EmailAddresses     []string `json:"EmailAddresses,omitempty"`
-	Duration           int      `json:"Duration"`
-	KeyUsage           []string `json:"KeyUsage"`
-	DNSNames           []string `json:"DNSNames,omitempty"`
-	IPAddresses        []net.IP `json:"IPAddresses,omitempty"`
-	CertificateName    string   `json:"CertificateName"`
-	SerialNumber       uint64   `json:"SerialNumber"`
-	Comments           []string `json:"Comments,omitempty"`
-}
 
 // Create the sample certificate config file
 

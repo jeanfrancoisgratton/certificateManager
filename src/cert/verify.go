@@ -6,6 +6,7 @@
 package cert
 
 import (
+	"certificateManager/environment"
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
@@ -13,7 +14,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"certificateManager/environment"
 	cerr "github.com/jeanfrancoisgratton/customError/v3"
 )
 
@@ -35,9 +35,9 @@ func verifyCert(certFilePath string) *cerr.CustomError {
 	certPEMBlock, err := os.ReadFile(certFilePath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return &cerr.CustomError{Title: "Path error", Message: "You most likely did not provide a full path to the CRT file"}
+			return &cerr.CustomError{Title: "Path error", Message: "You most likely did not provide a full path to the CRT file", Fatality: cerr.Fatal}
 		}
-		return &cerr.CustomError{Title: err.Error()}
+		return &cerr.CustomError{Title: err.Error(), Fatality: cerr.Fatal}
 	}
 
 	// Decode the PEM block into a certificate
@@ -49,7 +49,7 @@ func verifyCert(certFilePath string) *cerr.CustomError {
 	// Parse the certificate
 	parsedCert, err := x509.ParseCertificate(cert.Bytes)
 	if err != nil {
-		return &cerr.CustomError{Message: err.Error()}
+		return &cerr.CustomError{Message: err.Error(), Fatality: cerr.Fatal}
 	}
 
 	// Print certificate information

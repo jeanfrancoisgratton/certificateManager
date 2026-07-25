@@ -6,10 +6,10 @@
 package cmd
 
 import (
+	"certificateManager/cert"
 	"fmt"
 	"os"
 
-	"certificateManager/cert"
 	cerr "github.com/jeanfrancoisgratton/customError/v3"
 	"github.com/spf13/cobra"
 )
@@ -84,4 +84,8 @@ var certRevokeCmd = &cobra.Command{
 			fmt.Printf("%s\n", err.Error())
 		}
 	},
+}
+
+func init() {
+	certCmd.AddCommand(certlistCmd, certVerifyCmd, certCreateCmd, certRevokeCmd)
 }

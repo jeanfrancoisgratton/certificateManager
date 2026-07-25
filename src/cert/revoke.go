@@ -7,12 +7,12 @@ package cert
 
 import (
 	"bufio"
+	"certificateManager/environment"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"certificateManager/environment"
 	cerr "github.com/jeanfrancoisgratton/customError/v3"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 )
@@ -77,12 +77,12 @@ func putRevokeFlag(e environment.EnvironmentStruct, certname string, country str
 	// Open in and out files
 	inFile, err := os.Open(filepath.Join(e.RootCAdir, "index.txt"))
 	if err != nil {
-		return &cerr.CustomError{Title: "Unable to open index.txt", Message: err.Error()}
+		return &cerr.CustomError{Title: "Unable to open index.txt", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 	defer inFile.Close()
 	outFile, err := os.Create(filepath.Join(e.RootCAdir, "index.txt.new"))
 	if err != nil {
-		return &cerr.CustomError{Title: "Unable to create the temp index file", Message: err.Error()}
+		return &cerr.CustomError{Title: "Unable to create the temp index file", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 	defer outFile.Close()
 
@@ -111,7 +111,7 @@ func putRevokeFlag(e environment.EnvironmentStruct, certname string, country str
 	}
 
 	if err := scanner.Err(); err != nil {
-		return &cerr.CustomError{Title: "Unable to read the index file", Message: err.Error()}
+		return &cerr.CustomError{Title: "Unable to read the index file", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 
 	if CertRemoveFiles {

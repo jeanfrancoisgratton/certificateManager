@@ -6,6 +6,7 @@
 package cert
 
 import (
+	"certificateManager/environment"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
@@ -19,7 +20,6 @@ import (
 	"strings"
 	"time"
 
-	"certificateManager/environment"
 	cerr "github.com/jeanfrancoisgratton/customError/v3"
 	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
@@ -45,7 +45,7 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) *cerr.Cus
 	// Ensure there is a single file in the CA directory and fetch its name
 	caCertFiles, err := filepath.Glob(filepath.Join(env.RootCAdir, "*.crt"))
 	if err != nil {
-		return &cerr.CustomError{Title: "Error listing CA certificate files: ", Message: err.Error()}
+		return &cerr.CustomError{Title: "Error listing CA certificate files: ", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 	if len(caCertFiles) != 1 {
 		return &cerr.CustomError{Message: "Expected one CA certificate file, found " + hftx.Red(fmt.Sprintf("%d", len(caCertFiles)))}
@@ -54,34 +54,34 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) *cerr.Cus
 
 	// 1. Load the CA cert and key files
 	if caCertPEM, err = os.ReadFile(filepath.Join(env.RootCAdir, baseFN+".crt")); err != nil {
-		return &cerr.CustomError{Title: "Error reading CA certificate: ", Message: err.Error()}
+		return &cerr.CustomError{Title: "Error reading CA certificate: ", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 	if caKeyPEM, err = os.ReadFile(filepath.Join(env.RootCAdir, baseFN+".key")); err != nil {
-		return &cerr.CustomError{Title: "Error reading CA private key: ", Message: err.Error()}
+		return &cerr.CustomError{Title: "Error reading CA private key: ", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 
 	// 2. Parse the CA cert and key files
 	caCertBlock, _ := pem.Decode(caCertPEM)
 	caKeyBlock, _ := pem.Decode(caKeyPEM)
 	if caCertBlock == nil || caKeyBlock == nil {
-		return &cerr.CustomError{Message: "Error PEM-decoding the CA certificate or its private key"}
+		return &cerr.CustomError{Message: "Error PEM-decoding the CA certificate or its private key", Fatality: cerr.Fatal}
 	}
 	if caCert, err = x509.ParseCertificate(caCertBlock.Bytes); err != nil {
-		return &cerr.CustomError{Title: "Error parsing CA certificate", Message: err.Error()}
+		return &cerr.CustomError{Title: "Error parsing CA certificate", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 	if caKey, err = x509.ParsePKCS1PrivateKey(caKeyBlock.Bytes); err != nil {
-		return &cerr.CustomError{Title: "Error parsing CA private key", Message: err.Error()}
+		return &cerr.CustomError{Title: "Error parsing CA private key", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 
 	// 3. Load, decode and parse the CSR file
 	if csrBytes, err = os.ReadFile(filepath.Join(env.ServerCertsDir, "csr", c.CertificateName+".csr")); err != nil {
-		return &cerr.CustomError{Title: "Error reading CSR certificate: ", Message: err.Error()}
+		return &cerr.CustomError{Title: "Error reading CSR certificate: ", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 	if csrBlock, _ := pem.Decode(csrBytes); csrBlock == nil {
-		return &cerr.CustomError{Message: "Error PEM-decoding the CSR file"}
+		return &cerr.CustomError{Message: "Error PEM-decoding the CSR file", Fatality: cerr.Fatal}
 	} else {
 		if csrRequest, err = x509.ParseCertificateRequest(csrBlock.Bytes); err != nil {
-			return &cerr.CustomError{Title: "Error parsing CSR certificate", Message: err.Error()}
+			return &cerr.CustomError{Title: "Error parsing CSR certificate", Message: err.Error(), Fatality: cerr.Fatal}
 		}
 	}
 
@@ -106,31 +106,31 @@ func (c CertificateStruct) signCert(env environment.EnvironmentStruct) *cerr.Cus
 	// 5. Create (sign) the certificate
 	certDER, err := x509.CreateCertificate(rand.Reader, &template, caCert, csrRequest.PublicKey, caKey)
 	if err != nil {
-		return &cerr.CustomError{Title: "Error creating certificate", Message: err.Error()}
+		return &cerr.CustomError{Title: "Error creating certificate", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 
 	// 6. Encode, save to disk
 	certFile, err := os.Create(filepath.Join(env.ServerCertsDir, "certs", c.CertificateName+".crt"))
 	if err != nil {
-		return &cerr.CustomError{Title: "Error creating certificate file: ", Message: err.Error()}
+		return &cerr.CustomError{Title: "Error creating certificate file: ", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 	defer certFile.Close()
 
 	if err = pem.Encode(certFile, &pem.Block{Type: "CERTIFICATE", Bytes: certDER}); err != nil {
-		return &cerr.CustomError{Title: "Error encoding certificate to PEM: ", Message: err.Error()}
+		return &cerr.CustomError{Title: "Error encoding certificate to PEM: ", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 
 	// We also need to save the new certificate in the rootCA "newcerts" directory
 	if err = os.Mkdir(filepath.Join(env.RootCAdir, "newcerts"), os.ModePerm); err != nil && !os.IsExist(err) {
-		return &cerr.CustomError{Message: err.Error()}
+		return &cerr.CustomError{Message: err.Error(), Fatality: cerr.Fatal}
 	}
 	newcertFile, err := os.Create(filepath.Join(env.RootCAdir, "newcerts", fmt.Sprintf("%04X.pem", c.SerialNumber)))
 	if err != nil {
-		return &cerr.CustomError{Title: "Unable to create the certificate within root CA's PKI: ", Message: err.Error()}
+		return &cerr.CustomError{Title: "Unable to create the certificate within root CA's PKI: ", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 	defer newcertFile.Close()
 	if pem.Encode(newcertFile, &pem.Block{Type: "CERTIFICATE", Bytes: certDER}); err != nil {
-		return &cerr.CustomError{Title: "Error encoding certificate to PEM: ", Message: err.Error()}
+		return &cerr.CustomError{Title: "Error encoding certificate to PEM: ", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 
 	if CertJava {
@@ -162,17 +162,17 @@ func (c CertificateStruct) createCA(env environment.EnvironmentStruct, privateKe
 		EmailAddresses:        c.EmailAddresses,
 	}
 	if caBytes, err = x509.CreateCertificate(rand.Reader, &template, &template, &privateKey.PublicKey, privateKey); err != nil {
-		return &cerr.CustomError{Title: "Unable to create CA certificate: ", Message: err.Error()}
+		return &cerr.CustomError{Title: "Unable to create CA certificate: ", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 
 	cafile, err := os.Create(filepath.Join(env.RootCAdir, c.CertificateName+".crt"))
 	if err != nil {
-		return &cerr.CustomError{Message: err.Error()}
+		return &cerr.CustomError{Message: err.Error(), Fatality: cerr.Fatal}
 	}
 	defer cafile.Close()
 
 	if err = pem.Encode(cafile, &pem.Block{Type: "CERTIFICATE", Bytes: caBytes}); err != nil {
-		return &cerr.CustomError{Message: err.Error()}
+		return &cerr.CustomError{Message: err.Error(), Fatality: cerr.Fatal}
 	}
 
 	fmt.Printf("Root CA certificate %s with a duration of %v years successfully created in %s\n",
@@ -208,11 +208,11 @@ func (c CertificateStruct) createJavaCert(e environment.EnvironmentStruct, caCer
 
 	// Load, decode and parse the current server cert
 	if certPEM, err = os.ReadFile(filepath.Join(e.ServerCertsDir, "certs", c.CertificateName+".crt")); err != nil {
-		return &cerr.CustomError{Title: "Error reading CA certificate", Message: err.Error()}
+		return &cerr.CustomError{Title: "Error reading CA certificate", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 	certBlock, _ = pem.Decode(certPEM)
 	if serverCert, err = x509.ParseCertificate(certBlock.Bytes); err != nil {
-		return &cerr.CustomError{Message: err.Error()}
+		return &cerr.CustomError{Message: err.Error(), Fatality: cerr.Fatal}
 	}
 
 	// PKCS#12 requires the file to be password-protected
@@ -226,7 +226,7 @@ func (c CertificateStruct) createJavaCert(e environment.EnvironmentStruct, caCer
 			if os.IsNotExist(errfn) {
 				continue
 			} else {
-				return &cerr.CustomError{Title: "Unable to remove " + fn, Message: err.Error()}
+				return &cerr.CustomError{Title: "Unable to remove " + fn + " : ", Message: err.Error()}
 			}
 		}
 	}
@@ -234,11 +234,12 @@ func (c CertificateStruct) createJavaCert(e environment.EnvironmentStruct, caCer
 	// Convert cert to PKCS#12
 	pkcs12Data, err := pkcs12.Encode(rand.Reader, serverKey, serverCert, []*x509.Certificate{caCert}, certPasswd)
 	if err != nil {
-		return &cerr.CustomError{Title: "Error encoding the certificate in PKCS#12: ", Message: err.Error()}
+		return &cerr.CustomError{Title: "Error encoding the certificate in PKCS#12: ",
+			Message: err.Error(), Fatality: cerr.Fatal}
 	}
 
 	if err = os.WriteFile(filepath.Join(e.ServerCertsDir, "java", c.CertificateName+".p12"), pkcs12Data, 0644); err != nil {
-		return &cerr.CustomError{Message: err.Error()}
+		return &cerr.CustomError{Message: err.Error(), Fatality: cerr.Fatal}
 	}
 
 	// No other way for now <sigh>
@@ -252,7 +253,7 @@ func (c CertificateStruct) createJavaCert(e environment.EnvironmentStruct, caCer
 	cmd.Stderr = os.Stderr
 
 	if err := cmd.Run(); err != nil {
-		return &cerr.CustomError{Title: "Keytool command failed: ", Message: err.Error()}
+		return &cerr.CustomError{Title: "Keytool command failed: ", Message: err.Error(), Fatality: cerr.Fatal}
 	}
 
 	return nil

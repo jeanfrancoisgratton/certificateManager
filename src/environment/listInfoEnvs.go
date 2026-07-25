@@ -28,12 +28,12 @@ func ListEnvironments(envdir string) *cerr.CustomError {
 		envdir = filepath.Join(os.Getenv("HOME"), ".config", "JFG", "certificatemanager")
 	}
 	if dirFH, err = os.Open(envdir); err != nil {
-		ce := &cerr.CustomError{Title: "Unable to read config directory"}
+		ce := &cerr.CustomError{Title: "Unable to read config directory", Fatality: cerr.Fatal}
 		return ce
 	}
 
 	if fileInfos, err = dirFH.Readdir(0); err != nil {
-		ce := &cerr.CustomError{Title: "Unable to read files in config directory"}
+		ce := &cerr.CustomError{Title: "Unable to read files in config directory", Fatality: cerr.Fatal}
 		return ce
 	}
 
@@ -44,7 +44,7 @@ func ListEnvironments(envdir string) *cerr.CustomError {
 	}
 
 	if err != nil {
-		ce := &cerr.CustomError{Title: "Undefined error", Message: err.Error()}
+		ce := &cerr.CustomError{Title: "Undefined error", Message: err.Error(), Fatality: cerr.Fatal}
 		return ce
 	}
 
@@ -83,9 +83,9 @@ func ExplainEnvFile(envfiles []string) *cerr.CustomError {
 		}
 		EnvConfigFile = envfile
 
-		if e, err := LoadEnvironmentFile(); err != nil {
+		if e, cerr := LoadEnvironmentFile(); cerr != nil {
 			EnvConfigFile = oldEnvFile
-			return err
+			return cerr
 		} else {
 			t.AppendRow([]interface{}{hftx.Green(envfile), hftx.Green(e.CertificateRootDir), hftx.Green(filepath.Base(e.RootCAdir)),
 				hftx.Green(filepath.Base(e.ServerCertsDir)), hftx.Green(filepath.Base(e.CertificatesConfigDir))})

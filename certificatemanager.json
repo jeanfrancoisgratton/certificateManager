@@ -1,0 +1,20 @@
+{
+  "softwarename": "certificatemanager",
+  "binaryname": "cm",
+  "goversion": "1.26.5",
+  "versionnumber": "1.8.0",
+  "releasenumber": "1",
+  "description": "Certificate / PKI management tool",
+  "maintainer": "J.F.Gratton \u003cjean-francois@famillegratton.net\u003e",
+  "packager": "Package builder \u003cbuilder@famillegratton.net\u003e",
+  "section": "Packaging tool",
+  "dependencies": "",
+  "url": "https://git.famillegratton.net:3000/devops/certificatemanager",
+  "stubs": {
+    "alpine": true,
+    "debian": true,
+    "redhat": true,
+    "archlinux": true,
+    "skeleton": true
+  }
+}

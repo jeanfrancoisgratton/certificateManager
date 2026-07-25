@@ -1,275 +1,324 @@
-<H1>certificateManager</H1>
+![certificateManager](images/cm_banner.png)
 
-A GO tool to generate and sign all of your SSL certificates
+# certificateManager
 
-<H2>Overview</H2>
-**PLEASE NOTE**
+A Go tool to generate, sign, verify and revoke all of your SSL/TLS certificates from your own PKI.
 
-A new version of this tool is in the planning stages. It will likely bring breaking changes and offer QoL improvements
+The binary is installed as `cm`.
 
+## Overview
 
-This tool uses GO's x509 package to:<br>
-- Generate<br>
-- Sign<br>
-- Verify all of your SSL certificates, your custom Root Certificate Authority (Root CA) certs, and even your Java certs in the .JKS (Java Keystore) certificates.
+`certificateManager` uses Go's `crypto/x509` package to build and operate a self-contained
+Public Key Infrastructure (PKI). With it you can:
 
-<H3>What that tool does do</H3>
-- Create your own custom PKI (Private Key Infrastructure), and handle all certificates from under it<br>
-- Create, if needed, a root CA cert<br>
-- Create and sign "normal" SSL server certs<br>
-- Verify those certs<br>
-- Revoke certs<br>
+- Create your own custom PKI and manage every certificate under it
+- Create a root CA (Certificate Authority) certificate
+- Create and sign "standard" SSL/TLS server certificates
+- Verify certificates
+- Revoke certificates
+- Optionally export server certificates to Java Keystore (`.jks`) and PKCS#12 (`.p12`) formats
 
-<H3>What that tool does not do</H3>
-- Sign certificates against a remote CA:<br>
-  - No CRL (Certificate Revokation List) is implemented<br>
-  - No CDP (Certificate Distribution Point) is implemented<br>
-- Any operation against a remote CA, actually.<br><br>
+### What this tool does *not* do
 
-Bear in mind : this software is intended to run on an internal network.<br>
-For instance, if you wish to publish your own rootCA certificate, it's yours do deploy it at VeriSign, etc....
-<br><br>
-<H2>Concepts</H2>
+- It does not sign certificates against a **remote** CA
+- No CRL (Certificate Revocation List) is implemented
+- No CDP (CRL Distribution Point) is implemented
+- No operation of any kind against a remote CA
 
-<H3>Environments</H3>
+This software is intended to run on an **internal network**. If you want your root CA
+to be publicly trusted, it is up to you to publish/deploy it with a public authority.
 
-In most use cases, you would see a single rootCA or rootCA + intermediateCA present in a PKI.<br>
+## Concepts
 
-You might wish to have this tool in a docker container and be able to manage multiple PKIs, so to facilitate this, we introduce the idea of *environments*.
+### Environments
 
-An environment is a set of rules that define the directory structure that will be used by a PKI.
-This allows handling of multiple PKIs as sandboxed environments.
+In most cases a PKI has a single root CA (or a root CA plus an intermediate CA). You may,
+however, want to manage several independent PKIs — for example inside a Docker container.
+To make this possible, the tool introduces the idea of an **environment**.
 
-The contents of an environment file is such:<br>
+An environment is a small JSON file that describes the directory layout of one PKI. Each
+environment is a self-contained sandbox, which lets you manage several PKIs side by side.
+
+Environment files live in `$HOME/.config/JFG/certificatemanager/`. An environment file
+looks like this:
+
 ```json
 {
-  "CertificateRootDir": "/Users/jfgratton/.config/JFG/certificatemanager/certificates",
-  "RootCAdir": "rootCA",
-  "ServerCertsDir": "servers",
-  "CertificatesConfigDir": "conf",
+  "CertificateRootDir": "/localrep/devops/_certificates/famillegratton",
+  "RootCAdir": "/localrep/devops/_certificates/famillegratton/CA",
+  "ServerCertsDir": "/localrep/devops/_certificates/famillegratton/srv",
+  "CertificatesConfigDir": "/localrep/devops/_certificates/famillegratton/cfg",
   "RemoveDuplicates": true
 }
 ```
 
-The file is in JSON format; every key in the file (except the last one, `RemoveDuplicates`) are string values representing a path. The first path **must** be absolute, while the others are relative to it.<br>
-(btw... `RemoveDuplicates` is meaningless for now, as that key is not treated -yet- anywhere in my code)
+- `CertificateRootDir` — absolute path to the root of the PKI
+- `RootCAdir` — directory holding the root CA certificate, its key and the PKI database
+- `ServerCertsDir` — directory holding the server certificates, keys, CSRs and Java exports
+- `CertificatesConfigDir` — directory holding the certificate **config** files
+- `RemoveDuplicates` — when `true`, refuses to create a certificate whose subject already
+  exists (as a valid entry) in the PKI database (`index.txt`)
 
-You switch between environments with the `-e` flag. Not using this flag will assume that you use the default environment file, `$HOME/.config/JFG/certficatemanager/default.Env` , assuming of course that the file is there.
-<br><br>
-<H3>Certificates, root certificates and certificate config files</H3>
-A certificate (extension .crt) is the actual x509 SSL file that you might wish to deploy on a server, for example.
-The root certificate (or rootCA) is the certificate used to sign (validate) all other certificates within the PKI.
-A certificate config file is the JSON file that this tool uses to generate the certificate file.
+When you create an environment with `cm env add`, you enter a directory **name** for each
+of the sub-directories and the tool stores them as absolute paths, rooted at
+`CertificateRootDir`.
 
-A typical certificate config file looks like this:
+You select an environment with the global `-e` flag. If you omit it, the tool uses
+`defaultEnv.json`. The `.json` extension is always implied, so `-e test` and
+`-e test.json` are equivalent.
+
+### Certificates, root certificates and config files
+
+- A **certificate** (`.crt`) is the actual x509 SSL/TLS file you deploy on a server.
+- The **root certificate** (root CA) is the certificate that signs (validates) every other
+  certificate in the PKI.
+- A **certificate config file** is the JSON file this tool reads to generate a certificate.
+
+A typical certificate config file:
 
 ```json
 {
   "Country": "CA",
   "Province": "Quebec",
   "Locality": "Blainville",
-  "Organization": "myorg.net",
-  "OrganizationalUnit": "myorg",
-  "CommonName": "myorg.net root CA",
-  "IsCA": true,
+  "Organization": "famillegratton",
+  "OrganizationalUnit": "Computers",
+  "CommonName": "bergen.famillegratton.net",
+  "IsCA": false,
   "EmailAddresses": [
-    "cert@myorg.net",
-    "cert@org,net"
+    "certs@famillegratton.net",
+    "jfgratton@famillegratton.net"
   ],
-  "Duration": 10,
+  "Duration": 3,
   "KeyUsage": [
-    "cert sign",
-    "crl sign",
-    "digital signature"
+    "digital signature",
+    "key encipherment",
+    "data encipherment",
+    "key agreement"
   ],
   "DNSNames": [
-    "myorg.net",
-    "myorg.com",
-    "lan.myorg.net"
+    "bergen",
+    "bergen.famillegratton.net"
   ],
-  "IPAddresses": [
-    "10.0.0.1",
-    "127.0.0.1"
-  ],
-  "CertificateName": "sampleCert",
-  "SerialNumber": 1,
+  "CertificateName": "bergen.famillegratton.net",
+  "SerialNumber": 26,
   "Comments": [
-    "To see which values to put in the KeyUsage field, see https://pkg.go.dev/crypto/x509#KeyUsage",
-    "Strip off 'KeyUsage' from the const name and there you go.",
-    "",
-    "Please note that this field offers no functionality and is strictly here for documentation purposes"
+    "pc principal"
   ]
 }
 ```
-<br>
-<H2>PKI / environment directory structure</H2>
 
-As mentioned above, an *environment* is a sandbox. Different environments represent different PKIs.
-We'll use the variables from `sampleEnv.json` here to describe the structure. <br>
+Notes:
 
-Here, I have an environment called `test (test.json)` :
+- `Duration` is expressed in **years**. Because of the Apple 825-day rule, CA certificates
+  (`IsCA: true`) are capped at **2 years**.
+- For the valid `KeyUsage` strings, see the reference table under
+  [Key usage values](#key-usage-values).
+- `SerialNumber` and `Comments` are optional; `Comments` are purely documentation and have
+  no functional effect.
+
+## PKI / environment directory structure
+
+An environment is a sandbox; different environments are different PKIs. Given this
+environment:
+
 ```bash
-[16:56:29|jfgratton@bergen:certificatemanager]: cm env ls
-Number of environment files: 1
-┏━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓
-┃ Environment file ┃ File size ┃ Modification time   ┃
-┣━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━┫
-┃ test.json        ┃ 145       ┃ 2023/10/02 16:56:29 ┃
-┗━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━┛
-
-[16:56:38|jfgratton@bergen:certificatemanager]: cm env explain test
-┏━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ Environment file ┃ Certificate root dir ┃ CA dir ┃ Server certificates dir ┃ Certificates config dir ┃
-┣━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━┫
-┃ test.json        ┃ /test                ┃ CA     ┃ srv                     ┃ cfg                     ┃
-┗━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━┛
+[jfgratton@bergen certificatemanager]$ cm -e test env info test
 ```
 
-So you see, my environment / sandbox / PKI, sits under `/test/`
+the PKI directory tree looks like this (root CA dir = `CA`, server dir = `srv`, config
+dir = `cfg`):
 
-Now, I've cheated a bit here, I've already created some certs, to show you the directory structure:<br>
-```bash
-[17:16:19|jfgratton@bergen:/test]: cm -e test cert ls
-Number of certificates: 4
-┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓
-┃ Cert name    ┃ Common Name       ┃ File size ┃ Modification time   ┃
-┣━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━┫
-┃ gitea.json   ┃ git.myorg.net     ┃ 488       ┃ 2023/10/02 17:16:11 ┃
-┃ haproxy.json ┃ haproxy.myorg.net ┃ 515       ┃ 2023/10/02 17:16:17 ┃
-┃ nexus.json   ┃ nexus.myorg.net   ┃ 518       ┃ 2023/10/02 17:16:19 ┃
-┃ testCA.json  ┃ myorg.net root CA ┃ 726       ┃ 2023/10/02 17:15:28 ┃
-┗━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━┛
-```
-<br>**A NOTE ABOUT `cm cert ls`:**<br>
-This command lists certificate **config** files, not certificate **files**. This means a config file might be present, but no valid certificate being present.<br>
-If you wish to see that a certificate exists (and is valid) : `cm cert verify $PATH_TO_CERTIFICATE_FILE`
-<br><br>
-`cm env explain test`, above, reflects the following directory structure:<br>
-
-
-With `test` as being the root PKI directory, we get this:<br>
-```bash
+```text
 test
 ├── CA
-│   ├── index.txt
-│   ├── index.txt.attr
-│   ├── newcerts
-│   │   ├── 0002.pem
-│   │   ├── 0003.pem
-│   │   └── 0004.pem
-│   ├── serial
-│   ├── testCA.crt
-│   └── testCA.key
+│   ├── index.txt
+│   ├── index.txt.attr
+│   ├── newcerts
+│   │   ├── 0002.pem
+│   │   ├── 0003.pem
+│   │   └── 0004.pem
+│   ├── serial
+│   ├── testCA.crt
+│   └── testCA.key
 ├── cfg
-│   ├── gitea.json
-│   ├── haproxy.json
-│   ├── nexus.json
-│   └── testCA.json
+│   ├── gitea.json
+│   ├── haproxy.json
+│   ├── nexus.json
+│   └── testCA.json
 └── srv
-    ├── cert
-    │   ├── gitea.crt
-    │   ├── haproxy.crt
-    │   └── nexus.crt
+    ├── certs
+    │   ├── gitea.crt
+    │   ├── haproxy.crt
+    │   └── nexus.crt
     ├── csr
-    │   ├── gitea.csr
-    │   ├── haproxy.csr
-    │   └── nexus.csr
+    │   ├── gitea.csr
+    │   ├── haproxy.csr
+    │   └── nexus.csr
     ├── java
     └── private
         ├── gitea.key
         ├── haproxy.key
         └── nexus.key
-
 ```
-*In this structure*:<br>
-CA is the root PKI directory:<br>
-cfg is the config dir, where all certificates config files are stored<br>
-srv is where you store all certificates files, private keys, java keys (jks, p12)<br>
-- `index.txt` is the main database that stores every certificate in the PKI, including the rootCA<br>
-- `serials` is the latest generated certificate serial<br>
-- `newcerts/` is the directory holding a copy of the generated certificates; the filename is an hexidecimal-translated number (from the cert serial number)<br>
-- `cfg/` is the certificate configuration files
-- `srv/cert/` contains the certificates themselves
-- `srv/csr/` contains the certificate signing request; I keep these in case you want to make your PKI structure public
-- `srv/private/` contains the certificate private key (needed by CSR)
-- `srv/java/` are the certificates (.crt), converted in PKCS#12 and JKS formats, for Java usage
 
-The notable exception is the CA itself, and its key: both reside in the `CA` directory itself.
-<br><br>
+- `CA/` — the root CA certificate and key live here directly
+  - `index.txt` — the PKI database, listing every certificate (including the root CA)
+  - `index.txt.attr` — the attribute file for the database
+  - `serial` — the last serial number issued
+  - `newcerts/` — a copy of each issued certificate, named after its serial in hexadecimal
+- `cfg/` — the certificate **config** files
+- `srv/certs/` — the issued certificates (`.crt`)
+- `srv/csr/` — the certificate signing requests (kept in case you want to publish your PKI)
+- `srv/private/` — the certificate private keys
+- `srv/java/` — server certificates exported to PKCS#12 (`.p12`) and Java Keystore (`.jks`)
 
-<H2>How do we use the software</H2>
-<H3>Create an environment file</H3>
+> **A note about `cm cert ls`:** this command lists certificate **config** files, not the
+> certificates themselves. A config file may exist without a corresponding valid
+> certificate. To confirm a certificate exists and is valid, use
+> `cm cert verify PATH_TO_CERT`.
 
-As mentioned earlier, at the initial run of the software, it will create a few files in `$HOME/.config/JFG/certificatemanager`:<br>
-- sampleCert.json
-- sampleCert-README.txt
-- sampleEnv.json
-- sampleEnv-README.txt
+## Usage
 
-Read both `.txt` files for further explanations. For now, the software is not yet usable; you need an environment file to run.<br>
-By default, if you do not pass an `-e` argument to the app, it will assume `-e defaultEnv.json` (you do not need to provide the extension, btw)<br>
+The global flag `-e ENV` selects the environment file (default: `defaultEnv.json`).
 
-The easiest way, then, to create that default Environment file is: `cm env create`.<br>
-You could add a filename such as `test`. If you provide another name, this means that any execution of the app will need the `-e ENVFILE` args (ENVFILE being the filename you've selected)<br>
+### Environments — `cm env`
 
-By default, the software runs with the `-e defaultEnv.json` flag as a default environment file (which is why you need to adapt the above file with sane values). This will create the correct directory structure this software needs to operate
+| Command | Aliases | Description |
+|---------|---------|-------------|
+| `cm env add [FILE]` | `create` | Create an environment file (prompts for directories). Defaults to `defaultEnv.json`. |
+| `cm env list [DIR]` | `ls` | List the environment files. |
+| `cm env info [FILE...]` | `explain` | Show the details of one or more environment files. |
+| `cm env rm [FILE]` | `remove` | Delete an environment file. Defaults to `defaultEnv.json`. |
 
-<H3>Create a CA cert</H3>
-The very first step in building your own PKI is to have a root CA (root certificate authority)<br>
-Either you already have your own json CA file (`cfg/rootCA.json`, in this example), or you will need to create your own:<br>
-<H4>You have your own config</H4>
-`cm cert create rootCA` (assuming that your CA config file is actually `rootCA.json`)
-<H4>Create your own config</H4>
-`cm cert create` <-- ensure that you select TRUE for a root CA when prompted<br>
+The `.json` extension is always optional.
 
-<H3>Create "standard" SSL certs</H3>
-The process is exactly as the one above, except that this time you specify that you are not creating a CA certificate<br>
+### Certificates — `cm cert`
 
-This means that you follow the steps, above, and if you create a new file, you will need to answer FALSE to the prompt where it asks you if this is a CA cert.<br>
-<H3>Java certificates</H3>
-A Java certificate can be created with the `-j` flag with `cm cert create`.<br>
-This flag will convert the newly-created `.crt` certificate in a PKCS#12 format (`.p12` file), and then, convert that PKCS#12
-in a Java Keystore (`.jks`) file.<br><br>
-**HUGE CAVEAT:** In order to convert the `.p12` to `.jks`, we need an external tool, `keytool`, which is provided by any Java SDK or JRE.
-For many reasons, *I do not factor that dependency in my binary package build toolchain*, the main reason being that Java package names are inconsistent on any given distro.
-<br><br>
-In a future release, I will provide a flag to ignore the conversion from PKCS#12 to Java Keystore.<br>
+| Command | Aliases | Description |
+|---------|---------|-------------|
+| `cm cert create [CONFIG]` | | Create a CA or standard certificate. Prompts interactively if no config file is given. |
+| `cm cert verify FILE` | | Verify a certificate. The file does not need to live inside the current PKI. |
+| `cm cert list` | `ls` | List the certificate config files in the environment. |
+| `cm cert revoke [CONFIG]` | `rm`, `remove` | Revoke a certificate by its config file name. |
 
-<H3>Revoke certs</H3>
-Simple: `cm cert revoke [-r] $CERTCONFIGFILE`<br>
-You just name the cert config file (as per `cm cert ls`), and that's it.<br><br>
-The `-r` flag instructs the tool to physically remove the files from the environment as well.
+Flags:
 
-<H2>Building, installing CertificateManager</H2>
-I provide both the source code and Alpine (APK), Debian-based (DEB) or RedHat-based (RPM) binary packages.
+- `cm cert create -b, --keysize N` — private key size in bits (default `4096`)
+- `cm cert create -j, --java` — also export a PKCS#12 (`.p12`) and Java Keystore (`.jks`)
+- `cm cert verify -v, --verbose` — display the full output
+- `cm cert verify -c, --comments` — display the config file comments (if any)
+- `cm cert revoke -r, --remove` — also physically remove the certificate artefacts from the PKI
 
-<H3>Install from source</H3>
-- Clone the repo<br>
-- from the `src/` directory, run: `./build [-o OUTPUTDIR]`, where OUTPUTDIR is where you want the final binary to be copied. By default it uses `/opt/bin/`
+### First run
 
-*NOTE: The script assumes that the building user has sudo rights to write in `/opt/bin` and strip the binary from debugging code*
+On its first run the tool creates its per-user config directory,
+`$HOME/.config/JFG/certificatemanager/`. Before you can do anything useful you need an
+environment file describing where your PKI will live.
 
-<H3>Install from binary packages</H3>
-Go in the Releases link from this site, and pick your package, once downloaded, in say, `/tmp/` :
+The easiest way is:
 
-<H4>Alpine (APK)</H4>
-`$ apk add [--allow-untrusted] /tmp/$PACKAGENAME`
+```bash
+cm env add            # creates the default environment (defaultEnv.json)
+cm env add test       # creates a named environment (used later with: cm -e test ...)
+```
 
-<br>(the `--allow-untrusted` is for anyone who does not possess my signing keys. Most likely anyone not using my own binary repos)
+### Create a CA certificate
 
-<H4>Debian-based (DEB)</H4>
-`$ apt install /tmp/$PACKAGENAME`
+The first step in building a PKI is a root CA.
 
-<H4>RedHat-based (RPM)</H4>
-`$ dnf localinstall /tmp/$PACKAGENAME`
+If you already have a CA config file (e.g. `cfg/rootCA.json`):
 
-<H2>A note about some extra directories and files</H2>
-The following directories:<br>
-- __alpine/<br>
-- __debian/<br>
-- ./certificateManager.spec<br>
-- ./rpmbuild-deps.sh<br><br>
+```bash
+cm cert create rootCA
+```
 
-Those dirs and files are needed for my own home setup. That setup relies on my own custom Docker containers to build the binary packages.
-Those containers will be made available once I manage to strip them from my personal information, but it is an involved process, so for now don't count on them.
-(teaser: it's a pity, it works so well :D)
+Or create one interactively — answer **TRUE** when asked whether this is a CA certificate:
+
+```bash
+cm cert create
+```
+
+### Create a standard SSL/TLS certificate
+
+Same process as above, but answer **FALSE** to the "is this a CA certificate?" prompt (or
+use a config file whose `IsCA` is `false`):
+
+```bash
+cm cert create bergen.famillegratton.net
+```
+
+### Java certificates
+
+Passing `-j` to `cm cert create` converts the freshly-created `.crt` into a PKCS#12 (`.p12`)
+file and then into a Java Keystore (`.jks`). Both are written to `srv/java/`.
+
+> **Caveat:** the `.p12` → `.jks` conversion relies on the external `keytool` binary,
+> which ships with any Java SDK/JRE. This dependency is intentionally **not** declared in the
+> binary packages, because Java package names differ wildly across distributions. Make sure
+> `keytool` is on your `PATH` if you use `-j`.
+
+### Revoke a certificate
+
+```bash
+cm cert revoke haproxy.json        # mark as revoked in the PKI database
+cm cert revoke -r haproxy.json     # also delete the certificate's files
+```
+
+You name the certificate **config** file (as shown by `cm cert ls`).
+
+### Key usage values
+
+Valid `KeyUsage` strings (case-insensitive):
+
+`digital signature`, `content commitment`, `key encipherment`, `data encipherment`,
+`key agreement`, `cert sign`, `crl sign`, `encipher only`, `decipher only`.
+
+Two convenience catch-alls are also accepted when creating a cert interactively:
+`CADEFAULTS` (sensible defaults for a root CA) and `CERTDEFAULTS` (defaults for a standard
+certificate).
+
+## Building and installing
+
+Both the source code and binary packages (Alpine `.apk`, Debian `.deb`, RedHat `.rpm`,
+Arch Linux) are provided.
+
+### Build from source
+
+Requires Go (see `go.version` for the version this release is built with).
+
+```bash
+git clone https://github.com/jeanfrancoisgratton/certificatemanager.git
+cd certificatemanager/src
+./build.sh [OUTPUT_DIR]     # defaults to /opt/bin
+```
+
+The build script names the binary `cm` on the `main`/`develop` branches, and
+`cm-<branch>` on any other branch.
+
+### Install from a binary package
+
+Grab the package for your distribution, then:
+
+| Distro | Command |
+|--------|---------|
+| Alpine | `apk add [--allow-untrusted] /tmp/PACKAGE.apk` |
+| Debian/Ubuntu | `apt install /tmp/PACKAGE.deb` |
+| RedHat/Fedora | `dnf localinstall /tmp/PACKAGE.rpm` |
+| Arch Linux | `pacman -U /tmp/PACKAGE.pkg.tar.zst` |
+
+(`--allow-untrusted` is only needed if you do not have the signing keys for the Alpine
+package repository.)
+
+## Packaging directories
+
+The `__alpine/`, `__archlinux/`, `__debian/` and `__redhat/` directories hold the packaging
+metadata and build scripts used to produce the binary packages. They are geared toward the
+maintainer's own container-based build pipeline and are not required to build or run the
+tool from source.
+
+## Documentation
+
+- Changelog: [`docs/CHANGELOG.md`](docs/CHANGELOG.md)
+- License: [`docs/LICENSE`](docs/LICENSE)
+- Sample environment and certificate config files: [`docs/samples/`](docs/samples/)
