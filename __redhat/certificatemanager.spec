@@ -65,6 +65,13 @@ fi
 
 
 %changelog
+* Sat Jul 25 2026 Binary package builder <builder@famillegratton.net> 1.8.0-1
+- Refactored BUILDERs packaging, updated builddeps, upgraded helperFunctions and customError
+- sanitized code, cleared go vet ./...
+- Fixed typo
+- added changelog to specfile
+- added archlinux support to binary packaging, go version bump, builddeps updates, simplified error handling
+
 * Wed May 13 2026 Binary package builder <builder@famillegratton.net> 1.70.00-0
 - added archlinux support to binary packaging, go version bump, builddeps updates, simplified error handling
 
