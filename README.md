@@ -1,4 +1,4 @@
-![certificateManager](images/cm_banner.png)
+![certificateManager](images/cm_banner2.png)
 
 # certificateManager
 

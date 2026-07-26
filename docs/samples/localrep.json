@@ -1,0 +1,7 @@
+{
+  "CertificateRootDir": "/localrep/devops/_certificates/famillegratton",
+  "RootCAdir": "/localrep/devops/_certificates/famillegratton/CA",
+  "ServerCertsDir": "/localrep/devops/_certificates/famillegratton/srv",
+  "CertificatesConfigDir": "/localrep/devops/_certificates/famillegratton/cfg",
+  "RemoveDuplicates": true
+}

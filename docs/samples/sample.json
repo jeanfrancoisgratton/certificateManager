@@ -1,0 +1,29 @@
+{
+  "Country": "CA",
+  "Province": "Quebec",
+  "Locality": "Blainville",
+  "Organization": "famillegratton",
+  "OrganizationalUnit": "Computers",
+  "CommonName": "bergen.famillegratton.net",
+  "IsCA": false,
+  "EmailAddresses": [
+    "certs@famillegratton.net",
+    "jfgratton@famillegratton.net"
+  ],
+  "Duration": 3,
+  "KeyUsage": [
+    "digital signature",
+    "key encipherment",
+    "data encipherment",
+    "key agreement"
+  ],
+  "DNSNames": [
+    "bergen",
+    "bergen.famillegratton.net"
+  ],
+  "CertificateName": "bergen.famillegratton.net",
+  "SerialNumber": 26,
+  "Comments": [
+    "pc principal"
+  ]
+}
